@@ -342,7 +342,7 @@ document.getElementById('wonder').addEventListener('change',e=>{settings.wonder=
 document.getElementById('wLv').addEventListener('change',e=>{settings.wLv=clamp(parseInt(e.target.value)||0,0,50);e.target.value=settings.wLv;renderAll();});
 document.getElementById('baseH').addEventListener('change',e=>{settings.baseH=Math.max(0,num(e.target.value,0));e.target.value=settings.baseH;renderAll();});
 document.getElementById('curLv').addEventListener('change',e=>{wLvSet.cur=clamp(parseInt(e.target.value)||0,0,50);e.target.value=wLvSet.cur;renderWonder();});
-document.getElementById('tgtLv').addEventListener('change',e=>{wLvSet.tgt=clamp(parseInt(e.target.value)||0,0,50);e.target.value=wLvSet.tgt;renderWonder();});
+document.getElementById('tgtLv').addEventListener('change',e=>{wLvSet.tgt=Math.max(wLvSet.cur,clamp(parseInt(e.target.value)||0,0,50));e.target.value=wLvSet.tgt;renderWonder();});
 ['wLv','baseH','curLv','tgtLv'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}}));
 
 renderAll();
