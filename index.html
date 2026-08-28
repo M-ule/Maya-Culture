@@ -269,7 +269,7 @@ function commitRow(el,group,name){
     }
   } else if(k==='mode') s.mode=v;
   else if(k==='bldgs'||k==='stock') s[k]=Math.max(0,num(v,0));
-  else if(k==='hours') s.hours=v;
+  else if(k==='hours') s.hours=v===''?'':Math.max(0,num(v,0));
   renderAll();
 }
 function renderTables(){
