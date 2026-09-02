@@ -60,34 +60,6 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 .step-one::-webkit-inner-spin-button,.step-one::-webkit-outer-spin-button{-webkit-appearance:none;margin:0} .step-one{-moz-appearance:textfield}
 .stock-input::-webkit-inner-spin-button,.stock-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0} .stock-input{-moz-appearance:textfield}
 .settings .step-wrap{width:92px} .settings .step-wrap input{width:72px;min-width:0}
-/* 생산 계산기·불가사의 계산기 공통 열 폭 통일
-   이름 120 / 레벨 82 / 생산 방식 136 / 건물 수 100 / 운영 시간 110
-   현재 보유량 130 / 잔여·부족 130 / 판정 95 / 소요 시간 105
-   생산량·소비량·사용량 등 결과 수치 열 92 */
-#t1{width:1192px!important;min-width:1192px}
-#t2{width:916px!important;min-width:916px}
-#tw{width:856px!important;min-width:856px}
-
-#t1 th:nth-child(1),#t2 th:nth-child(1){width:120px!important}
-#t1 th:nth-child(2),#t2 th:nth-child(2){width:82px!important}
-#t1 th:nth-child(3),#t2 th:nth-child(3){width:136px!important}
-#t1 th:nth-child(4),#t2 th:nth-child(4){width:100px!important}
-#t1 th:nth-child(5),#t2 th:nth-child(5){width:110px!important}
-
-#t1 th:nth-child(6){width:130px!important}
-#t1 th:nth-child(7){width:130px!important}
-#t1 th:nth-child(8){width:95px!important}
-#t1 th:nth-child(9){width:105px!important}
-#t1 th:nth-child(10),#t1 th:nth-child(11){width:92px!important}
-
-#t2 th:nth-child(6),#t2 th:nth-child(7),#t2 th:nth-child(8),#t2 th:nth-child(9){width:92px!important}
-
-#tw th:nth-child(1){width:120px!important}
-#tw th:nth-child(2){width:130px!important}
-#tw th:nth-child(3){width:130px!important}
-#tw th:nth-child(4){width:95px!important}
-#tw th:nth-child(5){width:105px!important}
-#tw th:nth-child(6),#tw th:nth-child(7),#tw th:nth-child(8){width:92px!important}
 #tw th{white-space:nowrap;height:28px;line-height:1.2}
 
 /* 모든 계산기 표 열 너비 100px 통일 */
@@ -100,6 +72,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 #tw { width:800px !important; min-width:800px !important; }
 .w-mode { width:100% !important; max-width:100%; }
 .input-cell input, .input-cell select { max-width:100%; }
+#tw th { white-space:nowrap; height:28px; line-height:1.2; }
 @media(max-width:720px){body{padding:10px}h1{font-size:18px}.settings{gap:8px}.settings .spacer{display:none}}
 </style>
 </head>
