@@ -10,7 +10,7 @@
   --font: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
   --primary:#0b603a; --primary-2:#5a9948; --page:#e8f1e5; --panel:#fffef8; --text:#19352a;
   --border:#79a96b; --soft:#dcebd9; --soft-2:#f4f8f2; --input:#fff4bf; --input-border:#d2b94b;
-  --input-focus:#b79a1f; --ok-bg:#dff2df; --ok:#176038; --bad-bg:#fde2df; --bad:#9b2c27;
+  --input-focus:#b79a1f; --ok-bg:#d1fae5; --ok:#065f46; --bad-bg:#fee2e2; --bad:#991b1b;
 }
 *{box-sizing:border-box}
 body{font-family:var(--font);color:var(--text);background:var(--page);margin:0;padding:16px;font-size:13px}
@@ -46,7 +46,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 .reset-btn:hover{background:#fecaca}
 .reset-status{min-width:70px;font-size:12px;font-weight:700;color:var(--primary)}
 .badge{display:inline-block;min-width:48px;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:700}
-.badge-ok{background:#cfe9d0;color:#145c32} .badge-bad{background:#f7d2ce;color:#8d211d}
+.badge-ok{background:var(--ok-bg);color:var(--ok)} .badge-bad{background:var(--bad-bg);color:var(--bad)}
 .remain-ok{background:var(--ok-bg)!important;color:var(--ok)!important;font-weight:700}
 .remain-bad{background:var(--bad-bg)!important;color:var(--bad)!important;font-weight:700}
 .note{font-size:11px;color:#496253;line-height:1.7;padding:9px 12px;background:#f2f7f0;border:1px solid var(--border);border-radius:8px;margin-top:10px}
@@ -60,20 +60,24 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 .step-one::-webkit-inner-spin-button,.step-one::-webkit-outer-spin-button{-webkit-appearance:none;margin:0} .step-one{-moz-appearance:textfield}
 .stock-input::-webkit-inner-spin-button,.stock-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0} .stock-input{-moz-appearance:textfield}
 .settings .step-wrap{width:92px} .settings .step-wrap input{width:72px;min-width:0}
-/* 1·2단계의 앞 5개 열은 같은 폭을 사용해 수직 위치를 정확히 맞춘다.
-   테이블 전체 폭도 각 열 폭의 합과 일치시켜 브라우저가 열을 임의로 늘리지 않도록 한다. */
-#t1{width:1228px;min-width:1228px} #t2{width:998px;min-width:998px} #tw{width:900px;min-width:900px}
-#t1 th:nth-child(1),#t2 th:nth-child(1){width:120px}
-#t1 th:nth-child(2),#t2 th:nth-child(2){width:82px}
-#t1 th:nth-child(3),#t2 th:nth-child(3){width:136px}
-#t1 th:nth-child(4),#t2 th:nth-child(4){width:100px}
-#t1 th:nth-child(5),#t2 th:nth-child(5){width:110px}
-/* 이후 결과 영역은 각 단계의 정보량에 맞춰 균형 있게 배치 */
-#t1 th:nth-child(6){width:135px} #t1 th:nth-child(7){width:125px} #t1 th:nth-child(8){width:90px}
-#t1 th:nth-child(9),#t1 th:nth-child(10),#t1 th:nth-child(11){width:110px}
-#t2 th:nth-child(6){width:135px} #t2 th:nth-child(7),#t2 th:nth-child(8),#t2 th:nth-child(9){width:105px}
+/* 중국 문명 계산기 기준의 열 폭을 적용한다.
+   공통 1~5열은 동일하게 맞추고, 결과 열은 중국 계산기의 대응 열 폭을 사용한다. */
+#t1{width:1192px!important;min-width:1192px} #t2{width:948px!important;min-width:948px} #tw{width:900px;min-width:900px}
+#t1 th:nth-child(1),#t2 th:nth-child(1){width:120px!important}
+#t1 th:nth-child(2),#t2 th:nth-child(2){width:82px!important}
+#t1 th:nth-child(3),#t2 th:nth-child(3){width:136px!important}
+#t1 th:nth-child(4),#t2 th:nth-child(4){width:100px!important}
+#t1 th:nth-child(5),#t2 th:nth-child(5){width:110px!important}
+/* 1단계: 현재 보유량 · 잔여/부족 · 판정은 중국 1·2단계 기준 */
+#t1 th:nth-child(6){width:130px!important} #t1 th:nth-child(7){width:130px!important} #t1 th:nth-child(8){width:95px!important}
+/* 중국 문명 1단계와 동일: 소요 시간 105px · 예상 생산량 92px · 예상 소비량 92px */
+#t1 th:nth-child(9){width:105px!important}
+#t1 th:nth-child(10),#t1 th:nth-child(11){width:92px!important}
+/* 2단계 자동 계산 열은 중국 최종 상품 표 기준 */
+#t2 th:nth-child(6),#t2 th:nth-child(7),#t2 th:nth-child(8),#t2 th:nth-child(9){width:100px!important}
+/* 불가사의 계산기는 중국 계산기와 동일한 폭 */
 #tw th:nth-child(1){width:88px} #tw th:nth-child(2){width:126px} #tw th:nth-child(3){width:126px} #tw th:nth-child(4){width:88px}
-#tw th:nth-child(5),#tw th:nth-child(6),#tw th:nth-child(7),#tw th:nth-child(8){width:118px}
+#tw th:nth-child(5),#tw th:nth-child(6),#tw th:nth-child(7),#tw th:nth-child(8){width:104px}
 @media(max-width:720px){body{padding:10px}h1{font-size:18px}.settings{gap:8px}.settings .spacer{display:none}}
 </style>
 </head>
@@ -95,7 +99,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
     <select id="wonder"><option>티칼</option><option>치첸이트사</option><option>사일 궁전</option></select>
     <label for="wLv">보너스 적용 레벨</label>
     <div class="step-wrap settings-step"><input type="number" id="wLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
-    <label for="baseH">일괄 운영시간(h)</label>
+    <label for="baseH">일괄 운영 시간(h)</label>
     <div class="step-wrap"><input type="number" id="baseH" class="step-one" min="0" step="any"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
     <button id="resetBtn" type="button" class="reset-btn">입력값 초기화</button>
     <span id="resetStatus" class="reset-status" role="status" aria-live="polite"></span>
@@ -107,7 +111,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   <div class="table-wrap">
     <table id="t1">
       <thead><tr>
-        <th>자원/건물</th><th>레벨</th><th>생산방식</th><th>건물 수</th><th>운영시간(h)</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요시간(h)</th><th>예상 생산량</th><th>예상 소비량</th>
+        <th>자원/건물</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>운영 시간(h)</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요 시간(h)</th><th>예상 생산량</th><th>예상 소비량</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
@@ -116,7 +120,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   <div class="table-wrap">
     <table id="t2">
       <thead><tr>
-        <th>상품/건물</th><th>레벨</th><th>생산방식</th><th>건물 수</th><th>운영시간(h)</th><th>예상 생산량</th><th>옥 사용량</th><th>흑요석 사용량</th><th>깃털 사용량</th>
+        <th>상품/건물</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>운영 시간(h)</th><th>예상 생산량</th><th>옥 사용량</th><th>흑요석 사용량</th><th>깃털 사용량</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
@@ -126,8 +130,8 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
     2. 자원과 상품의 생산 시간, 건물 수, 현재 보유량 등을 입력하면 생산량·사용량·소비량과 판정 및 충분 시간을 계산합니다.<br>
     3. 최종 상품의 현재 보유량은 불가사의 계산기 탭에서 입력하세요.<br>
     4. 이전 레벨 건물 추가 시 소수점을 활용해보세요. Ex) 6레벨 자원, 생산건물에서 5레벨 건물 한 개 추가시 0.66, 4레벨 추가시 0.44 (정밀값은 아님)<br>
-    5. 일괄 운영시간을 기본으로 사용합니다. 운영시간이 입력된 행은 해당 시간이 우선 적용됩니다.<br>
-    6. 소요 시간(h)은 현재 운영시간과 무관하게 현재 보유량을 포함해 판정이 처음 '잔여'가 되는 총 운영시간입니다.<br>
+    5. 일괄 운영 시간을 기본으로 사용합니다. 운영 시간이 입력된 행은 해당 시간이 우선 적용됩니다.<br>
+    6. 소요 시간(h)은 현재 운영 시간과 무관하게 현재 보유량을 포함해 판정이 처음 '잔여'가 되는 총 운영 시간입니다.<br>
     7. 기초 자원은 <span class="happy-highlight">행복도 0%</span> 기준값을 사용합니다. Ex) 행복도 50% 건물 1개라면 건물 수를 1.5로 환산해 입력하세요.<br>
     8. 상품은 <span class="happy-highlight">행복도 100%</span> 기준값을 사용합니다. 행복도가 다르면 직접 환산해야 합니다.
   </div>
@@ -145,14 +149,14 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   <div class="table-wrap">
     <table id="tw">
       <thead><tr>
-        <th>상품</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요시간(h)</th><th>목표 구간 소비량</th><th>상품 예상 생산량</th><th>예상 보유량</th>
+        <th>상품</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요 시간(h)</th><th>목표 구간 소비량</th><th>상품 예상 생산량</th><th>예상 보유량</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
   <div class="note">
     1. 현재 레벨과 목표 레벨을 입력하면 해당 구간의 상품 소비량을 계산합니다.<br>
     2. 현재 보유량은 현재 가지고 있는 상품 수량을 직접 입력합니다.<br>
-    3. 상품 예상 생산량과 상품별 소요시간은 생산 계산기의 레벨·생산방식·건물 수 설정을 기준으로 계산합니다.<br>
+    3. 상품 예상 생산량과 상품별 소요 시간은 생산 계산기의 레벨·생산 방식·건물 수 설정을 기준으로 계산합니다.<br>
     4. 목표 레벨은 현재 레벨보다 낮게 설정할 수 없으며, 낮은 값을 입력하면 현재 레벨로 자동 보정됩니다.
   </div>
 </div>
