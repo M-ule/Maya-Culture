@@ -88,6 +88,18 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 #tw th:nth-child(4){width:95px!important}
 #tw th:nth-child(5){width:105px!important}
 #tw th:nth-child(6),#tw th:nth-child(7),#tw th:nth-child(8){width:92px!important}
+#tw th{white-space:nowrap;height:28px;line-height:1.2}
+
+/* 모든 계산기 표 열 너비 100px 통일 */
+#t1, #t2, #tw { table-layout:fixed; }
+#t1 th:nth-child(1), #t1 th:nth-child(2), #t1 th:nth-child(3), #t1 th:nth-child(4), #t1 th:nth-child(5), #t1 th:nth-child(6), #t1 th:nth-child(7), #t1 th:nth-child(8), #t1 th:nth-child(9), #t1 th:nth-child(10), #t1 th:nth-child(11) { width:100px !important; }
+#t1 { width:1100px !important; min-width:1100px !important; }
+#t2 th:nth-child(1), #t2 th:nth-child(2), #t2 th:nth-child(3), #t2 th:nth-child(4), #t2 th:nth-child(5), #t2 th:nth-child(6), #t2 th:nth-child(7), #t2 th:nth-child(8), #t2 th:nth-child(9) { width:100px !important; }
+#t2 { width:900px !important; min-width:900px !important; }
+#tw th:nth-child(1), #tw th:nth-child(2), #tw th:nth-child(3), #tw th:nth-child(4), #tw th:nth-child(5), #tw th:nth-child(6), #tw th:nth-child(7), #tw th:nth-child(8) { width:100px !important; }
+#tw { width:800px !important; min-width:800px !important; }
+.w-mode { width:100% !important; max-width:100%; }
+.input-cell input, .input-cell select { max-width:100%; }
 @media(max-width:720px){body{padding:10px}h1{font-size:18px}.settings{gap:8px}.settings .spacer{display:none}}
 </style>
 </head>
@@ -121,7 +133,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   <div class="table-wrap">
     <table id="t1">
       <thead><tr>
-        <th>자원/건물</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>운영 시간(h)</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요 시간(h)</th><th>예상 생산량</th><th>예상 소비량</th>
+        <th>자원</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>운영 시간(h)</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요 시간(h)</th><th>예상 생산량</th><th>예상 소비량</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
@@ -130,7 +142,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   <div class="table-wrap">
     <table id="t2">
       <thead><tr>
-        <th>상품/건물</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>운영 시간(h)</th><th>예상 생산량</th><th>옥 사용량</th><th>흑요석 사용량</th><th>깃털 사용량</th>
+        <th>상품</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>운영 시간(h)</th><th>예상 생산량</th><th>옥 사용량</th><th>흑요석 사용량</th><th>깃털 사용량</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
@@ -159,7 +171,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   <div class="table-wrap">
     <table id="tw">
       <thead><tr>
-        <th>상품</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요 시간(h)</th><th>목표 구간 소비량</th><th>상품 예상 생산량</th><th>예상 보유량</th>
+        <th>상품</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요 시간(h)</th><th>구간 소비량</th><th>예상 생산량</th><th>예상 보유량</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
