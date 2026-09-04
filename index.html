@@ -86,13 +86,13 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 .adjust-main{flex:0 0 auto;min-width:0}
 .adjust-table-row{display:flex;align-items:flex-start;gap:8px}
 .adjust-side{flex:0 0 auto;min-width:0;position:relative}
-.convert-toggle{position:absolute;left:0;top:-34px;padding:5px 8px;background:#edf6eb;color:var(--primary);border:1px solid var(--border);border-radius:4px;cursor:pointer;font:700 11px var(--font);white-space:nowrap}
+.convert-toggle{position:absolute;left:0;top:-54px;padding:5px 8px;background:#edf6eb;color:var(--primary);border:1px solid var(--border);border-radius:4px;cursor:pointer;font:700 11px var(--font);white-space:nowrap}
 .convert-toggle:hover{background:#dcebd9}
-.convert-panel{width:500px;margin-top:0}
+.convert-panel{width:700px;margin-top:0}
 .convert-panel[hidden]{display:none}
 .convert-body{padding:0}
 .convert-ratio{font-weight:700}
-@media(max-width:1120px){
+@media(max-width:1260px){
   .adjust-layout{flex-direction:column;width:100%;max-width:100%}
   .adjust-main,.adjust-table-row,.adjust-side{width:100%;max-width:100%}
   .adjust-main,.adjust-side{flex:1 1 auto}
@@ -113,7 +113,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 #t2{width:1000px !important;min-width:1000px !important;}
 #tw{width:800px !important;min-width:800px !important;}
 #ta{width:500px !important;min-width:500px !important;}
-#tc{width:500px !important;min-width:500px !important;margin-bottom:0;}
+#tc{width:700px !important;min-width:700px !important;margin-bottom:0;}
 
 #t1 th,#t1 td,
 #t2 th,#t2 td,
@@ -212,6 +212,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 
   <div class="step-title-row">
     <h2>2단계 · 건물 수 조정 제안 (Lv6 건물 기준)</h2>
+    <div class="adjust-note"><b class="adj-warn">※ 상품 건물 수 조정은 행복도 100% 기준입니다.</b> 추가 건물의 행복도가 낮으면 실제 필요한 건물 수가 더 많습니다. 100% 건물 1개 기준 환산: 75% ≈ 0.88 · 50% ≈ 0.75 · 25% ≈ 0.63 · 0% ≈ 0.50</div>
   </div>
   <div class="adjust-layout">
     <div class="adjust-main">
@@ -234,7 +235,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
           <div class="table-wrap">
             <table id="tc">
               <thead><tr>
-                <th>항목</th><th>생산 방식</th><th>Lv4</th><th>Lv5</th><th>Lv6</th>
+                <th>항목</th><th>생산 방식</th><th>Lv2</th><th>Lv3</th><th>Lv4</th><th>Lv5</th><th>Lv6</th>
               </tr></thead><tbody></tbody>
             </table>
           </div>
@@ -249,8 +250,9 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
     3. <b>소요 시간(h)</b>은 <b>현재 보유량</b>을 포함하여 <b>판정</b>이 처음 ‘잔여’가 되기까지 필요한 운영 시간입니다.<br>
     4. <b>현재 건물 수</b>, <b>조정량</b>, <b>필요 건물 수</b>는 모두 <b>Lv6 건물 생산력 기준</b>으로 환산하며, 목표량이 부족하지 않도록 <b>필요 건물 수</b>는 소수 둘째 자리까지 올림합니다.<br>
     5. 자원의 <b>조정량</b>에는 부족 상품을 추가 생산할 때 필요한 자원 소비량도 함께 반영됩니다.<br>
-    6. <b>건물 생산력 환산표</b>는 Lv6 건물 생산력을 1.00으로 두고 Lv4·Lv5 건물의 상대 생산력을 보여줍니다. 상품의 <b>생산 방식</b>을 변경하면 선택한 생산 방식에 맞춰 환산값도 자동으로 변경됩니다.<br>
-    7. <b>건물 수 조정 제안</b>은 건물 건설에 필요한 시간은 고려하지 않습니다.
+    6. <b>상품 건물 수 조정</b>은 행복도 100% 기준입니다. 추가 건물의 행복도가 낮으면 실제 필요한 건물 수가 더 많습니다.<br>
+    7. <b>건물 생산력 환산표</b>는 Lv6 건물 생산력을 1.00으로 두고 Lv2~Lv5 건물의 상대 생산력을 보여줍니다. 상품은 현재 선택한 <b>생산 방식</b>과 같은 생산 주기가 있는 레벨만 표시하며, 생산 방식을 변경하면 환산값도 자동으로 변경됩니다.<br>
+    8. <b>건물 수 조정 제안</b>은 건물 건설에 필요한 시간은 고려하지 않습니다.
   </div>
 </div>
 
@@ -286,7 +288,7 @@ function normalizeState(){
     const s=state.resources[name];
     s.lv=clamp(parseInt(s.lv)||1,1,6);
     s.bldgs=Math.max(0,num(s.bldgs,0));
-    s.stock=Math.max(0,Math.round(num(s.stock,0)));
+    s.stock=Math.round(num(s.stock,0));
     s.hours=s.hours===''||s.hours===null||s.hours===undefined?'':Math.max(0,num(s.hours,0));
     s.mode='연속';
   });
@@ -294,7 +296,7 @@ function normalizeState(){
     const s=state.products[name];
     s.lv=clamp(parseInt(s.lv)||1,1,6);
     s.bldgs=Math.max(0,num(s.bldgs,0));
-    s.stock=Math.max(0,Math.round(num(s.stock,0)));
+    s.stock=Math.round(num(s.stock,0));
     s.hours=s.hours===''||s.hours===null||s.hours===undefined?'':Math.max(0,num(s.hours,0));
     const modes=DATA.modes[name+'|'+s.lv]||[];
     if(!modes.includes(s.mode)) s.mode=modes[0]||'1분';
@@ -465,7 +467,7 @@ function resourceRow(name){
     '<td class="fixed-input">연속</td>'+
     '<td class="input-cell">'+stepper('bldgs',s.bldgs)+'</td>'+
     '<td class="input-cell">'+stepper('hours',s.hours,'일괄')+'</td>'+
-    '<td class="input-cell"><input type="number" class="stock-input" data-k="stock" value="'+s.stock+'" step="1" min="0"></td>'+
+    '<td class="input-cell"><input type="number" class="stock-input" data-k="stock" value="'+s.stock+'" step="1"></td>'+
     '<td class="num calc '+remainClass(remain)+'">'+fmtQty(remain)+'</td>'+
     '<td class="calc">'+verdict(remain)+'</td>'+
     '<td class="num calc">'+fmtHours(time)+'</td>'+
@@ -481,7 +483,7 @@ function productRow(name){
     '<td class="input-cell"><select data-k="mode">'+modeOptions(name,s.lv,s.mode)+'</select></td>'+
     '<td class="input-cell">'+stepper('bldgs',s.bldgs)+'</td>'+
     '<td class="input-cell">'+stepper('hours',s.hours,'일괄')+'</td>'+
-    '<td class="input-cell"><input type="number" class="stock-input" data-k="stock" value="'+s.stock+'" step="1" min="0"></td>'+
+    '<td class="input-cell"><input type="number" class="stock-input" data-k="stock" value="'+s.stock+'" step="1"></td>'+
     '<td class="num calc">'+fmtQty(out)+'</td>'+
     '<td class="num calc">'+fmtQty(productUse(name,'jade'))+'</td>'+
     '<td class="num calc">'+fmtQty(productUse(name,'obs'))+'</td>'+
@@ -508,7 +510,7 @@ function commitRow(el,group,name){
     }
   } else if(k==='mode') s.mode=v;
   else if(k==='bldgs') s[k]=Math.max(0,num(v,0));
-  else if(k==='stock') s[k]=Math.max(0,Math.round(num(v,0)));
+  else if(k==='stock') s[k]=Math.round(num(v,0));
   else if(k==='hours'){
     const hours=num(v,0);
     s.hours=v===''||hours<0?'':hours;
@@ -694,6 +696,8 @@ function productConversionRatio(name,lv){
 function conversionRow(kind,name){
   const isProduct=kind==='상품';
   const mode=isProduct?state.products[name].mode:'연속';
+  const r2=isProduct?productConversionRatio(name,2):resourceConversionRatio(name,2);
+  const r3=isProduct?productConversionRatio(name,3):resourceConversionRatio(name,3);
   const r4=isProduct?productConversionRatio(name,4):resourceConversionRatio(name,4);
   const r5=isProduct?productConversionRatio(name,5):resourceConversionRatio(name,5);
   const r6=isProduct?productConversionRatio(name,6):resourceConversionRatio(name,6);
@@ -701,6 +705,8 @@ function conversionRow(kind,name){
   return '<tr'+rowCls+'>'+
     '<td class="name">'+name+'</td>'+
     '<td class="calc">'+mode+'</td>'+
+    '<td class="num calc convert-ratio">'+fmtRatio(r2)+'</td>'+
+    '<td class="num calc convert-ratio">'+fmtRatio(r3)+'</td>'+
     '<td class="num calc convert-ratio">'+fmtRatio(r4)+'</td>'+
     '<td class="num calc convert-ratio">'+fmtRatio(r5)+'</td>'+
     '<td class="num calc convert-ratio">'+fmtRatio(r6)+'</td>'+
