@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>마야 문명 생산 계산기 시뮬레이터</title>
+<!-- 기준: 2026-09-07 최신 업로드본 / 상품 건물 레벨·행복도 상세 설정 통합 v3 -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
 <style>
 :root {
@@ -67,9 +68,9 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 
 /* 모든 계산기 표 열 너비 100px 통일 */
 #t1, #t2, #tw, #ta { table-layout:fixed; }
-#t1 { width:1100px !important; min-width:1100px !important; }
+#t1 { width:1000px !important; min-width:1000px !important; }
 #t2 { width:1000px !important; min-width:1000px !important; }
-#tw { width:800px !important; min-width:800px !important; }
+#tw { width:700px !important; min-width:700px !important; }
 .w-mode { width:100% !important; max-width:100%; }
 .input-cell input, .input-cell select { max-width:100%; }
 #tw th, #ta th { white-space:nowrap; height:28px; line-height:1.2; }
@@ -79,14 +80,12 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 .adj-warn{color:#92400e;font-weight:700}
 .adj-kind{background:#edf6eb!important;color:var(--primary)!important;font-weight:700}
 #ta tr.adjust-resource-start td,#tc tr.convert-resource-start td{border-top:3px solid var(--primary)!important}
-.adjust-note{margin-top:7px;font-size:11px;color:#496253;line-height:1.65}
-.step-title-row{margin-top:16px}
-.step-title-row h2{margin:0}
+.adjust-note{flex:1 1 100%;margin-top:0;font-size:11px;color:#496253;line-height:1.65}
 .adjust-layout{display:flex;align-items:flex-start;gap:8px;margin-top:8px}
 .adjust-main{flex:0 0 auto;min-width:0}
 .adjust-table-row{display:flex;align-items:flex-start;gap:8px}
 .adjust-side{flex:0 0 auto;min-width:0;position:relative}
-.convert-toggle{position:absolute;left:0;top:-54px;padding:5px 8px;background:#edf6eb;color:var(--primary);border:1px solid var(--border);border-radius:4px;cursor:pointer;font:700 11px var(--font);white-space:nowrap}
+.convert-toggle{padding:7px 11px;background:#edf6eb;color:var(--primary);border:1px solid var(--border);border-radius:6px;cursor:pointer;font:700 12px var(--font);white-space:nowrap;min-height:36px}
 .convert-toggle:hover{background:#dcebd9}
 .convert-panel{width:700px;margin-top:0}
 .convert-panel[hidden]{display:none}
@@ -98,26 +97,27 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   .adjust-main,.adjust-side{flex:1 1 auto}
   .adjust-table-row{align-items:flex-start}
   .adjust-main .table-wrap,.adjust-side .table-wrap{width:100%;max-width:100%}
-  .convert-toggle{position:static;margin-bottom:6px}
   .convert-panel{width:100%;max-width:100%}
 }
-@media(max-width:720px){body{padding:10px}h1{font-size:18px}.settings{gap:8px}.settings .spacer{display:none}}
+@media(max-width:720px){body{padding:10px}h1{font-size:18px}.settings{gap:8px}.settings .spacer{display:none}.step2-title-actions,.step-title-row{align-items:flex-start;gap:6px}.step2-title-actions h2,.step-title-row h2{flex:1 1 100%;}.product-detail-actions,.section-title-actions{width:100%;}.detail-open-btn,.convert-toggle{min-height:44px;font-size:13px}.detail-summary{align-self:center}}
 
 /* ===== 공통 표 셀 규격 =====
    모든 표는 1칸당 실제 100px, 헤더/데이터 행 높이 동일 */
-#t1,#t2,#tw,#ta,#tc{
+#t1,#t2,#tw,#ts,#ta,#tc{
   table-layout:fixed !important;
   border-spacing:0 !important;
 }
-#t1{width:1100px !important;min-width:1100px !important;}
+#t1{width:1000px !important;min-width:1000px !important;}
 #t2{width:1000px !important;min-width:1000px !important;}
-#tw{width:800px !important;min-width:800px !important;}
+#tw{width:700px !important;min-width:700px !important;}
+#ts{width:700px !important;min-width:700px !important;}
 #ta{width:500px !important;min-width:500px !important;}
 #tc{width:700px !important;min-width:700px !important;margin-bottom:0;}
 
 #t1 th,#t1 td,
 #t2 th,#t2 td,
 #tw th,#tw td,
+#ts th,#ts td,
 #ta th,#ta td,
 #tc th,#tc td{
   box-sizing:border-box !important;
@@ -131,8 +131,84 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   vertical-align:middle !important;
 }
 
-#t1 th,#t2 th,#tw th,#ta th,#tc th{
+#t1 th,#t2 th,#tw th,#ts th,#ta th,#tc th{
   white-space:nowrap;
+}
+
+
+/* ===== 상품 건물 상세 설정 ===== */
+.step2-title-actions,.step-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;margin-bottom:8px}
+.step2-title-actions h2,.step-title-row h2{margin:0}
+.product-detail-actions,.section-title-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0}
+.detail-open-btn{padding:7px 11px;background:#edf6eb;color:var(--primary);border:1px solid var(--border);border-radius:6px;cursor:pointer;font:700 12px var(--font);min-height:36px}
+.detail-open-btn:hover{background:#dcebd9}
+.detail-summary{font-size:11px;color:#496253;line-height:1.5}
+.detail-badge{display:inline-block;margin-left:4px;padding:1px 4px;border-radius:4px;background:#e0f2fe;color:#075985;font-size:9px;font-weight:800;vertical-align:1px}
+.detail-active-cell{background:#eef7fb!important;color:#075985!important;font-weight:700}
+.detail-modal[hidden]{display:none}
+.detail-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.detail-backdrop{position:absolute;inset:0;background:rgba(12,35,24,.46)}
+.detail-sheet{position:relative;z-index:1;width:min(760px,100%);max-height:86vh;overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+.detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.detail-head h3{font-size:16px;margin:0;color:#153d2b}
+.detail-head p{font-size:11px;margin:4px 0 0;color:#5d7065;line-height:1.5}
+.detail-close{flex:0 0 auto;width:40px;height:40px;border:1px solid var(--border);border-radius:8px;background:var(--soft-2);color:var(--primary);cursor:pointer;font-size:20px;line-height:1}
+.detail-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
+.detail-tab{min-height:40px;border:1px solid var(--border);border-radius:7px;background:var(--soft-2);color:#315641;cursor:pointer;font:700 12px var(--font);padding:6px}
+.detail-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
+.detail-tab .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#0ea5e9;margin-left:3px;vertical-align:1px}
+.detail-tab.active .dot{background:white}
+.detail-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;background:#f2f7f0;border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+.detail-field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.detail-field label{font-size:11px;font-weight:700;color:#315641}
+.detail-field input,.detail-field select{min-height:40px;font-size:14px}
+.detail-toggle-wrap{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 4px}
+.detail-toggle-wrap input{width:18px;height:18px;min-width:18px}
+.detail-toggle-wrap label{font-size:12px;font-weight:700;color:#214b37;cursor:pointer}
+.detail-help{font-size:11px;line-height:1.6;color:#496253;background:#fff9dc;border:1px solid var(--input-border);border-radius:7px;padding:8px 10px;margin-bottom:8px}
+.detail-result{font-size:11px;line-height:1.6;color:#315641;background:#edf6eb;border:1px solid var(--border);border-radius:7px;padding:8px 10px;margin-bottom:8px}
+.detail-rows{display:flex;flex-direction:column;gap:7px}
+.detail-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:7px;align-items:end;padding:9px;background:var(--soft-2);border:1px solid var(--border);border-radius:8px}
+.detail-row .detail-field input,.detail-row .detail-field select{background:#fff9dc}
+.detail-row-note{grid-column:1/-1;font-size:10px;color:#5d7065;line-height:1.45}
+.detail-remove{width:40px;height:40px;border:1px solid #fecaca;border-radius:7px;background:#fee2e2;color:#991b1b;cursor:pointer;font:800 16px var(--font)}
+.detail-footer{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:9px}
+.detail-add{min-height:40px;padding:7px 12px;border:1px solid var(--border);border-radius:7px;background:#edf6eb;color:var(--primary);cursor:pointer;font:700 12px var(--font)}
+.detail-add:disabled{opacity:.45;cursor:not-allowed}
+.detail-disabled{opacity:.62}
+body.detail-modal-open{overflow:hidden}
+@media(max-width:720px){
+  .detail-modal{align-items:flex-end;padding:0}
+  .detail-sheet{width:100%;max-height:88vh;border-radius:14px 14px 0 0;padding:12px 10px 14px}
+  .detail-head{margin-bottom:8px}
+  .detail-tabs{grid-template-columns:repeat(2,1fr)}
+  .detail-tab{min-height:44px;font-size:13px}
+  .detail-toolbar{grid-template-columns:1fr}
+  .detail-row{grid-template-columns:1fr 1fr;gap:8px}
+  .detail-row .detail-field input,.detail-row .detail-field select{min-height:44px;font-size:16px}
+  .detail-row .detail-level-step{min-height:44px}
+  .detail-row .detail-level-step input{min-height:44px;font-size:16px}
+  .detail-row .detail-level-step .step-controls{width:26px;flex-basis:26px}
+  .detail-row .detail-level-step .step-btn{min-height:22px;font-size:10px}
+  .detail-remove{grid-column:2;justify-self:end;width:44px;height:44px}
+  .detail-row-note{grid-column:1/-1}
+  .detail-open-btn{min-height:44px;font-size:13px}
+}
+
+/* ===== 수면 전 6시간 자원 비축 계산 ===== */
+.sleep-settings{margin:0 0 8px;max-width:800px}
+.sleep-settings .sleep-time-wrap{width:92px}
+.sleep-settings .sleep-time-wrap input{width:72px;min-width:0}
+.sleep-info{flex:1 1 100%;font-size:11px;color:#496253;line-height:1.6;margin:2px 0 0;max-width:800px}
+.sleep-adjust-up,.sleep-adjust-down,.sleep-adjust-keep,.sleep-adjust-warn{font-weight:700}
+.sleep-adjust-warn-badge{background:#fef3c7;color:#92400e}
+@media(max-width:720px){
+  .sleep-settings{max-width:100%;padding:9px 10px}
+  .sleep-settings label{flex:1 1 auto}
+  .sleep-settings .sleep-time-wrap{width:104px}
+  .sleep-settings .sleep-time-wrap input{width:78px;font-size:16px;min-height:44px}
+  .sleep-settings .sleep-time-wrap .step-controls{width:26px;flex-basis:26px}
+  .sleep-settings .sleep-time-wrap .step-btn{min-height:22px;font-size:10px}
 }
 
 </style>
@@ -167,12 +243,18 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   <div class="table-wrap">
     <table id="t1">
       <thead><tr>
-        <th>자원</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>운영 시간(h)</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요 시간(h)</th><th>예상 생산량</th><th>예상 소비량</th>
+        <th>자원</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>운영 시간(h)</th><th>현재 보유량</th><th>잔여/부족</th><th>소요 시간(h)</th><th>예상 생산량</th><th>예상 소비량</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
 
-  <h2>2단계 · 상품 생산 (마스크 · 달력돌 · 단검 · 머리장식)</h2>
+  <div class="step2-title-actions">
+    <h2>2단계 · 상품 생산 (마스크 · 달력돌 · 단검 · 머리장식)</h2>
+    <div class="product-detail-actions">
+      <button id="productDetailOpen" type="button" class="detail-open-btn">상품 건물 상세 설정</button>
+      <span id="productDetailSummary" class="detail-summary">상세 설정 미사용</span>
+    </div>
+  </div>
   <div class="table-wrap">
     <table id="t2">
       <thead><tr>
@@ -181,14 +263,42 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
     </table>
   </div>
 
+  <div id="productDetailModal" class="detail-modal" hidden aria-hidden="true">
+    <div class="detail-backdrop" data-detail-close></div>
+    <section class="detail-sheet" role="dialog" aria-modal="true" aria-labelledby="productDetailTitle">
+      <div class="detail-head">
+        <div>
+          <h3 id="productDetailTitle">상품 건물 상세 설정</h3>
+          <p>상품 행은 하나로 유지하면서, 레벨과 행복도가 다른 실제 건물을 정확하게 반영합니다.</p>
+        </div>
+        <button type="button" class="detail-close" data-detail-close aria-label="닫기">×</button>
+      </div>
+      <div id="productDetailTabs" class="detail-tabs"></div>
+      <div class="detail-toolbar">
+        <div class="detail-field">
+          <label>상세 계산</label>
+          <div class="detail-toggle-wrap"><input type="checkbox" id="productDetailEnabled"><label for="productDetailEnabled">이 상품에 상세 설정 사용</label></div>
+        </div>
+        <div class="detail-field">
+          <label for="productDetailMode">생산 방식</label>
+          <select id="productDetailMode"></select>
+        </div>
+      </div>
+      <div class="detail-help">레벨·건물 수·행복도는 <b>실제 건물 구성</b>을 입력하세요. 행복도는 <b>상품 생산량에만</b> 반영되고, 옥·흑요석·깃털 사용량은 행복도와 관계없이 <b>각 레벨의 실제 건물 수</b>를 기준으로 계산합니다. 상세 설정을 켜면 메인 상품 행의 레벨·건물 수는 상세 구성에서 자동 표시됩니다.</div>
+      <div id="productDetailResult" class="detail-result"></div>
+      <div id="productDetailRows" class="detail-rows"></div>
+      <div class="detail-footer"><button id="productDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button></div>
+    </section>
+  </div>
+
   <div class="note">
     1. <b>불가사의</b>와 <b>보너스 적용 레벨</b>을 입력하면 자원 생산 보너스가 자동 반영되고 추가 일꾼 수와 다음 증가 레벨이 표시됩니다.<br>
     2. 자원과 상품의 <b>운영 시간(h)</b>, <b>건물 수</b>, <b>현재 보유량</b> 등을 입력하면 <b>예상 생산량</b>·사용량·<b>예상 소비량</b>과 <b>판정</b> 및 <b>소요 시간(h)</b>을 계산합니다.<br>
-    3. 이전 레벨 건물을 함께 사용할 때는 <b>건물 수</b>를 소수로 환산해 입력하세요. 정확한 Lv4·Lv5 환산값은 불가사의 계산기의 건물 생산력 환산표에서 확인할 수 있습니다.<br>
-    4. <b>일괄 운영 시간</b>을 기본으로 사용합니다. <b>운영 시간(h)</b>이 입력된 행은 해당 시간이 우선 적용됩니다.<br>
-    5. <b>소요 시간(h)</b>은 <b>현재 보유량</b>을 포함하여 <b>판정</b>이 처음 ‘잔여’가 되기까지 필요한 운영 시간입니다.<br>
-    6. 기초 자원은 <span class="happy-highlight">행복도 0%</span> 기준값을 사용합니다. Ex) 행복도 50% 건물 1개라면 <b>건물 수</b>를 1.5로 환산해 입력하세요.<br>
-    7. <b>상품</b>은 <span class="happy-highlight">행복도 100%</span> 기준값을 사용합니다. 행복도가 다르면 직접 환산해야 합니다.
+    3. <b>일괄 운영 시간</b>을 기본으로 사용합니다. <b>운영 시간(h)</b>이 입력된 행은 해당 시간이 우선 적용됩니다.<br>
+    4. <b>소요 시간(h)</b>은 <b>현재 보유량</b>을 포함하여 <b>판정</b>이 처음 ‘잔여’가 되기까지 필요한 운영 시간입니다.<br>
+    5. <b>1단계:</b> 기초 자원은 <span class="happy-highlight">행복도 0%</span> 기준값을 사용합니다. 행복도 차이나 이전 레벨 건물은 생산력 비율에 따라 <b>건물 수</b>를 소수로 환산해 입력할 수 있습니다.<br>
+    6. <b>2단계:</b> 상품의 일반 입력은 <span class="happy-highlight">행복도 100%</span> 기준입니다. 레벨이나 행복도가 다른 상품 건물을 함께 사용하는 경우 <b>상품 건물 상세 설정</b>에 실제 레벨·건물 수·행복도를 입력하세요.<br>
+    7. <b>2단계:</b> 상품 상세 설정에서는 <b>행복도는 생산량에만 적용</b>하고, 옥·흑요석·깃털 사용량은 <b>레벨별 실제 건물 수</b>를 기준으로 계산합니다.
   </div>
 </div>
 
@@ -205,14 +315,31 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   <div class="table-wrap">
     <table id="tw">
       <thead><tr>
-        <th>상품</th><th>현재 보유량</th><th>잔여/부족</th><th>판정</th><th>소요 시간(h)</th><th>구간 소비량</th><th>예상 생산량</th><th>예상 보유량</th>
+        <th>상품</th><th>잔여/부족</th><th>구간 소비량</th><th>현재 보유량</th><th>예상 생산량</th><th>예상 보유량</th><th>소요 시간(h)</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
 
   <div class="step-title-row">
-    <h2>2단계 · 건물 수 조정 제안 (Lv6 건물 기준)</h2>
-    <div class="adjust-note"><b class="adj-warn">※ 상품 건물 수 조정은 행복도 100% 기준입니다.</b> 추가 건물의 행복도가 낮으면 실제 필요한 건물 수가 더 많습니다. 100% 건물 1개 기준 환산: 75% ≈ 0.88 · 50% ≈ 0.75 · 25% ≈ 0.63 · 0% ≈ 0.50</div>
+    <h2>2단계 · 수면 대비 자원 확보</h2>
+  </div>
+  <div class="settings sleep-settings">
+    <label for="sleepPrepH">수면까지 남은 시간(h)</label>
+    <div class="step-wrap sleep-time-wrap"><input type="number" id="sleepPrepH" class="step-one" min="0" step="any"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
+  </div>
+  <div class="table-wrap">
+    <table id="ts">
+      <thead><tr>
+        <th>자원</th><th>건물 수 차이</th><th>현재 건물 수</th><th>필요 건물 수</th><th>수면 요구량</th><th>수면 예정 보유량</th><th>잔여/부족</th>
+      </tr></thead><tbody></tbody>
+    </table>
+  </div>
+
+  <div class="step-title-row">
+    <h2>3단계 · 목표 레벨 생산력 비교</h2>
+    <div class="section-title-actions">
+      <button id="convertToggle" type="button" class="convert-toggle" aria-expanded="false">생산력 환산표 보기</button>
+    </div>
   </div>
   <div class="adjust-layout">
     <div class="adjust-main">
@@ -220,7 +347,7 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
         <div class="table-wrap">
           <table id="ta">
             <thead><tr>
-              <th>항목</th><th>현재 건물 수</th><th>조정량</th><th>필요 건물 수</th><th>잔여/부족</th>
+              <th>항목</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>잔여/부족</th>
             </tr></thead><tbody></tbody>
           </table>
         </div>
@@ -229,7 +356,6 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 </div>
 
     <div class="adjust-side">
-      <button id="convertToggle" type="button" class="convert-toggle" aria-expanded="false">환산표 보기</button>
       <div id="convertPanel" class="convert-panel" hidden>
         <div class="convert-body">
           <div class="table-wrap">
@@ -245,20 +371,16 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   </div>
 
   <div class="note">
-    1. <b>현재 레벨</b>과 <b>목표 레벨</b>을 입력하면 <b>구간 소비량</b>과 목표 달성 여부를 계산합니다.<br>
-    2. 상품의 <b>현재 보유량</b>은 생산 계산기의 입력값을 자동 반영하며, <b>예상 생산량</b>은 생산 계산기의 <b>레벨</b>·<b>생산 방식</b>·<b>건물 수</b>·<b>운영 시간(h)</b> 설정을 기준으로 계산합니다.<br>
-    3. <b>소요 시간(h)</b>은 <b>현재 보유량</b>을 포함하여 <b>판정</b>이 처음 ‘잔여’가 되기까지 필요한 운영 시간입니다.<br>
-    4. <b>현재 건물 수</b>, <b>조정량</b>, <b>필요 건물 수</b>는 모두 <b>Lv6 건물 생산력 기준</b>으로 환산하며, 목표량이 부족하지 않도록 <b>필요 건물 수</b>는 소수 둘째 자리까지 올림합니다.<br>
-    5. 자원의 <b>조정량</b>에는 부족 상품을 추가 생산할 때 필요한 자원 소비량도 함께 반영됩니다.<br>
-    6. <b>상품 건물 수 조정</b>은 행복도 100% 기준입니다. 추가 건물의 행복도가 낮으면 실제 필요한 건물 수가 더 많습니다.<br>
-    7. <b>건물 생산력 환산표</b>는 Lv6 건물 생산력을 1.00으로 두고 Lv2~Lv5 건물의 상대 생산력을 보여줍니다. 상품은 현재 선택한 <b>생산 방식</b>과 같은 생산 주기가 있는 레벨만 표시하며, 생산 방식을 변경하면 환산값도 자동으로 변경됩니다.<br>
-    8. <b>건물 수 조정 제안</b>은 건물 건설에 필요한 시간은 고려하지 않습니다.
+    1. <b>1단계:</b> <b>현재 레벨</b>과 <b>목표 레벨</b>을 기준으로 필요한 상품량과 목표 달성 여부를 계산합니다.<br>
+    2. <b>2단계:</b> <b>수면까지 남은 시간(h)</b>을 기준으로 수면 예정 시각의 자원 보유량을 계산하고, 수면 중 필요한 원자재와 비교하여 필요한 자원 건물 수와 건물 수 차이를 계산합니다. 수면 요구량은 각 상품 건물의 현재 레벨에서 이용 가능한 <b>가장 긴 생산 방식 × 3회</b>에 필요한 원자재를 기준으로 합니다.<br>
+    3. <b>3단계:</b> 현재 생산력과 <b>목표 레벨 달성에 필요한 생산력</b>을 비교하여 생산력 차이를 계산합니다.<br>
+    <b>※ 생산력은 Lv6 건물을 100으로 둔 지수이며, 상품은 <span class="happy-highlight">행복도 100%</span>, 자원은 <span class="happy-highlight">행복도 0%</span> 기준입니다.</b> 실제 추가할 상품 건물의 레벨이나 행복도가 다르면 <b>상품 건물 상세 설정</b>에 입력해 다시 계산하세요.
   </div>
 </div>
 
 <script>
 const DATA={"resources":{"옥":{"1":{"hours":6.0,"out":3300.0},"2":{"hours":6.0,"out":4900.0},"3":{"hours":6.0,"out":7500.0},"4":{"hours":6.0,"out":11500.0},"5":{"hours":6.0,"out":17500.0},"6":{"hours":6.0,"out":26000.0}},"흑요석":{"1":{"hours":6.0,"out":2200.0},"2":{"hours":6.0,"out":3300.0},"3":{"hours":6.0,"out":5000.0},"4":{"hours":6.0,"out":7800.0},"5":{"hours":6.0,"out":11700.0},"6":{"hours":6.0,"out":17400.0}},"깃털":{"1":{"hours":8.0,"out":800.0},"2":{"hours":8.0,"out":1200.0},"3":{"hours":8.0,"out":1800.0},"4":{"hours":8.0,"out":2800.0},"5":{"hours":8.0,"out":5100.0},"6":{"hours":8.0,"out":6300.0}}},"products":{"마스크|1|1분":{"min":1.0,"out":20.0,"jade":30.0,"obs":0.0,"feather":0.0},"마스크|2|5분":{"min":5.0,"out":210.0,"jade":310.0,"obs":0.0,"feather":0.0},"마스크|2|30분":{"min":30.0,"out":1200.0,"jade":1700.0,"obs":0.0,"feather":0.0},"마스크|2|1시간":{"min":60.0,"out":2270.0,"jade":3000.0,"obs":0.0,"feather":0.0},"마스크|3|30분":{"min":30.0,"out":2575.0,"jade":3850.0,"obs":0.0,"feather":0.0},"마스크|3|1시간":{"min":60.0,"out":4900.0,"jade":7000.0,"obs":0.0,"feather":0.0},"마스크|3|2시간":{"min":120.0,"out":9200.0,"jade":12250.0,"obs":0.0,"feather":0.0},"마스크|4|30분":{"min":30.0,"out":3800.0,"jade":5700.0,"obs":0.0,"feather":0.0},"마스크|4|1시간":{"min":60.0,"out":7200.0,"jade":10250.0,"obs":0.0,"feather":0.0},"마스크|4|2시간":{"min":120.0,"out":13600.0,"jade":18250.0,"obs":0.0,"feather":0.0},"마스크|5|30분":{"min":30.0,"out":5700.0,"jade":8550.0,"obs":0.0,"feather":0.0},"마스크|5|1시간":{"min":60.0,"out":10800.0,"jade":15400.0,"obs":0.0,"feather":0.0},"마스크|5|2시간":{"min":120.0,"out":20400.0,"jade":27350.0,"obs":0.0,"feather":0.0},"마스크|6|30분":{"min":30.0,"out":8550.0,"jade":12850.0,"obs":0.0,"feather":0.0},"마스크|6|1시간":{"min":60.0,"out":16200.0,"jade":23100.0,"obs":0.0,"feather":0.0},"마스크|6|2시간":{"min":120.0,"out":30600.0,"jade":41000.0,"obs":0.0,"feather":0.0},"달력돌|1|1분":{"min":1.0,"out":16.0,"jade":0.0,"obs":20.0,"feather":0.0},"달력돌|2|5분":{"min":5.0,"out":185.0,"jade":0.0,"obs":240.0,"feather":0.0},"달력돌|2|30분":{"min":30.0,"out":1020.0,"jade":0.0,"obs":1200.0,"feather":0.0},"달력돌|2|1시간":{"min":60.0,"out":1920.0,"jade":0.0,"obs":2150.0,"feather":0.0},"달력돌|3|30분":{"min":30.0,"out":2245.0,"jade":0.0,"obs":2800.0,"feather":0.0},"달력돌|3|1시간":{"min":60.0,"out":4260.0,"jade":0.0,"obs":5050.0,"feather":0.0},"달력돌|3|2시간":{"min":120.0,"out":8060.0,"jade":0.0,"obs":9000.0,"feather":0.0},"달력돌|4|30분":{"min":30.0,"out":3425.0,"jade":0.0,"obs":4300.0,"feather":0.0},"달력돌|4|1시간":{"min":60.0,"out":6500.0,"jade":0.0,"obs":7700.0,"feather":0.0},"달력돌|4|2시간":{"min":120.0,"out":12250.0,"jade":0.0,"obs":13650.0,"feather":0.0},"달력돌|5|30분":{"min":30.0,"out":5125.0,"jade":0.0,"obs":6400.0,"feather":0.0},"달력돌|5|1시간":{"min":60.0,"out":9700.0,"jade":0.0,"obs":11500.0,"feather":0.0},"달력돌|5|2시간":{"min":120.0,"out":18350.0,"jade":0.0,"obs":20550.0,"feather":0.0},"달력돌|6|30분":{"min":30.0,"out":7700.0,"jade":0.0,"obs":9600.0,"feather":0.0},"달력돌|6|1시간":{"min":60.0,"out":14550.0,"jade":0.0,"obs":17250.0,"feather":0.0},"달력돌|6|2시간":{"min":120.0,"out":27500.0,"jade":0.0,"obs":30800.0,"feather":0.0},"단검|1|1분":{"min":1.0,"out":15.0,"jade":15.0,"obs":10.0,"feather":0.0},"단검|2|5분":{"min":5.0,"out":190.0,"jade":200.0,"obs":150.0,"feather":0.0},"단검|2|30분":{"min":30.0,"out":1080.0,"jade":1080.0,"obs":810.0,"feather":0.0},"단검|2|1시간":{"min":60.0,"out":2040.0,"jade":1900.0,"obs":1450.0,"feather":0.0},"단검|3|30분":{"min":30.0,"out":1800.0,"jade":1900.0,"obs":1430.0,"feather":0.0},"단검|3|1시간":{"min":60.0,"out":3400.0,"jade":3400.0,"obs":2550.0,"feather":0.0},"단검|3|2시간":{"min":120.0,"out":6450.0,"jade":6100.0,"obs":4600.0,"feather":0.0},"단검|4|30분":{"min":30.0,"out":2750.0,"jade":2900.0,"obs":2200.0,"feather":0.0},"단검|4|1시간":{"min":60.0,"out":5200.0,"jade":5200.0,"obs":3900.0,"feather":0.0},"단검|4|2시간":{"min":120.0,"out":9850.0,"jade":9300.0,"obs":7000.0,"feather":0.0},"단검|5|30분":{"min":30.0,"out":4150.0,"jade":4350.0,"obs":3300.0,"feather":0.0},"단검|5|1시간":{"min":60.0,"out":7800.0,"jade":7800.0,"obs":5850.0,"feather":0.0},"단검|5|2시간":{"min":120.0,"out":14700.0,"jade":13800.0,"obs":10350.0,"feather":0.0},"단검|6|30분":{"min":30.0,"out":6250.0,"jade":6550.0,"obs":4950.0,"feather":0.0},"단검|6|1시간":{"min":60.0,"out":11700.0,"jade":11700.0,"obs":8800.0,"feather":0.0},"단검|6|2시간":{"min":120.0,"out":22050.0,"jade":20700.0,"obs":15550.0,"feather":0.0},"머리장식|1|1분":{"min":1.0,"out":8.0,"jade":0.0,"obs":0.0,"feather":10.0},"머리장식|2|5분":{"min":5.0,"out":74.0,"jade":0.0,"obs":0.0,"feather":70.0},"머리장식|2|30분":{"min":30.0,"out":419.0,"jade":0.0,"obs":0.0,"feather":350.0},"머리장식|2|1시간":{"min":60.0,"out":789.0,"jade":0.0,"obs":0.0,"feather":600.0},"머리장식|3|30분":{"min":30.0,"out":644.0,"jade":0.0,"obs":0.0,"feather":550.0},"머리장식|3|1시간":{"min":60.0,"out":1219.0,"jade":0.0,"obs":0.0,"feather":1000.0},"머리장식|3|2시간":{"min":120.0,"out":2318.0,"jade":0.0,"obs":0.0,"feather":1850.0},"머리장식|4|30분":{"min":30.0,"out":950.0,"jade":0.0,"obs":0.0,"feather":850.0},"머리장식|4|1시간":{"min":60.0,"out":1800.0,"jade":0.0,"obs":0.0,"feather":1500.0},"머리장식|4|2시간":{"min":120.0,"out":3400.0,"jade":0.0,"obs":0.0,"feather":2700.0},"머리장식|5|30분":{"min":30.0,"out":1425.0,"jade":0.0,"obs":0.0,"feather":1250.0},"머리장식|5|1시간":{"min":60.0,"out":2700.0,"jade":0.0,"obs":0.0,"feather":2250.0},"머리장식|5|2시간":{"min":120.0,"out":5100.0,"jade":0.0,"obs":0.0,"feather":4000.0},"머리장식|6|30분":{"min":30.0,"out":2150.0,"jade":0.0,"obs":0.0,"feather":1900.0},"머리장식|6|1시간":{"min":60.0,"out":4050.0,"jade":0.0,"obs":0.0,"feather":3400.0},"머리장식|6|2시간":{"min":120.0,"out":7650.0,"jade":0.0,"obs":0.0,"feather":6000.0}},"modes":{"마스크|1":["1분"],"마스크|2":["5분","30분","1시간"],"마스크|3":["30분","1시간","2시간"],"마스크|4":["30분","1시간","2시간"],"마스크|5":["30분","1시간","2시간"],"마스크|6":["30분","1시간","2시간"],"달력돌|1":["1분"],"달력돌|2":["5분","30분","1시간"],"달력돌|3":["30분","1시간","2시간"],"달력돌|4":["30분","1시간","2시간"],"달력돌|5":["30분","1시간","2시간"],"달력돌|6":["30분","1시간","2시간"],"단검|1":["1분"],"단검|2":["5분","30분","1시간"],"단검|3":["30분","1시간","2시간"],"단검|4":["30분","1시간","2시간"],"단검|5":["30분","1시간","2시간"],"단검|6":["30분","1시간","2시간"],"머리장식|1":["1분"],"머리장식|2":["5분","30분","1시간"],"머리장식|3":["30분","1시간","2시간"],"머리장식|4":["30분","1시간","2시간"],"머리장식|5":["30분","1시간","2시간"],"머리장식|6":["30분","1시간","2시간"]},"wonderCosts":{"0":{},"1":{"마스크":3.0,"달력돌":2.0,"단검":0.0,"머리장식":0.0},"2":{"마스크":23.0,"달력돌":8.0,"단검":0.0,"머리장식":0.0},"3":{"마스크":83.0,"달력돌":17.0,"단검":0.0,"머리장식":0.0},"4":{"마스크":233.0,"달력돌":32.0,"단검":0.0,"머리장식":0.0},"5":{"마스크":483.0,"달력돌":257.0,"단검":0.0,"머리장식":0.0},"6":{"마스크":1183.0,"달력돌":857.0,"단검":0.0,"머리장식":0.0},"7":{"마스크":1683.0,"달력돌":1282.0,"단검":0.0,"머리장식":0.0},"8":{"마스크":2558.0,"달력돌":2032.0,"단검":0.0,"머리장식":0.0},"9":{"마스크":4433.0,"달력돌":3632.0,"단검":0.0,"머리장식":0.0},"10":{"마스크":7613.0,"달력돌":6332.0,"단검":0.0,"머리장식":0.0},"11":{"마스크":11663.0,"달력돌":9752.0,"단검":0.0,"머리장식":0.0},"12":{"마스크":16643.0,"달력돌":14012.0,"단검":50.0,"머리장식":0.0},"13":{"마스크":25043.0,"달력돌":21152.0,"단검":150.0,"머리장식":0.0},"14":{"마스크":34493.0,"달력돌":29272.0,"단검":550.0,"머리장식":0.0},"15":{"마스크":46493.0,"달력돌":39512.0,"단검":1900.0,"머리장식":0.0},"16":{"마스크":64043.0,"달력돌":54542.0,"단검":5050.0,"머리장식":0.0},"17":{"마스크":85043.0,"달력돌":72442.0,"단검":10750.0,"머리장식":0.0},"18":{"마스크":107543.0,"달력돌":91642.0,"단검":19750.0,"머리장식":0.0},"19":{"마스크":131543.0,"달력돌":112042.0,"단검":32800.0,"머리장식":0.0},"20":{"마스크":161543.0,"달력돌":137542.0,"단검":59800.0,"머리장식":100.0},"21":{"마스크":194043.0,"달력돌":165142.0,"단검":96550.0,"머리장식":800.0},"22":{"마스크":229043.0,"달력돌":194942.0,"단검":144550.0,"머리장식":2800.0},"23":{"마스크":258343.0,"달력돌":219842.0,"단검":190050.0,"머리장식":5860.0},"24":{"마스크":290843.0,"달력돌":247442.0,"단검":237550.0,"머리장식":10180.0},"25":{"마스크":326643.0,"달력돌":277842.0,"단검":286950.0,"머리장식":16960.0},"26":{"마스크":419643.0,"달력돌":356842.0,"단검":406950.0,"머리장식":45200.0},"27":{"마스크":461943.0,"달력돌":392742.0,"단검":460250.0,"머리장식":60400.0},"28":{"마스크":573943.0,"달력돌":482742.0,"단검":610250.0,"머리장식":99400.0},"29":{"마스크":622743.0,"달력돌":524242.0,"단검":667450.0,"머리장식":118900.0},"30":{"마스크":732743.0,"달력돌":622242.0,"단검":787450.0,"머리장식":160900.0},"31":{"마스크":822743.0,"달력돌":698742.0,"단검":881450.0,"머리장식":193900.0},"32":{"마스크":886143.0,"달력돌":752642.0,"단검":944550.0,"머리장식":216400.0},"33":{"마스크":1026143.0,"달력돌":872642.0,"단검":1079550.0,"머리장식":264400.0},"34":{"마스크":1099243.0,"달력돌":934742.0,"단검":1146550.0,"머리장식":288900.0},"35":{"마스크":1177243.0,"달력돌":1001042.0,"단검":1215450.0,"머리장식":314300.0},"36":{"마스크":1387243.0,"달력돌":1179042.0,"단검":1397450.0,"머리장식":381800.0},"37":{"마스크":1522243.0,"달력돌":1293842.0,"단검":1509450.0,"머리장식":423800.0},"38":{"마스크":1664743.0,"달력돌":1414942.0,"단검":1624450.0,"머리장식":467300.0},"39":{"마스크":1814743.0,"달력돌":1542442.0,"단검":1742450.0,"머리장식":512300.0},"40":{"마스크":1972243.0,"달력돌":1676342.0,"단검":1863450.0,"머리장식":558800.0},"41":{"마스크":2137243.0,"달력돌":1816642.0,"단검":1987450.0,"머리장식":606800.0},"42":{"마스크":2309743.0,"달력돌":1963242.0,"단검":2114450.0,"머리장식":656300.0},"43":{"마스크":2489743.0,"달력돌":2116242.0,"단검":2244450.0,"머리장식":707300.0},"44":{"마스크":2677243.0,"달력돌":2275642.0,"단검":2377450.0,"머리장식":759800.0},"45":{"마스크":2872243.0,"달력돌":2441442.0,"단검":2513450.0,"머리장식":813800.0},"46":{"마스크":3074743.0,"달력돌":2613542.0,"단검":2652450.0,"머리장식":869300.0},"47":{"마스크":3284743.0,"달력돌":2792042.0,"단검":2794450.0,"머리장식":926300.0},"48":{"마스크":3502243.0,"달력돌":2976942.0,"단검":2939450.0,"머리장식":984800.0},"49":{"마스크":3727243.0,"달력돌":3168242.0,"단검":3087450.0,"머리장식":1044800.0},"50":{"마스크":3959743.0,"달력돌":3365842.0,"단검":3238450.0,"머리장식":1106300.0}},"bonus":{"치첸이트사|0":{"흑요석":0.025,"코코넛":0.025},"치첸이트사|1":{"흑요석":0.06,"코코넛":0.06},"치첸이트사|2":{"흑요석":0.086,"코코넛":0.086},"치첸이트사|3":{"흑요석":0.10300000000000001,"코코넛":0.10300000000000001},"치첸이트사|4":{"흑요석":0.11599999999999999,"코코넛":0.11599999999999999},"치첸이트사|5":{"흑요석":0.126,"코코넛":0.126},"치첸이트사|6":{"흑요석":0.135,"코코넛":0.135},"치첸이트사|7":{"흑요석":0.14300000000000002,"코코넛":0.14300000000000002},"치첸이트사|8":{"흑요석":0.15,"코코넛":0.15},"치첸이트사|9":{"흑요석":0.156,"코코넛":0.156},"치첸이트사|10":{"흑요석":0.162,"코코넛":0.162},"치첸이트사|11":{"흑요석":0.16699999999999998,"코코넛":0.16699999999999998},"치첸이트사|12":{"흑요석":0.171,"코코넛":0.171},"치첸이트사|13":{"흑요석":0.175,"코코넛":0.175},"치첸이트사|14":{"흑요석":0.179,"코코넛":0.179},"치첸이트사|15":{"흑요석":0.183,"코코넛":0.183},"치첸이트사|16":{"흑요석":0.187,"코코넛":0.187},"치첸이트사|17":{"흑요석":0.19,"코코넛":0.19},"치첸이트사|18":{"흑요석":0.193,"코코넛":0.193},"치첸이트사|19":{"흑요석":0.196,"코코넛":0.196},"치첸이트사|20":{"흑요석":0.19899999999999998,"코코넛":0.19899999999999998},"치첸이트사|21":{"흑요석":0.20199999999999999,"코코넛":0.20199999999999999},"치첸이트사|22":{"흑요석":0.204,"코코넛":0.204},"치첸이트사|23":{"흑요석":0.207,"코코넛":0.207},"치첸이트사|24":{"흑요석":0.209,"코코넛":0.209},"치첸이트사|25":{"흑요석":0.21100000000000002,"코코넛":0.21100000000000002},"치첸이트사|26":{"흑요석":0.213,"코코넛":0.213},"치첸이트사|27":{"흑요석":0.21600000000000003,"코코넛":0.21600000000000003},"치첸이트사|28":{"흑요석":0.218,"코코넛":0.218},"치첸이트사|29":{"흑요석":0.22,"코코넛":0.22},"치첸이트사|30":{"흑요석":0.221,"코코넛":0.221},"치첸이트사|31":{"흑요석":0.223,"코코넛":0.223},"치첸이트사|32":{"흑요석":0.225,"코코넛":0.225},"치첸이트사|33":{"흑요석":0.22699999999999998,"코코넛":0.22699999999999998},"치첸이트사|34":{"흑요석":0.228,"코코넛":0.228},"치첸이트사|35":{"흑요석":0.23,"코코넛":0.23},"치첸이트사|36":{"흑요석":0.23199999999999998,"코코넛":0.23199999999999998},"치첸이트사|37":{"흑요석":0.233,"코코넛":0.233},"치첸이트사|38":{"흑요석":0.235,"코코넛":0.235},"치첸이트사|39":{"흑요석":0.23600000000000002,"코코넛":0.23600000000000002},"치첸이트사|40":{"흑요석":0.23800000000000002,"코코넛":0.23800000000000002},"치첸이트사|41":{"흑요석":0.239,"코코넛":0.239},"치첸이트사|42":{"흑요석":0.24,"코코넛":0.24},"치첸이트사|43":{"흑요석":0.242,"코코넛":0.242},"치첸이트사|44":{"흑요석":0.243,"코코넛":0.243},"치첸이트사|45":{"흑요석":0.244,"코코넛":0.244},"치첸이트사|46":{"흑요석":0.24600000000000002,"코코넛":0.24600000000000002},"치첸이트사|47":{"흑요석":0.247,"코코넛":0.247},"치첸이트사|48":{"흑요석":0.248,"코코넛":0.248},"치첸이트사|49":{"흑요석":0.249,"코코넛":0.249},"치첸이트사|50":{"흑요석":0.25,"코코넛":0.25},"사일 궁전|0":{"코코넛":0.05},"사일 궁전|1":{"코코넛":0.125},"사일 궁전|2":{"코코넛":0.17300000000000001},"사일 궁전|3":{"코코넛":0.20600000000000002},"사일 궁전|4":{"코코넛":0.23199999999999998},"사일 궁전|5":{"코코넛":0.253},"사일 궁전|6":{"코코넛":0.271},"사일 궁전|7":{"코코넛":0.28600000000000003},"사일 궁전|8":{"코코넛":0.3},"사일 궁전|9":{"코코넛":0.312},"사일 궁전|10":{"코코넛":0.32299999999999995},"사일 궁전|11":{"코코넛":0.33299999999999996},"사일 궁전|12":{"코코넛":0.342},"사일 궁전|13":{"코코넛":0.35100000000000003},"사일 궁전|14":{"코코넛":0.359},"사일 궁전|15":{"코코넛":0.366},"사일 궁전|16":{"코코넛":0.373},"사일 궁전|17":{"코코넛":0.38},"사일 궁전|18":{"코코넛":0.386},"사일 궁전|19":{"코코넛":0.392},"사일 궁전|20":{"코코넛":0.39799999999999996},"사일 궁전|21":{"코코넛":0.40299999999999997},"사일 궁전|22":{"코코넛":0.408},"사일 궁전|23":{"코코넛":0.413},"사일 궁전|24":{"코코넛":0.418},"사일 궁전|25":{"코코넛":0.423},"사일 궁전|26":{"코코넛":0.42700000000000005},"사일 궁전|27":{"코코넛":0.431},"사일 궁전|28":{"코코넛":0.435},"사일 궁전|29":{"코코넛":0.439},"사일 궁전|30":{"코코넛":0.44299999999999995},"사일 궁전|31":{"코코넛":0.447},"사일 궁전|32":{"코코넛":0.45},"사일 궁전|33":{"코코넛":0.45399999999999996},"사일 궁전|34":{"코코넛":0.457},"사일 궁전|35":{"코코넛":0.46},"사일 궁전|36":{"코코넛":0.46299999999999997},"사일 궁전|37":{"코코넛":0.466},"사일 궁전|38":{"코코넛":0.469},"사일 궁전|39":{"코코넛":0.47200000000000003},"사일 궁전|40":{"코코넛":0.475},"사일 궁전|41":{"코코넛":0.478},"사일 궁전|42":{"코코넛":0.48100000000000004},"사일 궁전|43":{"코코넛":0.483},"사일 궁전|44":{"코코넛":0.486},"사일 궁전|45":{"코코넛":0.489},"사일 궁전|46":{"코코넛":0.491},"사일 궁전|47":{"코코넛":0.493},"사일 궁전|48":{"코코넛":0.496},"사일 궁전|49":{"코코넛":0.498},"사일 궁전|50":{"코코넛":0.5},"티칼|0":{"옥":0.025,"깃털":0.025},"티칼|1":{"옥":0.06,"깃털":0.06},"티칼|2":{"옥":0.086,"깃털":0.086},"티칼|3":{"옥":0.10300000000000001,"깃털":0.10300000000000001},"티칼|4":{"옥":0.11599999999999999,"깃털":0.11599999999999999},"티칼|5":{"옥":0.126,"깃털":0.126},"티칼|6":{"옥":0.135,"깃털":0.135},"티칼|7":{"옥":0.14300000000000002,"깃털":0.14300000000000002},"티칼|8":{"옥":0.15,"깃털":0.15},"티칼|9":{"옥":0.156,"깃털":0.156},"티칼|10":{"옥":0.162,"깃털":0.162},"티칼|11":{"옥":0.16699999999999998,"깃털":0.16699999999999998},"티칼|12":{"옥":0.171,"깃털":0.171},"티칼|13":{"옥":0.175,"깃털":0.175},"티칼|14":{"옥":0.179,"깃털":0.179},"티칼|15":{"옥":0.183,"깃털":0.183},"티칼|16":{"옥":0.187,"깃털":0.187},"티칼|17":{"옥":0.19,"깃털":0.19},"티칼|18":{"옥":0.193,"깃털":0.193},"티칼|19":{"옥":0.196,"깃털":0.196},"티칼|20":{"옥":0.19899999999999998,"깃털":0.19899999999999998},"티칼|21":{"옥":0.20199999999999999,"깃털":0.20199999999999999},"티칼|22":{"옥":0.204,"깃털":0.204},"티칼|23":{"옥":0.207,"깃털":0.207},"티칼|24":{"옥":0.209,"깃털":0.209},"티칼|25":{"옥":0.21100000000000002,"깃털":0.21100000000000002},"티칼|26":{"옥":0.213,"깃털":0.213},"티칼|27":{"옥":0.21600000000000003,"깃털":0.21600000000000003},"티칼|28":{"옥":0.218,"깃털":0.218},"티칼|29":{"옥":0.22,"깃털":0.22},"티칼|30":{"옥":0.221,"깃털":0.221},"티칼|31":{"옥":0.223,"깃털":0.223},"티칼|32":{"옥":0.225,"깃털":0.225},"티칼|33":{"옥":0.22699999999999998,"깃털":0.22699999999999998},"티칼|34":{"옥":0.228,"깃털":0.228},"티칼|35":{"옥":0.23,"깃털":0.23},"티칼|36":{"옥":0.23199999999999998,"깃털":0.23199999999999998},"티칼|37":{"옥":0.233,"깃털":0.233},"티칼|38":{"옥":0.235,"깃털":0.235},"티칼|39":{"옥":0.23600000000000002,"깃털":0.23600000000000002},"티칼|40":{"옥":0.23800000000000002,"깃털":0.23800000000000002},"티칼|41":{"옥":0.239,"깃털":0.239},"티칼|42":{"옥":0.24,"깃털":0.24},"티칼|43":{"옥":0.242,"깃털":0.242},"티칼|44":{"옥":0.243,"깃털":0.243},"티칼|45":{"옥":0.244,"깃털":0.244},"티칼|46":{"옥":0.24600000000000002,"깃털":0.24600000000000002},"티칼|47":{"옥":0.247,"깃털":0.247},"티칼|48":{"옥":0.248,"깃털":0.248},"티칼|49":{"옥":0.249,"깃털":0.249},"티칼|50":{"옥":0.25,"깃털":0.25}},"bonusDisplay":{"치첸이트사|0":[["흑요석",0.025],["코코넛",0.025]],"치첸이트사|1":[["흑요석",0.06],["코코넛",0.06]],"치첸이트사|2":[["흑요석",0.086],["코코넛",0.086]],"치첸이트사|3":[["흑요석",0.10300000000000001],["코코넛",0.10300000000000001]],"치첸이트사|4":[["흑요석",0.11599999999999999],["코코넛",0.11599999999999999]],"치첸이트사|5":[["흑요석",0.126],["코코넛",0.126]],"치첸이트사|6":[["흑요석",0.135],["코코넛",0.135]],"치첸이트사|7":[["흑요석",0.14300000000000002],["코코넛",0.14300000000000002]],"치첸이트사|8":[["흑요석",0.15],["코코넛",0.15]],"치첸이트사|9":[["흑요석",0.156],["코코넛",0.156]],"치첸이트사|10":[["흑요석",0.162],["코코넛",0.162]],"치첸이트사|11":[["흑요석",0.16699999999999998],["코코넛",0.16699999999999998]],"치첸이트사|12":[["흑요석",0.171],["코코넛",0.171]],"치첸이트사|13":[["흑요석",0.175],["코코넛",0.175]],"치첸이트사|14":[["흑요석",0.179],["코코넛",0.179]],"치첸이트사|15":[["흑요석",0.183],["코코넛",0.183]],"치첸이트사|16":[["흑요석",0.187],["코코넛",0.187]],"치첸이트사|17":[["흑요석",0.19],["코코넛",0.19]],"치첸이트사|18":[["흑요석",0.193],["코코넛",0.193]],"치첸이트사|19":[["흑요석",0.196],["코코넛",0.196]],"치첸이트사|20":[["흑요석",0.19899999999999998],["코코넛",0.19899999999999998]],"치첸이트사|21":[["흑요석",0.20199999999999999],["코코넛",0.20199999999999999]],"치첸이트사|22":[["흑요석",0.204],["코코넛",0.204]],"치첸이트사|23":[["흑요석",0.207],["코코넛",0.207]],"치첸이트사|24":[["흑요석",0.209],["코코넛",0.209]],"치첸이트사|25":[["흑요석",0.21100000000000002],["코코넛",0.21100000000000002]],"치첸이트사|26":[["흑요석",0.213],["코코넛",0.213]],"치첸이트사|27":[["흑요석",0.21600000000000003],["코코넛",0.21600000000000003]],"치첸이트사|28":[["흑요석",0.218],["코코넛",0.218]],"치첸이트사|29":[["흑요석",0.22],["코코넛",0.22]],"치첸이트사|30":[["흑요석",0.221],["코코넛",0.221]],"치첸이트사|31":[["흑요석",0.223],["코코넛",0.223]],"치첸이트사|32":[["흑요석",0.225],["코코넛",0.225]],"치첸이트사|33":[["흑요석",0.22699999999999998],["코코넛",0.22699999999999998]],"치첸이트사|34":[["흑요석",0.228],["코코넛",0.228]],"치첸이트사|35":[["흑요석",0.23],["코코넛",0.23]],"치첸이트사|36":[["흑요석",0.23199999999999998],["코코넛",0.23199999999999998]],"치첸이트사|37":[["흑요석",0.233],["코코넛",0.233]],"치첸이트사|38":[["흑요석",0.235],["코코넛",0.235]],"치첸이트사|39":[["흑요석",0.23600000000000002],["코코넛",0.23600000000000002]],"치첸이트사|40":[["흑요석",0.23800000000000002],["코코넛",0.23800000000000002]],"치첸이트사|41":[["흑요석",0.239],["코코넛",0.239]],"치첸이트사|42":[["흑요석",0.24],["코코넛",0.24]],"치첸이트사|43":[["흑요석",0.242],["코코넛",0.242]],"치첸이트사|44":[["흑요석",0.243],["코코넛",0.243]],"치첸이트사|45":[["흑요석",0.244],["코코넛",0.244]],"치첸이트사|46":[["흑요석",0.24600000000000002],["코코넛",0.24600000000000002]],"치첸이트사|47":[["흑요석",0.247],["코코넛",0.247]],"치첸이트사|48":[["흑요석",0.248],["코코넛",0.248]],"치첸이트사|49":[["흑요석",0.249],["코코넛",0.249]],"치첸이트사|50":[["흑요석",0.25],["코코넛",0.25]],"사일 궁전|0":[["코코넛",0.05]],"사일 궁전|1":[["코코넛",0.125]],"사일 궁전|2":[["코코넛",0.17300000000000001]],"사일 궁전|3":[["코코넛",0.20600000000000002]],"사일 궁전|4":[["코코넛",0.23199999999999998]],"사일 궁전|5":[["코코넛",0.253]],"사일 궁전|6":[["코코넛",0.271]],"사일 궁전|7":[["코코넛",0.28600000000000003]],"사일 궁전|8":[["코코넛",0.3]],"사일 궁전|9":[["코코넛",0.312]],"사일 궁전|10":[["코코넛",0.32299999999999995]],"사일 궁전|11":[["코코넛",0.33299999999999996]],"사일 궁전|12":[["코코넛",0.342]],"사일 궁전|13":[["코코넛",0.35100000000000003]],"사일 궁전|14":[["코코넛",0.359]],"사일 궁전|15":[["코코넛",0.366]],"사일 궁전|16":[["코코넛",0.373]],"사일 궁전|17":[["코코넛",0.38]],"사일 궁전|18":[["코코넛",0.386]],"사일 궁전|19":[["코코넛",0.392]],"사일 궁전|20":[["코코넛",0.39799999999999996]],"사일 궁전|21":[["코코넛",0.40299999999999997]],"사일 궁전|22":[["코코넛",0.408]],"사일 궁전|23":[["코코넛",0.413]],"사일 궁전|24":[["코코넛",0.418]],"사일 궁전|25":[["코코넛",0.423]],"사일 궁전|26":[["코코넛",0.42700000000000005]],"사일 궁전|27":[["코코넛",0.431]],"사일 궁전|28":[["코코넛",0.435]],"사일 궁전|29":[["코코넛",0.439]],"사일 궁전|30":[["코코넛",0.44299999999999995]],"사일 궁전|31":[["코코넛",0.447]],"사일 궁전|32":[["코코넛",0.45]],"사일 궁전|33":[["코코넛",0.45399999999999996]],"사일 궁전|34":[["코코넛",0.457]],"사일 궁전|35":[["코코넛",0.46]],"사일 궁전|36":[["코코넛",0.46299999999999997]],"사일 궁전|37":[["코코넛",0.466]],"사일 궁전|38":[["코코넛",0.469]],"사일 궁전|39":[["코코넛",0.47200000000000003]],"사일 궁전|40":[["코코넛",0.475]],"사일 궁전|41":[["코코넛",0.478]],"사일 궁전|42":[["코코넛",0.48100000000000004]],"사일 궁전|43":[["코코넛",0.483]],"사일 궁전|44":[["코코넛",0.486]],"사일 궁전|45":[["코코넛",0.489]],"사일 궁전|46":[["코코넛",0.491]],"사일 궁전|47":[["코코넛",0.493]],"사일 궁전|48":[["코코넛",0.496]],"사일 궁전|49":[["코코넛",0.498]],"사일 궁전|50":[["코코넛",0.5]],"티칼|0":[["옥",0.025],["깃털",0.025]],"티칼|1":[["옥",0.06],["깃털",0.06]],"티칼|2":[["옥",0.086],["깃털",0.086]],"티칼|3":[["옥",0.10300000000000001],["깃털",0.10300000000000001]],"티칼|4":[["옥",0.11599999999999999],["깃털",0.11599999999999999]],"티칼|5":[["옥",0.126],["깃털",0.126]],"티칼|6":[["옥",0.135],["깃털",0.135]],"티칼|7":[["옥",0.14300000000000002],["깃털",0.14300000000000002]],"티칼|8":[["옥",0.15],["깃털",0.15]],"티칼|9":[["옥",0.156],["깃털",0.156]],"티칼|10":[["옥",0.162],["깃털",0.162]],"티칼|11":[["옥",0.16699999999999998],["깃털",0.16699999999999998]],"티칼|12":[["옥",0.171],["깃털",0.171]],"티칼|13":[["옥",0.175],["깃털",0.175]],"티칼|14":[["옥",0.179],["깃털",0.179]],"티칼|15":[["옥",0.183],["깃털",0.183]],"티칼|16":[["옥",0.187],["깃털",0.187]],"티칼|17":[["옥",0.19],["깃털",0.19]],"티칼|18":[["옥",0.193],["깃털",0.193]],"티칼|19":[["옥",0.196],["깃털",0.196]],"티칼|20":[["옥",0.19899999999999998],["깃털",0.19899999999999998]],"티칼|21":[["옥",0.20199999999999999],["깃털",0.20199999999999999]],"티칼|22":[["옥",0.204],["깃털",0.204]],"티칼|23":[["옥",0.207],["깃털",0.207]],"티칼|24":[["옥",0.209],["깃털",0.209]],"티칼|25":[["옥",0.21100000000000002],["깃털",0.21100000000000002]],"티칼|26":[["옥",0.213],["깃털",0.213]],"티칼|27":[["옥",0.21600000000000003],["깃털",0.21600000000000003]],"티칼|28":[["옥",0.218],["깃털",0.218]],"티칼|29":[["옥",0.22],["깃털",0.22]],"티칼|30":[["옥",0.221],["깃털",0.221]],"티칼|31":[["옥",0.223],["깃털",0.223]],"티칼|32":[["옥",0.225],["깃털",0.225]],"티칼|33":[["옥",0.22699999999999998],["깃털",0.22699999999999998]],"티칼|34":[["옥",0.228],["깃털",0.228]],"티칼|35":[["옥",0.23],["깃털",0.23]],"티칼|36":[["옥",0.23199999999999998],["깃털",0.23199999999999998]],"티칼|37":[["옥",0.233],["깃털",0.233]],"티칼|38":[["옥",0.235],["깃털",0.235]],"티칼|39":[["옥",0.23600000000000002],["깃털",0.23600000000000002]],"티칼|40":[["옥",0.23800000000000002],["깃털",0.23800000000000002]],"티칼|41":[["옥",0.239],["깃털",0.239]],"티칼|42":[["옥",0.24],["깃털",0.24]],"티칼|43":[["옥",0.242],["깃털",0.242]],"티칼|44":[["옥",0.243],["깃털",0.243]],"티칼|45":[["옥",0.244],["깃털",0.244]],"티칼|46":[["옥",0.24600000000000002],["깃털",0.24600000000000002]],"티칼|47":[["옥",0.247],["깃털",0.247]],"티칼|48":[["옥",0.248],["깃털",0.248]],"티칼|49":[["옥",0.249],["깃털",0.249]],"티칼|50":[["옥",0.25],["깃털",0.25]]},"staff":{"치첸이트사|0":{"worker":0,"priest":0,"nextWorker":1,"nextPriest":2},"치첸이트사|1":{"worker":1,"priest":0,"nextWorker":6,"nextPriest":2},"치첸이트사|2":{"worker":1,"priest":1,"nextWorker":6,"nextPriest":5},"치첸이트사|3":{"worker":1,"priest":1,"nextWorker":6,"nextPriest":5},"치첸이트사|4":{"worker":1,"priest":1,"nextWorker":6,"nextPriest":5},"치첸이트사|5":{"worker":1,"priest":2,"nextWorker":6,"nextPriest":11},"치첸이트사|6":{"worker":3,"priest":2,"nextWorker":10,"nextPriest":11},"치첸이트사|7":{"worker":3,"priest":2,"nextWorker":10,"nextPriest":11},"치첸이트사|8":{"worker":3,"priest":2,"nextWorker":10,"nextPriest":11},"치첸이트사|9":{"worker":3,"priest":2,"nextWorker":10,"nextPriest":11},"치첸이트사|10":{"worker":4,"priest":2,"nextWorker":20,"nextPriest":11},"치첸이트사|11":{"worker":4,"priest":3,"nextWorker":20,"nextPriest":21},"치첸이트사|12":{"worker":4,"priest":3,"nextWorker":20,"nextPriest":21},"치첸이트사|13":{"worker":4,"priest":3,"nextWorker":20,"nextPriest":21},"치첸이트사|14":{"worker":4,"priest":3,"nextWorker":20,"nextPriest":21},"치첸이트사|15":{"worker":4,"priest":3,"nextWorker":20,"nextPriest":21},"치첸이트사|16":{"worker":4,"priest":3,"nextWorker":20,"nextPriest":21},"치첸이트사|17":{"worker":4,"priest":3,"nextWorker":20,"nextPriest":21},"치첸이트사|18":{"worker":4,"priest":3,"nextWorker":20,"nextPriest":21},"치첸이트사|19":{"worker":4,"priest":3,"nextWorker":20,"nextPriest":21},"치첸이트사|20":{"worker":8,"priest":3,"nextWorker":29,"nextPriest":21},"치첸이트사|21":{"worker":8,"priest":4,"nextWorker":29,"nextPriest":26},"치첸이트사|22":{"worker":8,"priest":4,"nextWorker":29,"nextPriest":26},"치첸이트사|23":{"worker":8,"priest":4,"nextWorker":29,"nextPriest":26},"치첸이트사|24":{"worker":8,"priest":4,"nextWorker":29,"nextPriest":26},"치첸이트사|25":{"worker":8,"priest":4,"nextWorker":29,"nextPriest":26},"치첸이트사|26":{"worker":8,"priest":5,"nextWorker":29,"nextPriest":33},"치첸이트사|27":{"worker":8,"priest":5,"nextWorker":29,"nextPriest":33},"치첸이트사|28":{"worker":8,"priest":5,"nextWorker":29,"nextPriest":33},"치첸이트사|29":{"worker":11,"priest":5,"nextWorker":40,"nextPriest":33},"치첸이트사|30":{"worker":11,"priest":5,"nextWorker":40,"nextPriest":33},"치첸이트사|31":{"worker":11,"priest":5,"nextWorker":40,"nextPriest":33},"치첸이트사|32":{"worker":11,"priest":5,"nextWorker":40,"nextPriest":33},"치첸이트사|33":{"worker":11,"priest":6,"nextWorker":40,"nextPriest":45},"치첸이트사|34":{"worker":11,"priest":6,"nextWorker":40,"nextPriest":45},"치첸이트사|35":{"worker":11,"priest":6,"nextWorker":40,"nextPriest":45},"치첸이트사|36":{"worker":11,"priest":6,"nextWorker":40,"nextPriest":45},"치첸이트사|37":{"worker":11,"priest":6,"nextWorker":40,"nextPriest":45},"치첸이트사|38":{"worker":11,"priest":6,"nextWorker":40,"nextPriest":45},"치첸이트사|39":{"worker":11,"priest":6,"nextWorker":40,"nextPriest":45},"치첸이트사|40":{"worker":19,"priest":6,"nextWorker":50,"nextPriest":45},"치첸이트사|41":{"worker":19,"priest":6,"nextWorker":50,"nextPriest":45},"치첸이트사|42":{"worker":19,"priest":6,"nextWorker":50,"nextPriest":45},"치첸이트사|43":{"worker":19,"priest":6,"nextWorker":50,"nextPriest":45},"치첸이트사|44":{"worker":19,"priest":6,"nextWorker":50,"nextPriest":45},"치첸이트사|45":{"worker":19,"priest":7,"nextWorker":50,"nextPriest":0},"치첸이트사|46":{"worker":19,"priest":7,"nextWorker":50,"nextPriest":0},"치첸이트사|47":{"worker":19,"priest":7,"nextWorker":50,"nextPriest":0},"치첸이트사|48":{"worker":19,"priest":7,"nextWorker":50,"nextPriest":0},"치첸이트사|49":{"worker":19,"priest":7,"nextWorker":50,"nextPriest":0},"치첸이트사|50":{"worker":20,"priest":7,"nextWorker":0,"nextPriest":0},"사일 궁전|0":{"worker":1,"priest":0,"nextWorker":1,"nextPriest":3},"사일 궁전|1":{"worker":2,"priest":0,"nextWorker":5,"nextPriest":3},"사일 궁전|2":{"worker":2,"priest":0,"nextWorker":5,"nextPriest":3},"사일 궁전|3":{"worker":2,"priest":1,"nextWorker":5,"nextPriest":8},"사일 궁전|4":{"worker":2,"priest":1,"nextWorker":5,"nextPriest":8},"사일 궁전|5":{"worker":3,"priest":1,"nextWorker":6,"nextPriest":8},"사일 궁전|6":{"worker":5,"priest":1,"nextWorker":7,"nextPriest":8},"사일 궁전|7":{"worker":6,"priest":1,"nextWorker":9,"nextPriest":8},"사일 궁전|8":{"worker":6,"priest":2,"nextWorker":9,"nextPriest":14},"사일 궁전|9":{"worker":7,"priest":2,"nextWorker":10,"nextPriest":14},"사일 궁전|10":{"worker":8,"priest":2,"nextWorker":13,"nextPriest":14},"사일 궁전|11":{"worker":8,"priest":2,"nextWorker":13,"nextPriest":14},"사일 궁전|12":{"worker":8,"priest":2,"nextWorker":13,"nextPriest":14},"사일 궁전|13":{"worker":9,"priest":2,"nextWorker":15,"nextPriest":14},"사일 궁전|14":{"worker":9,"priest":3,"nextWorker":15,"nextPriest":18},"사일 궁전|15":{"worker":10,"priest":3,"nextWorker":16,"nextPriest":18},"사일 궁전|16":{"worker":11,"priest":3,"nextWorker":20,"nextPriest":18},"사일 궁전|17":{"worker":11,"priest":3,"nextWorker":20,"nextPriest":18},"사일 궁전|18":{"worker":11,"priest":6,"nextWorker":20,"nextPriest":21},"사일 궁전|19":{"worker":11,"priest":6,"nextWorker":20,"nextPriest":21},"사일 궁전|20":{"worker":17,"priest":6,"nextWorker":22,"nextPriest":21},"사일 궁전|21":{"worker":17,"priest":7,"nextWorker":22,"nextPriest":30},"사일 궁전|22":{"worker":20,"priest":7,"nextWorker":29,"nextPriest":30},"사일 궁전|23":{"worker":20,"priest":7,"nextWorker":29,"nextPriest":30},"사일 궁전|24":{"worker":20,"priest":7,"nextWorker":29,"nextPriest":30},"사일 궁전|25":{"worker":20,"priest":7,"nextWorker":29,"nextPriest":30},"사일 궁전|26":{"worker":20,"priest":7,"nextWorker":29,"nextPriest":30},"사일 궁전|27":{"worker":20,"priest":7,"nextWorker":29,"nextPriest":30},"사일 궁전|28":{"worker":20,"priest":7,"nextWorker":29,"nextPriest":30},"사일 궁전|29":{"worker":22,"priest":7,"nextWorker":38,"nextPriest":30},"사일 궁전|30":{"worker":22,"priest":8,"nextWorker":38,"nextPriest":39},"사일 궁전|31":{"worker":22,"priest":8,"nextWorker":38,"nextPriest":39},"사일 궁전|32":{"worker":22,"priest":8,"nextWorker":38,"nextPriest":39},"사일 궁전|33":{"worker":22,"priest":8,"nextWorker":38,"nextPriest":39},"사일 궁전|34":{"worker":22,"priest":8,"nextWorker":38,"nextPriest":39},"사일 궁전|35":{"worker":22,"priest":8,"nextWorker":38,"nextPriest":39},"사일 궁전|36":{"worker":22,"priest":8,"nextWorker":38,"nextPriest":39},"사일 궁전|37":{"worker":22,"priest":8,"nextWorker":38,"nextPriest":39},"사일 궁전|38":{"worker":23,"priest":8,"nextWorker":40,"nextPriest":39},"사일 궁전|39":{"worker":23,"priest":9,"nextWorker":40,"nextPriest":43},"사일 궁전|40":{"worker":31,"priest":9,"nextWorker":50,"nextPriest":43},"사일 궁전|41":{"worker":31,"priest":9,"nextWorker":50,"nextPriest":43},"사일 궁전|42":{"worker":31,"priest":9,"nextWorker":50,"nextPriest":43},"사일 궁전|43":{"worker":31,"priest":10,"nextWorker":50,"nextPriest":0},"사일 궁전|44":{"worker":31,"priest":10,"nextWorker":50,"nextPriest":0},"사일 궁전|45":{"worker":31,"priest":10,"nextWorker":50,"nextPriest":0},"사일 궁전|46":{"worker":31,"priest":10,"nextWorker":50,"nextPriest":0},"사일 궁전|47":{"worker":31,"priest":10,"nextWorker":50,"nextPriest":0},"사일 궁전|48":{"worker":31,"priest":10,"nextWorker":50,"nextPriest":0},"사일 궁전|49":{"worker":31,"priest":10,"nextWorker":50,"nextPriest":0},"사일 궁전|50":{"worker":32,"priest":10,"nextWorker":0,"nextPriest":0},"티칼|0":{"worker":0,"priest":0,"nextWorker":6,"nextPriest":3},"티칼|1":{"worker":0,"priest":0,"nextWorker":6,"nextPriest":3},"티칼|2":{"worker":0,"priest":0,"nextWorker":6,"nextPriest":3},"티칼|3":{"worker":0,"priest":1,"nextWorker":6,"nextPriest":18},"티칼|4":{"worker":0,"priest":1,"nextWorker":6,"nextPriest":18},"티칼|5":{"worker":0,"priest":1,"nextWorker":6,"nextPriest":18},"티칼|6":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|7":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|8":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|9":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|10":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|11":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|12":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|13":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|14":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|15":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|16":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|17":{"worker":2,"priest":1,"nextWorker":20,"nextPriest":18},"티칼|18":{"worker":2,"priest":2,"nextWorker":20,"nextPriest":30},"티칼|19":{"worker":2,"priest":2,"nextWorker":20,"nextPriest":30},"티칼|20":{"worker":6,"priest":2,"nextWorker":24,"nextPriest":30},"티칼|21":{"worker":6,"priest":2,"nextWorker":24,"nextPriest":30},"티칼|22":{"worker":6,"priest":2,"nextWorker":24,"nextPriest":30},"티칼|23":{"worker":6,"priest":2,"nextWorker":24,"nextPriest":30},"티칼|24":{"worker":9,"priest":2,"nextWorker":29,"nextPriest":30},"티칼|25":{"worker":9,"priest":2,"nextWorker":29,"nextPriest":30},"티칼|26":{"worker":9,"priest":2,"nextWorker":29,"nextPriest":30},"티칼|27":{"worker":9,"priest":2,"nextWorker":29,"nextPriest":30},"티칼|28":{"worker":9,"priest":2,"nextWorker":29,"nextPriest":30},"티칼|29":{"worker":12,"priest":2,"nextWorker":40,"nextPriest":30},"티칼|30":{"worker":12,"priest":3,"nextWorker":40,"nextPriest":38},"티칼|31":{"worker":12,"priest":3,"nextWorker":40,"nextPriest":38},"티칼|32":{"worker":12,"priest":3,"nextWorker":40,"nextPriest":38},"티칼|33":{"worker":12,"priest":3,"nextWorker":40,"nextPriest":38},"티칼|34":{"worker":12,"priest":3,"nextWorker":40,"nextPriest":38},"티칼|35":{"worker":12,"priest":3,"nextWorker":40,"nextPriest":38},"티칼|36":{"worker":12,"priest":3,"nextWorker":40,"nextPriest":38},"티칼|37":{"worker":12,"priest":3,"nextWorker":40,"nextPriest":38},"티칼|38":{"worker":12,"priest":5,"nextWorker":40,"nextPriest":0},"티칼|39":{"worker":12,"priest":5,"nextWorker":40,"nextPriest":0},"티칼|40":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|41":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|42":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|43":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|44":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|45":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|46":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|47":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|48":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|49":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0},"티칼|50":{"worker":20,"priest":5,"nextWorker":0,"nextPriest":0}}};
-const INIT={"resources":{"옥":{"lv":1,"mode":"연속","bldgs":1,"hours":"","stock":0},"흑요석":{"lv":1,"mode":"연속","bldgs":1,"hours":"","stock":0},"깃털":{"lv":1,"mode":"연속","bldgs":1,"hours":"","stock":0}},"products":{"마스크":{"lv":1,"mode":"1분","bldgs":1,"hours":"","stock":0},"달력돌":{"lv":1,"mode":"1분","bldgs":1,"hours":"","stock":0},"단검":{"lv":1,"mode":"1분","bldgs":1,"hours":"","stock":0},"머리장식":{"lv":1,"mode":"1분","bldgs":1,"hours":"","stock":0}},"settings":{"wonder":"티칼","wLv":0,"baseH":0},"wLvSet":{"cur":1,"tgt":1}};
+const INIT={"resources":{"옥":{"lv":1,"mode":"연속","bldgs":1,"hours":"","stock":0},"흑요석":{"lv":1,"mode":"연속","bldgs":1,"hours":"","stock":0},"깃털":{"lv":1,"mode":"연속","bldgs":1,"hours":"","stock":0}},"products":{"마스크":{"lv":1,"mode":"1분","bldgs":1,"hours":"","stock":0},"달력돌":{"lv":1,"mode":"1분","bldgs":1,"hours":"","stock":0},"단검":{"lv":1,"mode":"1분","bldgs":1,"hours":"","stock":0},"머리장식":{"lv":1,"mode":"1분","bldgs":1,"hours":"","stock":0}},"settings":{"wonder":"티칼","wLv":0,"baseH":0,"sleepPrepH":0},"wLvSet":{"cur":1,"tgt":1}};
 
 const resourceOrder=['옥','흑요석','깃털'];
 const productOrder=['마스크','달력돌','단검','머리장식'];
@@ -268,6 +390,8 @@ const state={
 };
 const settings={...INIT.settings};
 const wLvSet={...INIT.wLvSet};
+const productDetails=Object.fromEntries(productOrder.map(name=>[name,{enabled:false,rows:[]} ]));
+let detailProduct=productOrder[0];
 const STORAGE_KEY='mayaCalcState';
 let resetStatusTimer=null;
 
@@ -279,9 +403,80 @@ function fmtHours(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '�
 function fmtPct(n){ return (Math.round(n*1000)/10).toLocaleString('ko-KR',{maximumFractionDigits:1})+'%'; }
 function fmtBldg(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*100)/100); return r.toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:2}); }
 function fmtRatio(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*100)/100); return r.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtPower(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*10)/10); return r.toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:1}); }
 function ceil2(n){ return Math.ceil((n-1e-12)*100)/100; }
 function floor2(n){ return Math.floor((n+1e-12)*100)/100; }
 function effectiveHours(group,name){ const h=state[group][name].hours; return h===''||h===null||!Number.isFinite(parseFloat(h)) ? num(settings.baseH,0) : num(h,0); }
+
+function happinessFactor(h){ return (1+clamp(num(h,100),0,100)/100)/2; }
+function allProductModes(name){
+  const order=['1분','5분','30분','1시간','2시간'];
+  const found=new Set();
+  for(let lv=1;lv<=6;lv++) (DATA.modes[name+'|'+lv]||[]).forEach(m=>found.add(m));
+  return order.filter(m=>found.has(m));
+}
+function compatibleLevels(name,mode){
+  const levels=[];
+  for(let lv=1;lv<=6;lv++) if((DATA.modes[name+'|'+lv]||[]).includes(mode)) levels.push(lv);
+  return levels;
+}
+function closestCompatibleLevel(name,mode,lv){
+  const levels=compatibleLevels(name,mode);
+  if(!levels.length) return clamp(parseInt(lv)||1,1,6);
+  const n=clamp(parseInt(lv)||levels[0],1,6);
+  return levels.reduce((best,x)=>Math.abs(x-n)<Math.abs(best-n)?x:best,levels[0]);
+}
+function normalizeDetailProduct(name){
+  const d=productDetails[name]||(productDetails[name]={enabled:false,rows:[]});
+  d.enabled=!!d.enabled;
+  if(!Array.isArray(d.rows)) d.rows=[];
+  const mode=state.products[name].mode;
+  d.rows=d.rows.slice(0,20).map(row=>({
+    lv:closestCompatibleLevel(name,mode,row?.lv),
+    count:Math.max(0,num(row?.count,0)),
+    happiness:clamp(num(row?.happiness,100),0,100)
+  }));
+}
+function normalizeProductDetails(){ productOrder.forEach(normalizeDetailProduct); }
+function detailEnabled(name){ return !!(productDetails[name]?.enabled&&productDetails[name]?.rows?.length); }
+function seedDetailFromLegacy(name){
+  const d=productDetails[name];
+  if(d.rows.length) return;
+  const s=state.products[name];
+  d.rows=[{lv:closestCompatibleLevel(name,s.mode,s.lv),count:Math.max(0,num(s.bldgs,0)),happiness:100}];
+}
+function productActualBuildings(name){
+  if(!detailEnabled(name)) return state.products[name].bldgs;
+  return productDetails[name].rows.reduce((sum,row)=>sum+Math.max(0,num(row.count,0)),0);
+}
+function productDetailLevelText(name){
+  if(!detailEnabled(name)) return String(state.products[name].lv);
+  const levels=[...new Set(productDetails[name].rows.filter(r=>num(r.count,0)>0).map(r=>r.lv))].sort((a,b)=>b-a);
+  if(!levels.length) return '—';
+  return levels.length===1?String(levels[0]):levels.join('·');
+}
+function detailProductInfo(name,row){ return DATA.products[name+'|'+row.lv+'|'+state.products[name].mode]||null; }
+function detailProductCycles(name,row){
+  const p=detailProductInfo(name,row);
+  if(!p) return 0;
+  return Math.floor((effectiveHours('products',name)*60)/p.min+1e-10);
+}
+function productPerCycleOutput(name){
+  if(detailEnabled(name)){
+    return productDetails[name].rows.reduce((sum,row)=>{
+      const p=detailProductInfo(name,row);
+      return sum+(p?p.out*Math.max(0,num(row.count,0))*happinessFactor(row.happiness):0);
+    },0);
+  }
+  const s=state.products[name],p=productInfo(name);
+  return p?p.out*s.bldgs:0;
+}
+function productCycleMinutes(name){
+  if(detailEnabled(name)){
+    for(const row of productDetails[name].rows){ const p=detailProductInfo(name,row); if(p) return p.min; }
+  }
+  return productInfo(name)?.min||null;
+}
 
 function normalizeState(){
   resourceOrder.forEach(name=>{
@@ -304,19 +499,22 @@ function normalizeState(){
   if(!['티칼','치첸이트사','사일 궁전'].includes(settings.wonder)) settings.wonder=INIT.settings.wonder;
   settings.wLv=clamp(parseInt(settings.wLv)||0,0,50);
   settings.baseH=Math.max(0,num(settings.baseH,0));
+  settings.sleepPrepH=Math.max(0,num(settings.sleepPrepH,0));
   wLvSet.cur=clamp(parseInt(wLvSet.cur)||0,0,50);
   wLvSet.tgt=clamp(parseInt(wLvSet.tgt)||0,0,50);
   if(wLvSet.tgt<wLvSet.cur) wLvSet.tgt=wLvSet.cur;
+  normalizeProductDetails();
 }
 function syncUIFromState(){
   document.getElementById('wonder').value=settings.wonder;
   document.getElementById('wLv').value=settings.wLv;
   document.getElementById('baseH').value=settings.baseH;
+  const sleepEl=document.getElementById('sleepPrepH'); if(sleepEl) sleepEl.value=settings.sleepPrepH;
   document.getElementById('curLv').value=wLvSet.cur;
   document.getElementById('tgtLv').value=wLvSet.tgt;
 }
 function saveState(){
-  try{ localStorage.setItem(STORAGE_KEY,JSON.stringify({state,settings,wLvSet})); }catch(e){}
+  try{ localStorage.setItem(STORAGE_KEY,JSON.stringify({state,settings,wLvSet,productDetails})); }catch(e){}
 }
 function loadState(){
   try{
@@ -330,6 +528,7 @@ function loadState(){
     });
     if(saved?.settings) Object.assign(settings,saved.settings);
     if(saved?.wLvSet) Object.assign(wLvSet,saved.wLvSet);
+    if(saved?.productDetails) productOrder.forEach(name=>Object.assign(productDetails[name],saved.productDetails[name]||{}));
   }catch(e){}
   normalizeState();
   syncUIFromState();
@@ -340,6 +539,7 @@ function resetState(){
   const currentWonder=settings.wonder;
   resourceOrder.forEach(name=>Object.assign(state.resources[name],JSON.parse(JSON.stringify(INIT.resources[name]))));
   productOrder.forEach(name=>Object.assign(state.products[name],JSON.parse(JSON.stringify(INIT.products[name]))));
+  productOrder.forEach(name=>Object.assign(productDetails[name],{enabled:false,rows:[]}));
   Object.assign(settings,INIT.settings,{wonder:currentWonder});
   Object.assign(wLvSet,INIT.wLvSet);
   normalizeState();
@@ -372,10 +572,24 @@ function productCycles(name){
   return Math.floor((effectiveHours('products',name)*60)/p.min + 1e-10);
 }
 function productOutput(name){
+  if(detailEnabled(name)){
+    return productDetails[name].rows.reduce((sum,row)=>{
+      const p=detailProductInfo(name,row);
+      if(!p) return sum;
+      return sum+detailProductCycles(name,row)*p.out*Math.max(0,num(row.count,0))*happinessFactor(row.happiness);
+    },0);
+  }
   const s=state.products[name],p=productInfo(name);
   return p ? productCycles(name)*p.out*s.bldgs : 0;
 }
 function productUse(name,key){
+  if(detailEnabled(name)){
+    return productDetails[name].rows.reduce((sum,row)=>{
+      const p=detailProductInfo(name,row);
+      if(!p) return sum;
+      return sum+detailProductCycles(name,row)*(p[key]||0)*Math.max(0,num(row.count,0));
+    },0);
+  }
   const s=state.products[name],p=productInfo(name);
   return p ? productCycles(name)*(p[key]||0)*s.bldgs : 0;
 }
@@ -469,19 +683,25 @@ function resourceRow(name){
     '<td class="input-cell">'+stepper('hours',s.hours,'일괄')+'</td>'+
     '<td class="input-cell"><input type="number" class="stock-input" data-k="stock" value="'+s.stock+'" step="1"></td>'+
     '<td class="num calc '+remainClass(remain)+'">'+fmtQty(remain)+'</td>'+
-    '<td class="calc">'+verdict(remain)+'</td>'+
     '<td class="num calc">'+fmtHours(time)+'</td>'+
     '<td class="num calc">'+fmtQty(prod)+'</td>'+
     '<td class="num calc">'+fmtQty(cons)+'</td>'+
   '</tr>';
 }
 function productRow(name){
-  const s=state.products[name],out=productOutput(name);
+  const s=state.products[name],out=productOutput(name),detail=detailEnabled(name);
+  const levelCell=detail
+    ? '<td class="calc detail-active-cell">'+productDetailLevelText(name)+'</td>'
+    : '<td class="input-cell">'+levelStepper(s.lv)+'</td>';
+  const bldgCell=detail
+    ? '<td class="num calc detail-active-cell">'+fmtBldg(productActualBuildings(name))+'</td>'
+    : '<td class="input-cell">'+stepper('bldgs',s.bldgs)+'</td>';
+  const modeHtml=allProductModes(name).map(m=>'<option value="'+m+'"'+(m===s.mode?' selected':'')+'>'+m+'</option>').join('');
   return '<tr data-group="products" data-name="'+name+'">'+
-    '<td class="name">'+name+'</td>'+
-    '<td class="input-cell">'+levelStepper(s.lv)+'</td>'+
-    '<td class="input-cell"><select data-k="mode">'+modeOptions(name,s.lv,s.mode)+'</select></td>'+
-    '<td class="input-cell">'+stepper('bldgs',s.bldgs)+'</td>'+
+    '<td class="name">'+name+(detail?'<span class="detail-badge">상세</span>':'')+'</td>'+
+    levelCell+
+    '<td class="input-cell"><select data-k="mode">'+modeHtml+'</select></td>'+
+    bldgCell+
     '<td class="input-cell">'+stepper('hours',s.hours,'일괄')+'</td>'+
     '<td class="input-cell"><input type="number" class="stock-input" data-k="stock" value="'+s.stock+'" step="1"></td>'+
     '<td class="num calc">'+fmtQty(out)+'</td>'+
@@ -508,7 +728,7 @@ function commitRow(el,group,name){
       const modes=DATA.modes[name+'|'+s.lv]||[];
       if(!modes.includes(s.mode)) s.mode=modes[0]||s.mode;
     }
-  } else if(k==='mode') s.mode=v;
+  } else if(k==='mode'){ s.mode=v; if(group==='products') normalizeDetailProduct(name); }
   else if(k==='bldgs') s[k]=Math.max(0,num(v,0));
   else if(k==='stock') s[k]=Math.round(num(v,0));
   else if(k==='hours'){
@@ -516,6 +736,7 @@ function commitRow(el,group,name){
     s.hours=v===''||hours<0?'':hours;
   }
   renderAll();
+  if(group==='products'&&!document.getElementById('productDetailModal')?.hasAttribute('hidden')) renderDetailModal();
   saveState();
 }
 function renderTables(){
@@ -524,28 +745,143 @@ function renderTables(){
   bindProductionRows();
 }
 
+
+function resourceOutputForHours(name,hours,bldgsOverride=null){
+  const s=state.resources[name],p=resourceInfo(name);
+  if(!p) return 0;
+  const h=Math.max(0,num(hours,0));
+  const bldgs=bldgsOverride===null?s.bldgs:Math.max(0,num(bldgsOverride,0));
+  const bonus=bonusRates()[name]||0;
+  return (p.out/p.hours)*h*bldgs*(1+bonus);
+}
+function productUseForHours(name,key,hours){
+  const h=Math.max(0,num(hours,0));
+  if(detailEnabled(name)){
+    return productDetails[name].rows.reduce((sum,row)=>{
+      const p=detailProductInfo(name,row);
+      if(!p) return sum;
+      const cycles=Math.floor((h*60)/p.min+1e-10);
+      return sum+cycles*(p[key]||0)*Math.max(0,num(row.count,0));
+    },0);
+  }
+  const s=state.products[name],p=productInfo(name);
+  if(!p) return 0;
+  const cycles=Math.floor((h*60)/p.min+1e-10);
+  return cycles*(p[key]||0)*s.bldgs;
+}
+function sleepRecipe(name,lv){
+  const exact=DATA.products[name+'|'+lv+'|2시간'];
+  if(exact) return {p:exact,cycles:3,mode:'2시간',fallback:false};
+  const modes=DATA.modes[name+'|'+lv]||[];
+  let best=null;
+  modes.forEach(mode=>{
+    const p=DATA.products[name+'|'+lv+'|'+mode];
+    if(p&&(!best||p.min>best.p.min)) best={p,mode};
+  });
+  if(!best||best.p.min<=0) return null;
+  return {p:best.p,cycles:3,mode:best.mode,fallback:true};
+}
+function sleepRequirementForProduct(name,key){
+  if(detailEnabled(name)){
+    return productDetails[name].rows.reduce((sum,row)=>{
+      const r=sleepRecipe(name,row.lv);
+      return sum+(r?r.cycles*(r.p[key]||0)*Math.max(0,num(row.count,0)):0);
+    },0);
+  }
+  const s=state.products[name],r=sleepRecipe(name,s.lv);
+  return r?r.cycles*(r.p[key]||0)*s.bldgs:0;
+}
+function sleepRequirement(resource){
+  const key=resource==='옥'?'jade':resource==='흑요석'?'obs':'feather';
+  return productOrder.reduce((sum,name)=>sum+sleepRequirementForProduct(name,key),0);
+}
+function sleepProjectedStock(resource){
+  const key=resource==='옥'?'jade':resource==='흑요석'?'obs':'feather';
+  const h=settings.sleepPrepH;
+  const produced=resourceOutputForHours(resource,h);
+  const used=productOrder.reduce((sum,name)=>sum+productUseForHours(name,key,h),0);
+  return (state.resources[resource].stock||0)+produced-used;
+}
+function sleepResourceAdjustment(resource){
+  const current=state.resources[resource].bldgs;
+  const h=settings.sleepPrepH;
+  const required=sleepRequirement(resource);
+  const key=resource==='옥'?'jade':resource==='흑요석'?'obs':'feather';
+  const used=productOrder.reduce((sum,name)=>sum+productUseForHours(name,key,h),0);
+  const stock=state.resources[resource].stock||0;
+  const projected=stock+resourceOutputForHours(resource,h,current)-used;
+  const remain=projected-required;
+
+  // 자원 건물이 없어도 현재 보유량만으로 수면 요구량을 충족할 수 있는 경우
+  const requiredFromProduction=Math.max(0,required-stock+used);
+  if(requiredFromProduction<=1e-10){
+    const needed=0;
+    const delta=needed-current;
+    return {resource,projected,required,remain,current,delta,needed,status:delta<-1e-10?'down':'ok'};
+  }
+
+  // 준비 시간이 없으면 건물 수를 늘려도 수면 전 추가 생산이 불가능함
+  if(h<=0) return {resource,projected,required,remain,current,delta:null,needed:null,status:'time'};
+  const perBuilding=resourceOutputForHours(resource,h,1);
+  if(perBuilding<=0) return {resource,projected,required,remain,current,delta:null,needed:null,status:'time'};
+
+  // 수면 예정 시각에 요구량을 확보할 수 있는 최소 건물 수(소수 둘째 자리 올림)
+  const needed=ceil2(requiredFromProduction/perBuilding);
+  const delta=needed-current;
+  const status=delta>1e-10?'up':(delta<-1e-10?'down':'ok');
+  return {resource,projected,required,remain,current,delta,needed,status};
+}
+function sleepBuildingDifference(adj){
+  if(adj.status==='time'||adj.needed===null||!Number.isFinite(adj.current)) return null;
+  return adj.current-adj.needed;
+}
+function sleepAdjustmentText(adj){
+  const diff=sleepBuildingDifference(adj);
+  if(diff===null) return '<span class="badge sleep-adjust-warn-badge">준비 시간 확인</span>';
+  const r=displayZero(Math.round(diff*100)/100);
+  if(r>0) return '+'+fmtBldg(r);
+  return fmtBldg(r);
+}
+function sleepReserveRow(resource){
+  const a=sleepResourceAdjustment(resource);
+  const needed=a.needed===null?'—':fmtBldg(a.needed);
+  const buildingDiff=sleepBuildingDifference(a);
+  const adjustClass=buildingDiff===null?'':(buildingDiff<0?'remain-bad':'remain-ok');
+  return '<tr>'+
+    '<td class="name">'+resource+'</td>'+
+    '<td class="num calc '+adjustClass+'">'+sleepAdjustmentText(a)+'</td>'+
+    '<td class="num calc">'+fmtBldg(a.current)+'</td>'+
+    '<td class="num calc">'+needed+'</td>'+
+    '<td class="num calc">'+fmtQty(a.required)+'</td>'+
+    '<td class="num calc">'+fmtQty(a.projected)+'</td>'+
+    '<td class="num calc">'+fmtQty(a.remain)+'</td></tr>';
+}
+function renderSleepReserve(){
+  const tbody=document.querySelector('#ts tbody');
+  if(tbody) tbody.innerHTML=resourceOrder.map(sleepReserveRow).join('');
+}
+
 function cumulative(lv,product){ return DATA.wonderCosts[String(lv)]?.[product]||0; }
 function wonderNeed(product){ return Math.max(0,cumulative(wLvSet.tgt,product)-cumulative(wLvSet.cur,product)); }
 function wonderTime(product){
   const shortfall=Math.max(0,wonderNeed(product)-(state.products[product].stock||0));
   if(shortfall===0) return 0;
-  const s=state.products[product],p=productInfo(product);
-  if(!p||s.bldgs<=0) return null;
-  const perCycle=p.out*s.bldgs;
-  if(perCycle<=0) return null;
+  const perCycle=productPerCycleOutput(product);
+  const cycleMin=productCycleMinutes(product);
+  if(perCycle<=0||!cycleMin) return null;
   const cycles=Math.ceil(shortfall/perCycle-1e-12);
-  return cycles*(p.min/60);
+  return cycles*(cycleMin/60);
 }
 function wonderRow(product){
   const need=wonderNeed(product),prod=productOutput(product),stock=state.products[product].stock||0,expected=stock+prod,remain=expected-need,time=wonderTime(product);
-  return '<tr><td class="name">'+product+'</td>'+
-    '<td class="num calc">'+fmtQty(stock)+'</td>'+
+  return '<tr>'+
+    '<td class="name">'+product+'</td>'+
     '<td class="num calc '+remainClass(remain)+'">'+fmtQty(remain)+'</td>'+
-    '<td class="calc">'+verdict(remain)+'</td>'+
-    '<td class="num calc">'+fmtHours(time)+'</td>'+
     '<td class="num calc">'+fmtQty(need)+'</td>'+
+    '<td class="num calc">'+fmtQty(stock)+'</td>'+
     '<td class="num calc">'+fmtQty(prod)+'</td>'+
-    '<td class="num calc">'+fmtQty(expected)+'</td></tr>';
+    '<td class="num calc">'+fmtQty(expected)+'</td>'+
+    '<td class="num calc">'+fmtHours(time)+'</td></tr>';
 }
 function renderWonder(){
   document.querySelector('#tw tbody').innerHTML=productOrder.map(wonderRow).join('');
@@ -610,7 +946,7 @@ function resourceAdjustment(name,productAdjustments){
     const rawDelta=(-remain)/perBuilding;
     const suggested=ceil2(current+rawDelta);
     const delta=Math.max(0,suggested-current);
-    return {kind:'자원',name,remain,current,delta,suggested,status:'up'};
+    return {kind:'자원',name,remain,current,delta,rawDelta,suggested,status:'up'};
   }
   if(remain>0&&perBuilding>0&&current>0){
     const rawReducible=Math.min(current,remain/perBuilding);
@@ -626,6 +962,31 @@ function resourceAdjustment(name,productAdjustments){
   return {kind:'자원',name,remain,current,delta:0,suggested:ceil2(current),status:'keep'};
 }
 
+function currentPowerIndex(adj){
+  return Number.isFinite(adj.current)?Math.max(0,adj.current)*100:null;
+}
+function requiredPowerEquivalent(adj){
+  if(adj.status==='warn'||adj.remain===null||!Number.isFinite(adj.current)) return null;
+  const perBuilding=adj.kind==='상품' ? productLv6PerBuildingOutput(adj.name) : resourceLv6PerBuildingOutput(adj.name);
+  if(!(perBuilding>0)) return null;
+  return Math.max(0,adj.current-(adj.remain/perBuilding));
+}
+function requiredPowerIndex(adj){
+  const required=requiredPowerEquivalent(adj);
+  return Number.isFinite(required)?required*100:null;
+}
+function powerDifferenceIndex(adj){
+  const current=currentPowerIndex(adj);
+  const required=requiredPowerIndex(adj);
+  return Number.isFinite(current)&&Number.isFinite(required)?current-required:null;
+}
+function fmtSignedPower(n){
+  if(n===null||n===undefined||!Number.isFinite(n)) return '—';
+  const r=displayZero(Math.round(n*10)/10);
+  if(r>0) return '+'+fmtPower(r);
+  return fmtPower(r);
+}
+
 function adjustmentText(adj){
   if(adj.status==='warn') return '<span class="adj-warn">운영 시간 확인</span>';
   if(adj.status==='up') return adj.delta<0.01-1e-10?'0.01 미만 부족':fmtBldg(adj.delta)+' 부족';
@@ -636,18 +997,25 @@ function adjustmentText(adj){
 
 function adjustmentRow(adj){
   const remainText=adj.remain===null?'—':fmtQty(adj.remain);
-  const adjustmentCls=adj.status==='up'?'remain-bad':(adj.status==='warn'?'':'remain-ok');
-  const badgeCls=adj.status==='up'?'badge-bad':(adj.status==='warn'?'':'badge-ok');
-  const suggestedText=adj.suggested===null?'—':fmtBldg(adj.suggested);
-  const suggestedHtml=adj.status==='warn'
-    ? suggestedText
-    : '<span class="badge '+badgeCls+'">'+suggestedText+'</span>';
+  const currentPower=currentPowerIndex(adj);
+  const requiredPower=requiredPowerIndex(adj);
+  const difference=powerDifferenceIndex(adj);
+  const currentPowerHtml=currentPower===null
+    ? '<span class="adj-warn">—</span>'
+    : fmtPower(currentPower);
+  const requiredPowerHtml=requiredPower===null
+    ? '<span class="adj-warn">—</span>'
+    : fmtPower(requiredPower);
+  const diffCellClass=difference===null?'':(difference<0?'remain-bad':'remain-ok');
+  const differenceHtml=difference===null
+    ? '<span class="adj-warn">—</span>'
+    : fmtSignedPower(difference);
   const rowCls=adj.kind==='자원'&&adj.name===resourceOrder[0]?' class="adjust-resource-start"':'';
   return '<tr'+rowCls+'>'+
     '<td class="name">'+adj.name+'</td>'+
-    '<td class="num calc">'+fmtBldg(adj.current)+'</td>'+
-    '<td class="calc '+adjustmentCls+'">'+adjustmentText(adj)+'</td>'+
-    '<td class="num calc">'+suggestedHtml+'</td>'+
+    '<td class="num calc '+diffCellClass+'">'+differenceHtml+'</td>'+
+    '<td class="num calc">'+currentPowerHtml+'</td>'+
+    '<td class="num calc">'+requiredPowerHtml+'</td>'+
     '<td class="num calc">'+remainText+'</td>'+
   '</tr>';
 }
@@ -705,11 +1073,11 @@ function conversionRow(kind,name){
   return '<tr'+rowCls+'>'+
     '<td class="name">'+name+'</td>'+
     '<td class="calc">'+mode+'</td>'+
-    '<td class="num calc convert-ratio">'+fmtRatio(r2)+'</td>'+
-    '<td class="num calc convert-ratio">'+fmtRatio(r3)+'</td>'+
-    '<td class="num calc convert-ratio">'+fmtRatio(r4)+'</td>'+
-    '<td class="num calc convert-ratio">'+fmtRatio(r5)+'</td>'+
-    '<td class="num calc convert-ratio">'+fmtRatio(r6)+'</td>'+
+    '<td class="num calc convert-ratio">'+fmtPower(r2===null?null:r2*100)+'</td>'+
+    '<td class="num calc convert-ratio">'+fmtPower(r3===null?null:r3*100)+'</td>'+
+    '<td class="num calc convert-ratio">'+fmtPower(r4===null?null:r4*100)+'</td>'+
+    '<td class="num calc convert-ratio">'+fmtPower(r5===null?null:r5*100)+'</td>'+
+    '<td class="num calc convert-ratio">'+fmtPower(r6===null?null:r6*100)+'</td>'+
   '</tr>';
 }
 
@@ -722,7 +1090,81 @@ function renderConversion(){
   ].join('');
 }
 
-function renderAll(){ renderBonus(); renderTables(); renderWonder(); renderAdjustment(); renderConversion(); }
+function renderDetailLauncher(){
+  const el=document.getElementById('productDetailSummary');
+  if(!el) return;
+  const active=productOrder.filter(detailEnabled);
+  el.textContent=active.length?'상세 적용: '+active.join(' · '):'상세 설정 미사용';
+}
+function detailModeOptions(name){
+  return allProductModes(name).map(m=>'<option value="'+m+'"'+(m===state.products[name].mode?' selected':'')+'>'+m+'</option>').join('');
+}
+function detailLevelStepper(name,value){
+  const levels=compatibleLevels(name,state.products[name].mode);
+  const minLv=levels.length?levels[0]:1, maxLv=levels.length?levels[levels.length-1]:6;
+  const safe=closestCompatibleLevel(name,state.products[name].mode,value);
+  return '<div class="step-wrap detail-level-step"><input type="number" class="step-one" data-detail-k="lv" value="'+safe+'" step="1" min="'+minLv+'" max="'+maxLv+'" inputmode="numeric"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="레벨 올리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="레벨 내리기">▼</button></div></div>';
+}
+function detailRowHtml(name,row,index){
+  const factor=happinessFactor(row.happiness);
+  const fractional=Math.abs(num(row.count,0)-Math.round(num(row.count,0)))>1e-9;
+  return '<div class="detail-row" data-detail-index="'+index+'">'+
+    '<div class="detail-field"><label>레벨</label>'+detailLevelStepper(name,row.lv)+'</div>'+
+    '<div class="detail-field"><label>실제 건물 수</label><input type="number" min="0" step="1" inputmode="decimal" data-detail-k="count" value="'+row.count+'"></div>'+
+    '<div class="detail-field"><label>행복도(%)</label><input type="number" min="0" max="100" step="1" inputmode="decimal" data-detail-k="happiness" value="'+row.happiness+'"></div>'+
+    '<button type="button" class="detail-remove" data-detail-remove="'+index+'" aria-label="구성 삭제">−</button>'+
+    '<div class="detail-row-note">생산량 보정 ×'+fmtRatio(factor)+(fractional?' · 실제 건물 수는 정수 입력 권장':'')+' · 자원 소비는 행복도 보정 없음</div>'+
+  '</div>';
+}
+function renderDetailResult(name){
+  const el=document.getElementById('productDetailResult');
+  if(!el) return;
+  if(!detailEnabled(name)){
+    el.innerHTML='<b>현재 메인 계산 사용 중</b> · 상세 설정을 켜면 아래 실제 건물 구성이 생산량과 자원 사용량에 적용됩니다.';
+    return;
+  }
+  const parts=[];
+  const jade=productUse(name,'jade'),obs=productUse(name,'obs'),feather=productUse(name,'feather');
+  if(jade) parts.push('옥 '+fmtQty(jade));
+  if(obs) parts.push('흑요석 '+fmtQty(obs));
+  if(feather) parts.push('깃털 '+fmtQty(feather));
+  el.innerHTML='<b>현재 계산:</b> 실제 건물 '+fmtBldg(productActualBuildings(name))+'개 · 예상 생산량 '+fmtQty(productOutput(name))+(parts.length?' · 자원 사용 '+parts.join(' / '):' · 자원 사용 없음');
+}
+function renderDetailModal(){
+  const modal=document.getElementById('productDetailModal');
+  if(!modal) return;
+  const d=productDetails[detailProduct];
+  document.getElementById('productDetailTabs').innerHTML=productOrder.map(name=>
+    '<button type="button" class="detail-tab'+(name===detailProduct?' active':'')+'" data-detail-product="'+name+'">'+name+(detailEnabled(name)?'<span class="dot"></span>':'')+'</button>'
+  ).join('');
+  const enabled=document.getElementById('productDetailEnabled');
+  enabled.checked=!!d.enabled;
+  document.getElementById('productDetailMode').innerHTML=detailModeOptions(detailProduct);
+  const rowsEl=document.getElementById('productDetailRows');
+  rowsEl.classList.toggle('detail-disabled',!d.enabled);
+  rowsEl.innerHTML=d.rows.length?d.rows.map((row,i)=>detailRowHtml(detailProduct,row,i)).join(''):'<div class="detail-help">등록된 건물 구성이 없습니다. 상세 설정을 켜거나 “건물 구성 추가”를 눌러 입력하세요.</div>';
+  document.getElementById('productDetailAdd').disabled=!d.enabled;
+  renderDetailResult(detailProduct);
+  postSize();
+}
+function openDetailModal(name){
+  if(name&&productOrder.includes(name)) detailProduct=name;
+  const modal=document.getElementById('productDetailModal');
+  modal.removeAttribute('hidden');
+  modal.setAttribute('aria-hidden','false');
+  document.body.classList.add('detail-modal-open');
+  renderDetailModal();
+}
+function closeDetailModal(){
+  const modal=document.getElementById('productDetailModal');
+  if(!modal) return;
+  modal.setAttribute('hidden','');
+  modal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('detail-modal-open');
+  document.getElementById('productDetailOpen')?.focus();
+  postSize();
+}
+function renderAll(){ renderBonus(); renderTables(); renderWonder(); renderSleepReserve(); renderAdjustment(); renderConversion(); renderDetailLauncher(); }
 
 function incrementStepInput(input,delta){
   let cur=num(input.value,0),next=Math.round((cur+delta)*1000000)/1000000;
@@ -754,6 +1196,7 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
 document.getElementById('wonder').addEventListener('change',e=>{settings.wonder=e.target.value;renderAll();saveState();});
 document.getElementById('wLv').addEventListener('change',e=>{settings.wLv=clamp(parseInt(e.target.value)||0,0,50);e.target.value=settings.wLv;renderAll();saveState();});
 document.getElementById('baseH').addEventListener('change',e=>{settings.baseH=Math.max(0,num(e.target.value,0));e.target.value=settings.baseH;renderAll();saveState();});
+document.getElementById('sleepPrepH')?.addEventListener('change',e=>{settings.sleepPrepH=Math.max(0,num(e.target.value,0));e.target.value=settings.sleepPrepH;renderSleepReserve();saveState();postSize();});
 document.getElementById('curLv').addEventListener('change',e=>{
   wLvSet.cur=clamp(parseInt(e.target.value)||0,0,50);
   if(wLvSet.tgt<wLvSet.cur) wLvSet.tgt=wLvSet.cur;
@@ -761,8 +1204,66 @@ document.getElementById('curLv').addEventListener('change',e=>{
   renderWonder(); renderAdjustment(); saveState();
 });
 document.getElementById('tgtLv').addEventListener('change',e=>{wLvSet.tgt=Math.max(wLvSet.cur,clamp(parseInt(e.target.value)||0,0,50));e.target.value=wLvSet.tgt;renderWonder();renderAdjustment();saveState();});
-['wLv','baseH','curLv','tgtLv'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}}));
+['wLv','baseH','sleepPrepH','curLv','tgtLv'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}}));
 document.getElementById('resetBtn').addEventListener('click',resetState);
+
+document.getElementById('productDetailOpen')?.addEventListener('click',()=>openDetailModal());
+document.getElementById('productDetailModal')?.addEventListener('click',e=>{
+  if(e.target.closest('[data-detail-close]')){ closeDetailModal(); return; }
+  const tab=e.target.closest('[data-detail-product]');
+  if(tab){ detailProduct=tab.dataset.detailProduct; renderDetailModal(); return; }
+  const remove=e.target.closest('[data-detail-remove]');
+  if(remove){
+    const idx=parseInt(remove.dataset.detailRemove);
+    if(Number.isInteger(idx)) productDetails[detailProduct].rows.splice(idx,1);
+    if(productDetails[detailProduct].enabled&&!productDetails[detailProduct].rows.length) productDetails[detailProduct].enabled=false;
+    normalizeDetailProduct(detailProduct); renderAll(); renderDetailModal(); saveState(); return;
+  }
+});
+document.getElementById('productDetailEnabled')?.addEventListener('change',e=>{
+  const d=productDetails[detailProduct];
+  d.enabled=!!e.target.checked;
+  if(d.enabled) seedDetailFromLegacy(detailProduct);
+  normalizeDetailProduct(detailProduct); renderAll(); renderDetailModal(); saveState();
+});
+document.getElementById('productDetailMode')?.addEventListener('change',e=>{
+  state.products[detailProduct].mode=e.target.value;
+  normalizeDetailProduct(detailProduct); renderAll(); renderDetailModal(); saveState();
+});
+document.getElementById('productDetailAdd')?.addEventListener('click',()=>{
+  const d=productDetails[detailProduct];
+  if(!d.enabled) return;
+  const levels=compatibleLevels(detailProduct,state.products[detailProduct].mode);
+  const lv=levels.includes(state.products[detailProduct].lv)?state.products[detailProduct].lv:(levels[levels.length-1]||1);
+  d.rows.push({lv,count:1,happiness:100});
+  normalizeDetailProduct(detailProduct); renderAll(); renderDetailModal(); saveState();
+});
+document.getElementById('productDetailRows')?.addEventListener('change',e=>{
+  const el=e.target.closest('[data-detail-k]'); if(!el) return;
+  const rowEl=el.closest('[data-detail-index]'); if(!rowEl) return;
+  const idx=parseInt(rowEl.dataset.detailIndex),row=productDetails[detailProduct].rows[idx]; if(!row) return;
+  const k=el.dataset.detailK;
+  if(k==='lv') row.lv=closestCompatibleLevel(detailProduct,state.products[detailProduct].mode,parseInt(el.value)||1);
+  if(k==='count') row.count=Math.max(0,num(el.value,0));
+  if(k==='happiness') row.happiness=clamp(num(el.value,100),0,100);
+  normalizeDetailProduct(detailProduct);
+  renderAll();
+  renderDetailResult(detailProduct);
+  const normalized=productDetails[detailProduct].rows[idx];
+  if(normalized){
+    if(k==='lv') el.value=String(normalized.lv);
+    if(k==='count') el.value=String(normalized.count);
+    if(k==='happiness') el.value=String(normalized.happiness);
+    const note=rowEl.querySelector('.detail-row-note');
+    if(note){
+      const factor=happinessFactor(normalized.happiness);
+      const fractional=Math.abs(num(normalized.count,0)-Math.round(num(normalized.count,0)))>1e-9;
+      note.textContent='생산량 보정 ×'+fmtRatio(factor)+(fractional?' · 실제 건물 수는 정수 입력 권장':'')+' · 자원 소비는 행복도 보정 없음';
+    }
+  }
+  saveState();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('productDetailModal')?.hasAttribute('hidden')) closeDetailModal(); });
 
 const convertToggle=document.getElementById('convertToggle');
 const convertPanel=document.getElementById('convertPanel');
@@ -771,11 +1272,11 @@ if(convertToggle&&convertPanel){
     const open=convertPanel.hasAttribute('hidden');
     if(open){
       convertPanel.removeAttribute('hidden');
-      convertToggle.textContent='환산표 접기';
+      convertToggle.textContent='생산력 환산표 접기';
       convertToggle.setAttribute('aria-expanded','true');
     }else{
       convertPanel.setAttribute('hidden','');
-      convertToggle.textContent='환산표 보기';
+      convertToggle.textContent='생산력 환산표 보기';
       convertToggle.setAttribute('aria-expanded','false');
     }
     postSize();
