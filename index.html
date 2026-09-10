@@ -284,15 +284,15 @@ body.detail-modal-open{overflow:hidden}
       <div id="resourceDetailTabs" class="detail-tabs resource-detail-tabs"></div>
       <div class="detail-toolbar">
         <div class="detail-field">
-          <label>상세 계산</label>
-          <div class="detail-toggle-wrap"><input type="checkbox" id="resourceDetailEnabled"><label for="resourceDetailEnabled">이 자원에 상세 설정 사용</label></div>
+          <label>상세 설정</label>
+          <div class="detail-toggle-wrap"><input type="checkbox" id="resourceDetailEnabled"><label for="resourceDetailEnabled">이 자원에 상세 설정 적용</label></div>
         </div>
         <div class="detail-field">
           <label>생산 방식</label>
           <select id="resourceDetailMode" disabled><option>연속</option></select>
         </div>
       </div>
-      <div class="detail-help">레벨·건물 수·행복도는 <b>실제 건물 구성</b>을 입력하세요. 상세 설정을 켜면 메인 자원 행의 레벨·건물 수·행복도는 상세 구성에서 자동 표시됩니다.</div>
+      <div class="detail-help">건물 구성에 맞게 <b>레벨</b>, <b>건물 수</b>, <b>행복도</b>를 입력하세요. 상세 설정을 사용하면 <b>기본 표</b>의 레벨·건물 수·행복도는 상세 구성에 따라 자동 표시됩니다.</div>
       <div id="resourceDetailResult" class="detail-result"></div>
       <div id="resourceDetailRows" class="detail-rows"></div>
       <div class="detail-footer"><button id="resourceDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button></div>
@@ -324,15 +324,15 @@ body.detail-modal-open{overflow:hidden}
       <div id="productDetailTabs" class="detail-tabs"></div>
       <div class="detail-toolbar">
         <div class="detail-field">
-          <label>상세 계산</label>
-          <div class="detail-toggle-wrap"><input type="checkbox" id="productDetailEnabled"><label for="productDetailEnabled">이 상품에 상세 설정 사용</label></div>
+          <label>상세 설정</label>
+          <div class="detail-toggle-wrap"><input type="checkbox" id="productDetailEnabled"><label for="productDetailEnabled">이 상품에 상세 설정 적용</label></div>
         </div>
         <div class="detail-field">
           <label for="productDetailMode">생산 방식</label>
           <select id="productDetailMode"></select>
         </div>
       </div>
-      <div class="detail-help">레벨·건물 수·행복도는 <b>실제 건물 구성</b>을 입력하세요. 행복도는 <b>상품 생산량에만</b> 반영되고, 옥·흑요석·깃털 사용량은 행복도와 관계없이 <b>각 레벨의 실제 건물 수</b>를 기준으로 계산합니다. 상세 설정을 켜면 메인 상품 행의 레벨·건물 수·행복도는 상세 구성에서 자동 표시됩니다.</div>
+      <div class="detail-help">건물 구성에 맞게 <b>레벨</b>, <b>건물 수</b>, <b>행복도</b>를 입력하세요. 행복도는 <b>상품 생산량에만</b> 반영되고, 옥·흑요석·깃털 사용량은 행복도와 관계없이 <b>각 레벨의 건물 수</b>를 기준으로 계산합니다. 상세 설정을 사용하면 <b>기본 표</b>의 레벨·건물 수·행복도는 상세 구성에 따라 자동 표시됩니다.</div>
       <div id="productDetailResult" class="detail-result"></div>
       <div id="productDetailRows" class="detail-rows"></div>
       <div class="detail-footer"><button id="productDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button></div>
@@ -361,7 +361,7 @@ body.detail-modal-open{overflow:hidden}
   <div class="table-wrap">
     <table id="tw">
       <thead><tr>
-        <th>상품</th><th>잔여/부족</th><th>소요 시간(h)</th><th>구간 소비량</th><th>현재 보유량</th><th>예상 생산량</th><th>예상 보유량</th>
+        <th>상품</th><th>잔여/부족</th><th>소요 시간(h)</th><th>구간 필요량</th><th>현재 보유량</th><th>예상 생산량</th><th>예상 보유량</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
@@ -376,7 +376,7 @@ body.detail-modal-open{overflow:hidden}
   <div class="table-wrap">
     <table id="ts">
       <thead><tr>
-        <th>자원</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>수면 요구량</th><th>수면 예정 보유량</th><th>잔여/부족</th>
+        <th>자원</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>수면 중 필요량</th><th>수면 시작 예상 보유량</th><th>잔여/부족</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
@@ -558,11 +558,11 @@ function renderBonus(){
   const nw=staff.nextWorker?staff.nextWorker+'레벨':'최대 레벨';
   const np=staff.nextPriest?staff.nextPriest+'레벨':'최대 레벨';
   document.getElementById('bonusBox').innerHTML=
-    '<div class="bonus-item"><span>레벨 보너스</span><b>'+bonusText+'</b></div>'+
+    '<div class="bonus-item"><span>생산 보너스</span><b>'+bonusText+'</b></div>'+
     '<div class="bonus-item"><span>추가 일꾼 수</span><b>'+staff.worker+'명</b></div>'+
-    '<div class="bonus-item"><span>일꾼 다음 증가</span><b>'+nw+'</b></div>'+
+    '<div class="bonus-item"><span>다음 일꾼 증가</span><b>'+nw+'</b></div>'+
     '<div class="bonus-item"><span>추가 사제 수</span><b>'+staff.priest+'명</b></div>'+
-    '<div class="bonus-item"><span>사제 다음 증가</span><b>'+np+'</b></div>';
+    '<div class="bonus-item"><span>다음 사제 증가</span><b>'+np+'</b></div>';
 }
 
 /* 구버전 resourceRow 제거: 아래 통합 구현 사용 */
@@ -773,7 +773,7 @@ function renderDetailLauncher(){
   const el=document.getElementById('productDetailSummary');
   if(!el) return;
   const active=productOrder.filter(detailEnabled);
-  el.textContent=active.length?'상세 적용: '+active.join(' · '):'상세 설정 미사용';
+  el.textContent=active.length?'상세 설정 적용: '+active.join(' · '):'상세 설정 미사용';
 }
 function detailModeOptions(name){
   return allProductModes(name).map(m=>'<option value="'+m+'"'+(m===state.products[name].mode?' selected':'')+'>'+m+'</option>').join('');
@@ -1251,25 +1251,25 @@ function renderConversion(){
 function detailRowHtml(name,row,index){
   return '<div class="detail-row" data-detail-index="'+index+'">'+
     '<div class="detail-field"><label>레벨</label>'+detailLevelStepper(name,row.lv)+'</div>'+
-    '<div class="detail-field"><label>실제 건물 수</label>'+detailCountStepper('data-detail-k',row.count)+'</div>'+
+    '<div class="detail-field"><label>건물 수</label>'+detailCountStepper('data-detail-k',row.count)+'</div>'+
     '<div class="detail-field"><label>행복도(%)</label>'+happinessInput('happiness',row.happiness,'data-detail-k')+'</div>'+
     '<button type="button" class="detail-remove" data-detail-remove="'+index+'" aria-label="구성 삭제">−</button></div>';
 }
 function renderDetailResult(name){
   const el=document.getElementById('productDetailResult'); if(!el) return;
   if(!detailEnabled(name)){
-    el.innerHTML='<b>현재 메인 계산 사용 중</b> · 상세 설정을 켜면 아래 실제 건물 구성이 생산량과 자원 사용량에 적용됩니다.';
+    el.innerHTML='<b>기본 설정으로 계산 중</b> · 상세 설정을 사용하면 아래 건물 구성이 생산량과 자원 사용량에 적용됩니다.';
     return;
   }
   const parts=[],jade=productUse(name,'jade'),obs=productUse(name,'obs'),feather=productUse(name,'feather');
   if(jade) parts.push('옥 '+fmtQty(jade)); if(obs) parts.push('흑요석 '+fmtQty(obs)); if(feather) parts.push('깃털 '+fmtQty(feather));
-  el.innerHTML='<b>현재 계산:</b> 실제 건물 '+fmtBldg(productActualBuildings(name))+'개 · 예상 생산량 '+fmtQty(productOutput(name))+(parts.length?' · 자원 사용 '+parts.join(' / '):' · 자원 사용 없음');
+  el.innerHTML='<b>현재 계산:</b> 건물 '+fmtBldg(productActualBuildings(name))+'개 · 예상 생산량 '+fmtQty(productOutput(name))+(parts.length?' · 자원 사용 '+parts.join(' / '):' · 자원 사용 없음');
 }
 
 function renderResourceDetailLauncher(){
   const el=document.getElementById('resourceDetailSummary'); if(!el) return;
   const active=resourceOrder.filter(resourceDetailEnabled);
-  el.textContent=active.length?'상세 적용: '+active.join(' · '):'상세 설정 미사용';
+  el.textContent=active.length?'상세 설정 적용: '+active.join(' · '):'상세 설정 미사용';
 }
 function resourceDetailLevelStepper(name,value){
   const safe=clamp(parseInt(value)||1,1,6);
@@ -1278,17 +1278,17 @@ function resourceDetailLevelStepper(name,value){
 function resourceDetailRowHtml(name,row,index){
   return '<div class="detail-row" data-resource-detail-index="'+index+'">'+
     '<div class="detail-field"><label>레벨</label>'+resourceDetailLevelStepper(name,row.lv)+'</div>'+
-    '<div class="detail-field"><label>실제 건물 수</label>'+detailCountStepper('data-resource-detail-k',row.count)+'</div>'+
+    '<div class="detail-field"><label>건물 수</label>'+detailCountStepper('data-resource-detail-k',row.count)+'</div>'+
     '<div class="detail-field"><label>행복도(%)</label>'+happinessInput('happiness',row.happiness,'data-resource-detail-k')+'</div>'+
     '<button type="button" class="detail-remove" data-resource-detail-remove="'+index+'" aria-label="구성 삭제">−</button></div>';
 }
 function renderResourceDetailResult(name){
   const el=document.getElementById('resourceDetailResult'); if(!el) return;
   if(!resourceDetailEnabled(name)){
-    el.innerHTML='<b>현재 메인 계산 사용 중</b> · 상세 설정을 켜면 아래 실제 건물 구성이 생산량 계산에 적용됩니다.';
+    el.innerHTML='<b>기본 설정으로 계산 중</b> · 상세 설정을 사용하면 아래 건물 구성이 생산량 계산에 적용됩니다.';
     return;
   }
-  el.innerHTML='<b>현재 계산:</b> 실제 건물 '+fmtBldg(resourceActualBuildings(name))+'개 · 예상 생산량 '+fmtQty(resourceOutput(name));
+  el.innerHTML='<b>현재 계산:</b> 건물 '+fmtBldg(resourceActualBuildings(name))+'개 · 예상 생산량 '+fmtQty(resourceOutput(name));
 }
 function renderResourceDetailModal(){
   const modal=document.getElementById('resourceDetailModal'); if(!modal) return;
@@ -1396,7 +1396,11 @@ document.getElementById('curLv').addEventListener('change',e=>{
 });
 document.getElementById('tgtLv').addEventListener('change',e=>{wLvSet.tgt=Math.max(wLvSet.cur,clamp(parseInt(e.target.value)||0,0,50));e.target.value=wLvSet.tgt;renderWonder();renderAdjustment();saveState();});
 ['wLv','baseH','sleepPrepH','curLv','tgtLv'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}}));
-document.getElementById('resetBtn').addEventListener('click',resetState);
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  const ok=window.confirm('입력한 값을 초기화할까요?\n현재 저장된 값이 기본값으로 돌아갑니다.');
+  if(!ok) return;
+  resetState();
+});
 
 document.getElementById('productDetailOpen')?.addEventListener('click',()=>openDetailModal());
 document.getElementById('productDetailModal')?.addEventListener('click',e=>{
@@ -1449,7 +1453,7 @@ document.getElementById('productDetailRows')?.addEventListener('change',e=>{
     if(note){
       const factor=happinessFactor(normalized.happiness);
       const fractional=Math.abs(num(normalized.count,0)-Math.round(num(normalized.count,0)))>1e-9;
-      note.textContent='생산량 보정 ×'+fmtRatio(factor)+(fractional?' · 실제 건물 수는 정수 입력 권장':'')+' · 자원 소비는 행복도 보정 없음';
+      note.textContent='생산량 보정 ×'+fmtRatio(factor)+(fractional?' · 건물 수는 정수 입력 권장':'')+' · 자원 소비는 행복도 보정 없음';
     }
   }
   saveState();
