@@ -1544,5 +1544,5 @@ function postSize(){ try{ parent.postMessage({type:'wrks:viz:resize',height:docu
 window.addEventListener('load',()=>{loadState();renderAll();postSize();});
 if('ResizeObserver' in window) new ResizeObserver(postSize).observe(document.body);
 </script>
-</body>
+<script src="update-check.js?v=20261102"></script></body>
 </html>
