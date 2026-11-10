@@ -440,6 +440,21 @@ h1{font-size:25px}
   #tc .wonder-conversion-name{width:85px}
   #tc .wonder-conversion-mode{width:76px}
 }
+/* Product-only quest rewards are planned separately from current stock. */
+.quest-caption{font-size:13px;color:var(--muted);line-height:1.45}
+.quest-caption strong{color:var(--primary)}
+.quest-rewards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 12px}
+.quest-reward{display:grid;grid-template-columns:minmax(0,1fr) minmax(58px,46%);align-items:center;gap:5px;padding:6px;border:1px solid var(--outline);border-radius:7px;background:var(--soft-2)}
+.quest-check{display:flex;align-items:center;gap:5px;min-width:0;min-height:36px;font-size:13px;font-weight:700;word-break:keep-all;cursor:pointer}
+.quest-check input{width:18px;height:18px;min-width:18px;margin:0;accent-color:var(--primary)}
+.quest-reward .quest-amount{min-width:0;min-height:36px;text-align:center;font-size:14px}
+.quest-error{grid-column:1/-1;color:var(--bad);font-size:11px;line-height:1.4}
+@media(max-width:720px){
+  .quest-rewards{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+  .quest-reward{grid-template-columns:minmax(0,1fr);padding:5px}
+  .quest-check,.quest-reward .quest-amount{min-height:42px}
+  .quest-reward .quest-amount{font-size:16px}
+}
 </style>
 </head>
 <body>
@@ -516,11 +531,12 @@ h1{font-size:25px}
 
   <section class="card" id="productsCard">
   <div class="step2-title-actions">
-    <div class="production-section-title"><h2>상품</h2><span id="productDetailSummary" class="detail-summary">기본 설정 사용</span></div>
+    <div class="production-section-title"><h2>상품</h2><span id="productDetailSummary" class="detail-summary">기본 설정 사용</span><span class="quest-caption"><strong>퀘스트 보상</strong> · 체크 시 보유량에 합산</span></div>
     <div class="product-detail-actions">
       <button id="productDetailOpen" type="button" aria-label="상품 건물 상세 설정" class="detail-open-btn">건물 상세 설정</button>
     </div>
   </div>
+  <div id="productQuestRewards" class="quest-rewards" role="group" aria-label="상품 퀘스트 보상"></div>
   <div class="table-wrap">
     <table id="t2">
       <thead><tr>
@@ -885,8 +901,12 @@ function renderSleepReserve(){
 
 function cumulative(lv,product){ return DATA.wonderCosts[String(lv)]?.[product]||0; }
 function wonderNeed(product){ return Math.max(0,cumulative(wLvSet.tgt,product)-cumulative(wLvSet.cur,product)); }
+function plannedProductStock(product){
+  const item=state.products[product],reward=item.questReward;
+  return item.stock+(reward?.enabled?reward.amount:0);
+}
 function wonderTime(product){
-  const shortfall=Math.max(0,wonderNeed(product)-state.products[product].stock);
+  const shortfall=Math.max(0,wonderNeed(product)-plannedProductStock(product));
   if(shortfall===0) return 0;
   const batches=productionConfigs('products',product).flatMap(row=>{
     if(row.hours===0) return [];
@@ -915,7 +935,7 @@ function wonderDuration(hours){
   return minutes<60?minutes+'분':Math.floor(minutes/60)+'시간'+(minutes%60?' '+minutes%60+'분':'');
 }
 function wonderRow(product){
-  const need=wonderNeed(product),prod=productOutput(product),stock=state.products[product].stock||0,expected=stock+prod,remain=expected-need,time=wonderTime(product);
+  const need=wonderNeed(product),prod=productOutput(product),stock=plannedProductStock(product),expected=stock+prod,remain=expected-need,time=wonderTime(product);
   return '<tr>'+
     '<td class="name">'+product+'</td>'+
     '<td class="num calc '+remainClass(remain)+'">'+fmtQty(remain)+'</td>'+
@@ -932,7 +952,7 @@ function renderWonder(){
   document.getElementById('tgtLv').min=wLvSet.cur;
   labelTable('tw');
   let level=wLvSet.cur;
-  while(level<50&&productOrder.every(name=>state.products[name].stock+productOutput(name)>=cumulative(level+1,name)-cumulative(wLvSet.cur,name))) level++;
+  while(level<50&&productOrder.every(name=>plannedProductStock(name)+productOutput(name)>=cumulative(level+1,name)-cumulative(wLvSet.cur,name))) level++;
   document.getElementById('wonderMaxLevel').textContent='Lv.'+level;
 }
 
@@ -970,7 +990,7 @@ function targetResourceNeed(name,target){
   return Math.max(0,gross-state.resources[name].stock);
 }
 function renderAdjustment(){
-  const target=Object.fromEntries(productOrder.map(name=>[name,Math.max(0,wonderNeed(name)-state.products[name].stock)]));
+  const target=Object.fromEntries(productOrder.map(name=>[name,Math.max(0,wonderNeed(name)-plannedProductStock(name))]));
   const shortage=[],missingHours=[];
   const rows=[...resourceOrder,...productOrder].map(name=>{
     const resource=name in resourceKeys;
@@ -1126,6 +1146,19 @@ function resourceDetailLevelText(name){
   return levels.length===1?String(levels[0]):levels.join('·');
 }
 
+function normalizedQuestReward(value){
+  const amount=Number(value?.amount);
+  return {amount:Number.isSafeInteger(amount)&&amount>0?amount:0,enabled:value?.enabled===true};
+}
+function renderQuestRewards(){
+  document.getElementById('productQuestRewards').innerHTML=productOrder.map(name=>{
+    const reward=state.products[name].questReward;
+    return '<div class="quest-reward" data-quest-product="'+name+'">'+
+      '<label class="quest-check"><input type="checkbox" data-quest-enable aria-label="'+name+' 퀘스트 보상 합산"'+(reward.enabled?' checked':'')+'>'+name+'</label>'+
+      '<input class="quest-amount" type="text" inputmode="decimal" data-quest-amount aria-label="'+name+' 퀘스트 보상량" placeholder="보상량" value="'+(reward.amount||'')+'">'+
+      '<small class="quest-error" role="status" hidden></small></div>';
+  }).join('');
+}
 function normalizeState(){
   resourceOrder.forEach(name=>{
     const s=state.resources[name];
@@ -1142,6 +1175,7 @@ function normalizeState(){
     s.bldgs=Math.max(0,num(s.bldgs,0));
     s.happiness=normalizedHappiness(s.happiness,100);
     s.stock=Math.round(num(s.stock,0));
+    s.questReward=normalizedQuestReward(s.questReward);
     s.hours=s.hours===''||s.hours===null||s.hours===undefined?'':Math.max(0,num(s.hours,0));
     const modes=DATA.modes[name+'|'+s.lv]||[];
     if(!modes.includes(s.mode)) s.mode=modes[0]||'1분';
@@ -1176,7 +1210,7 @@ function loadState(){
     if(saved?.productDetails) productOrder.forEach(name=>Object.assign(productDetails[name],saved.productDetails[name]||{}));
     if(saved?.resourceDetails) resourceOrder.forEach(name=>Object.assign(resourceDetails[name],saved.resourceDetails[name]||{}));
   }catch(e){}
-  normalizeState(); syncUIFromState(); syncWonderView(); saveState();
+  normalizeState(); syncUIFromState(); syncWonderView(); renderQuestRewards(); saveState();
 }
 function productionSnapshot(){
   const {wonder,wLv,baseH}=settings;
@@ -1196,7 +1230,7 @@ function restoreProduction(snapshot,message){
     }
   }
   for(const key of ['wonder','wLv','baseH']) settings[key]=snapshot.settings?.[key]??INIT.settings[key];
-  normalizeState();syncUIFromState();renderAll();saveState();reportProductionStatus(message);
+  normalizeState();syncUIFromState();renderQuestRewards();renderAll();saveState();reportProductionStatus(message);
 }
 
 function resourceRate(name,row){
@@ -1549,6 +1583,33 @@ for(const id of ['sleepCycle','sleepCount','productRawCycle']){
     settings[id]=e.target.value;normalizeState();syncUIFromState();renderAll();saveState();
   });
 }
+
+document.getElementById('productQuestRewards').addEventListener('change',event=>{
+  const input=event.target,group=input.closest('[data-quest-product]');
+  if(!group) return;
+  const reward=state.products[group.dataset.questProduct].questReward;
+  if(input.hasAttribute('data-quest-enable')) reward.enabled=input.checked;
+  if(input.hasAttribute('data-quest-amount')){
+    const raw=input.value.trim(),amount=raw===''?0:parseStock(raw);
+    const error=group.querySelector('.quest-error');
+    if(amount===null||amount<0){
+      input.setAttribute('aria-invalid','true');
+      error.textContent='0 이상의 숫자 또는 K·M 단위를 입력하세요.';
+      error.hidden=false;
+      return;
+    }
+    reward.amount=amount;
+    input.value=amount||'';
+    input.removeAttribute('aria-invalid');
+    error.hidden=true;
+  }
+  renderWonder();renderAdjustment();saveState();postSize();
+});
+document.getElementById('productQuestRewards').addEventListener('keydown',event=>{
+  if(event.key==='Enter'&&event.target.hasAttribute('data-quest-amount')){
+    event.preventDefault();event.target.blur();
+  }
+});
 
 document.getElementById('productDetailOpen')?.addEventListener('click',()=>openDetailModal());
 document.getElementById('productDetailModal')?.addEventListener('click',e=>{
