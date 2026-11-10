@@ -300,31 +300,83 @@ h1{font-size:25px}
   #tc th:first-child,#tc td:first-child{width:85px!important}
   #tc th:nth-child(2){width:74px!important}
 }
+/* Match the shared calculator layout while keeping the Maya palette. */
+:root{--muted:#456353;--outline:#c0d4b9}
+.panel{scroll-margin-top:64px}
+.card{padding:18px}
+.card-title,.step2-title-actions{margin-bottom:14px}
+.section-links a{display:inline-flex;align-items:center;min-height:34px}
+.section-links a:hover,.section-links a:focus-visible{background:var(--soft)}
+.settings{display:flex;flex-wrap:wrap;gap:12px 20px;padding:12px}
+.control-field{display:flex;align-items:center;gap:10px;min-width:0}
+.control-field>label{line-height:1.45;word-break:keep-all}
+.control-field>select{min-width:132px}
+.control-field>.step-wrap{min-width:0}
+.production-actions{gap:8px}
+#saveProduction,.detail-done{background:var(--primary);border:1px solid var(--primary);color:#fff;font-weight:700}
+#saveProduction:hover,.detail-done:hover{background:#08492d}
+.reset-status:empty{display:none}
+.summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.bonus-summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+.summary-metric{display:flex;flex-direction:column;gap:4px;padding:12px 14px;min-width:0;background:var(--soft-2);border:1px solid var(--outline);border-radius:9px}
+.summary-metric span,.summary-metric small{font-size:12px;color:var(--muted);line-height:1.5}
+.summary-metric strong{font-size:19px;line-height:1.35;color:var(--primary);overflow-wrap:anywhere}
+.summary-metric.warning strong{color:var(--bad)}
+.section-guide{margin:8px 0 12px;color:var(--muted);font-size:13px;line-height:1.55}
+.section-guide summary{width:fit-content;cursor:pointer;color:var(--primary);font-weight:700;padding:4px 0}
+.section-guide p{margin:4px 0 0}
+.conversion-hint{display:none;color:var(--muted);font-size:12px}
+.conversion-scroll:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+#tc tr:nth-child(even) td:not(.name){background:#eaf3e7}
+.detail-row-number{grid-column:1/-1;color:var(--primary);font-size:12px;font-weight:700}
+.detail-footer{position:sticky;bottom:-1px;z-index:1;background:var(--panel);border-top:1px solid var(--outline);padding:8px 0}
+.detail-footer .detail-done{min-height:42px;padding:8px 18px;border-radius:6px;cursor:pointer}
+.detail-row .detail-field :is(input,select){min-width:0}
+#t1 th:first-child,#t2 th:first-child{width:12%!important}
+#t2 th:nth-child(3){width:13%!important}
+@media(max-width:720px){
+  .card{padding:12px}
+  .settings{display:grid;grid-template-columns:1fr;gap:8px;padding:10px}
+  .control-field{display:grid;grid-template-columns:minmax(0,1fr) minmax(98px,45%);gap:8px}
+  .control-field>select,.control-field>.step-wrap{width:100%;min-width:0}
+  .control-field>select,.control-field input,.detail-row :is(input,select){font-size:16px;min-height:44px}
+  .step-controls{width:28px;flex-basis:28px}
+  .production-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) auto}
+  .production-actions button{padding:6px;white-space:normal;min-height:44px}
+  .production-actions .reset-status{grid-column:1/-1}
+  .summary-grid{gap:6px}
+  .bonus-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bonus-summary .summary-metric:first-child{grid-column:1/-1}
+  .summary-metric{padding:9px}
+  .summary-metric strong{font-size:17px}
+  .card table:not(#tc) tbody tr{gap:6px;padding:8px}
+  .card table:not(#tc) tbody td:not(.name)::before{font-size:12px}
+  #t1 input,#t2 input,#t2 select{font-size:16px;min-height:42px}
+  .card table:not(#tc) .result-cell{font-weight:700}
+  .conversion-hint{display:block}
+}
 </style>
 </head>
 <body>
 <h1>마야 문명 시뮬레이터</h1>
 <div class="legend">
-  <div class="legend-item"><span class="legend-box legend-input"></span>입력 가능 (노란색)</div>
-  <div class="legend-item"><span class="legend-box legend-calc"></span>자동 계산</div>
+  <div class="legend-item"><span class="legend-box legend-input"></span>노란 칸에 입력</div>
+
 </div>
 
 <nav class="tabs" aria-label="계산기 탭">
-  <button class="tab active" data-tab="prod">생산 계산기</button>
-  <button class="tab" data-tab="wonder">불가사의 목표</button>
+  <button class="tab active" id="tab-prod" type="button" aria-controls="panel-prod" aria-pressed="true" data-tab="prod">생산 계산기</button>
+  <button class="tab" id="tab-wonder" type="button" aria-controls="panel-wonder" aria-pressed="false" data-tab="wonder">불가사의 목표</button>
 </nav>
 
-<div id="panel-prod" class="panel active">
+<div id="panel-prod" class="panel active" aria-labelledby="tab-prod">
   <nav class="section-links" aria-label="생산 계산기 바로가기"><a href="#productionSettings">생산 설정</a><a href="#resourcesCard">기초 자원</a><a href="#productsCard">상품</a></nav>
   <section class="card" id="productionSettings">
   <div class="card-title"><h2>생산 설정</h2><button id="productionView" class="convert-toggle" type="button" aria-expanded="false" aria-controls="t1 t2">상세 보기</button></div>
   <div class="settings">
-    <label for="wonder">불가사의</label>
-    <select id="wonder"><option>티칼</option><option>치첸이트사</option><option>사일 궁전</option></select>
-    <label for="wLv">보너스 적용 레벨</label>
-    <div class="step-wrap settings-step"><input type="number" id="wLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
-    <label for="baseH">기본 운영 시간(h)</label>
-    <div class="step-wrap"><input type="number" id="baseH" class="step-one" min="0" step="any"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
+    <div class="control-field"><label for="wonder">불가사의</label><select id="wonder"><option>티칼</option><option>치첸이트사</option><option>사일 궁전</option></select></div>
+    <div class="control-field"><label for="wLv">보너스 적용 레벨</label><div class="step-wrap settings-step"><input type="number" id="wLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="보너스 적용 레벨 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="보너스 적용 레벨 줄이기">▼</button></div></div></div>
+    <div class="control-field"><label for="baseH">기본 운영 시간(h)</label><div class="step-wrap"><input type="number" id="baseH" class="step-one" min="0" step="any"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="기본 운영 시간(h) 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="기본 운영 시간(h) 줄이기">▼</button></div></div></div>
     </div>
   <div class="production-actions">
     <button id="saveProduction" type="button" class="convert-toggle">입력값 저장</button>
@@ -333,7 +385,7 @@ h1{font-size:25px}
     <span id="resetStatus" class="reset-status" role="status" aria-live="polite"></span>
   </div>
 
-  <div class="bonus-box" id="bonusBox"></div>
+  <div class="summary-grid bonus-summary" id="bonusBox"></div>
   </section>
   <section class="card" id="resourcesCard">
 
@@ -347,7 +399,7 @@ h1{font-size:25px}
   <div class="table-wrap">
     <table id="t1">
       <thead><tr>
-        <th>자원</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>행복도(%)</th><th>운영 시간(h)</th><th>현재 보유량</th><th>잔여/부족</th><th>소요 시간(h)</th><th>예상 생산량</th><th>예상 소비량</th>
+        <th>자원</th><th>레벨</th><th>생산 방식</th><th>건물 수</th><th>행복도(%)</th><th>운영 시간(h)</th><th>현재 보유량</th><th>잔여/부족</th><th>예상 생산량</th><th>예상 소비량</th><th>소요 시간(h)</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
@@ -370,7 +422,7 @@ h1{font-size:25px}
       <div class="detail-help">건물 구성마다 레벨·건물 수·행복도·운영 시간을 입력합니다. 운영 시간을 비우면 생산 표의 해당 항목 시간을 따릅니다.</div>
       <div id="resourceDetailResult" class="detail-result"></div>
       <div id="resourceDetailRows" class="detail-rows"></div>
-      <div class="detail-footer"><button id="resourceDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button><button type="button" class="detail-add" data-resource-detail-close>완료</button></div>
+      <div class="detail-footer"><button id="resourceDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button><button type="button" class="detail-done" data-resource-detail-close>완료</button></div>
     </section>
   </div>
 
@@ -407,35 +459,33 @@ h1{font-size:25px}
       <div class="detail-help">건물 구성마다 생산 주기와 운영 시간을 지정할 수 있습니다. 운영 시간을 비우면 해당 상품의 운영 시간을 따릅니다. 행복도는 생산량에만 반영됩니다.</div>
       <div id="productDetailResult" class="detail-result"></div>
       <div id="productDetailRows" class="detail-rows"></div>
-      <div class="detail-footer"><button id="productDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button><button type="button" class="detail-add" data-detail-close>완료</button></div>
+      <div class="detail-footer"><button id="productDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button><button type="button" class="detail-done" data-detail-close>완료</button></div>
     </section>
   </div>
 
   <p class="note">운영 시간을 비워 두면 기본 운영 시간을 사용합니다. 기초 자원은 운영 시간에 비례하고, 상품은 완료된 생산 주기만큼 계산합니다. 행복도는 생산량에 반영됩니다. 예상 생산량은 내림하고 원료 필요량은 올림합니다.</p>
 </div>
 
-<div id="panel-wonder" class="panel">
+<div id="panel-wonder" class="panel" aria-labelledby="tab-wonder">
   <nav class="section-links" aria-label="불가사의 목표 바로가기"><a href="#mayaGoal">달성 현황</a><a href="#mayaSleep">수면 대비</a><a href="#mayaPower">생산력 비교</a><a href="#mayaConversion">환산표</a></nav>
   <section class="card">
   <div class="card-title"><h2>불가사의 목표</h2><button id="wonderView" class="convert-toggle" type="button" aria-expanded="false" aria-controls="tw ts ta">상세 보기</button></div>
   <div class="settings">
-    <label for="curLv">현재 레벨</label>
-    <div class="step-wrap settings-step"><input type="number" id="curLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
-    <label for="tgtLv">목표 레벨</label>
-    <div class="step-wrap settings-step"><input type="number" id="tgtLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
+    <div class="control-field"><label for="curLv">현재 레벨</label><div class="step-wrap settings-step"><input type="number" id="curLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="현재 레벨 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="현재 레벨 줄이기">▼</button></div></div></div>
+    <div class="control-field"><label for="tgtLv">목표 레벨</label><div class="step-wrap settings-step"><input type="number" id="tgtLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="목표 레벨 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="목표 레벨 줄이기">▼</button></div></div></div>
 
   </div>
 
   <p id="wonderContext" class="section-note"></p>
-  <div id="goalSummary" class="bonus-box" role="status"></div>
+  <div id="goalSummary" class="summary-grid" role="status"></div>
   </section>
   <section class="card" id="mayaGoal">
   <h2>목표 달성 현황</h2>
-  <p class="section-note">소요 시간은 현재 보유량에서 시작해 목표 수량을 처음 채우는 데 걸리는 시간입니다. 설정한 운영 시간을 넘어도 표시하며, 상세 구성에서 운영 시간을 0으로 지정한 건물은 제외합니다.</p>
+  <details class="section-guide"><summary>소요 시간 계산 기준</summary><p>소요 시간은 현재 보유량에서 시작해 목표 수량을 처음 채우는 데 걸리는 시간입니다. 설정한 운영 시간을 넘어도 표시하며, 상세 구성에서 운영 시간을 0으로 지정한 건물은 제외합니다.</p></details>
   <div class="table-wrap">
     <table id="tw">
       <thead><tr>
-        <th>상품</th><th>잔여/부족</th><th>소요 시간(h)</th><th>구간 필요량</th><th>현재 보유량</th><th>예상 생산량</th><th>예상 보유량</th>
+        <th>상품</th><th>잔여/부족</th><th>구간 필요량</th><th>현재 보유량</th><th>예상 생산량</th><th>예상 보유량</th><th>소요 시간(h)</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
@@ -444,10 +494,9 @@ h1{font-size:25px}
   <section class="card" id="mayaSleep">
   <h2>수면 대비 자원 확보</h2>
   <div class="settings sleep-settings">
-    <label for="sleepPrepH">수면까지 남은 시간(h)</label>
-    <div class="step-wrap sleep-time-wrap"><input type="number" id="sleepPrepH" class="step-one" min="0" step="any" placeholder="기본"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
-    <label for="sleepCycle">예약 생산 주기</label><select id="sleepCycle"><option value="최장">레벨별 최장</option><option>30분</option><option>1시간</option><option>2시간</option></select>
-    <label for="sleepCount">예약 횟수</label><div class="step-wrap"><input type="number" id="sleepCount" class="step-one" min="0" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
+    <div class="control-field"><label for="sleepPrepH">수면까지 남은 시간(h)</label><div class="step-wrap sleep-time-wrap"><input type="number" id="sleepPrepH" class="step-one" min="0" step="any" placeholder="기본"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="수면까지 남은 시간(h) 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="수면까지 남은 시간(h) 줄이기">▼</button></div></div></div>
+    <div class="control-field"><label for="sleepCycle">예약 생산 주기</label><select id="sleepCycle"><option value="최장">레벨별 최장</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
+    <div class="control-field"><label for="sleepCount">예약 횟수</label><div class="step-wrap"><input type="number" id="sleepCount" class="step-one" min="0" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="예약 횟수 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="예약 횟수 줄이기">▼</button></div></div></div>
   </div>
   <p class="section-note">수면 전 예상 보유량과 잠들기 전에 예약할 상품 생산에 필요한 원료를 비교합니다.</p>
   <p id="sleepModes" class="section-note"></p>
@@ -462,16 +511,17 @@ h1{font-size:25px}
   </section>
   <section class="card" id="mayaPower">
     <h2>목표 레벨 생산력 비교</h2>
-    <p class="section-note">목표량을 채우는 데 필요한 상품 생산분의 원료 소모만을 계산합니다. 원료 필요량은 6레벨 건물을 기준으로 환산하고, 상세 설정 시 생산 주기·행복도·운영 시간이 다른 건물 구성을 함께 반영합니다.</p>
-    <div class="settings"><label for="productRawCycle">필요량 환산 기준 주기</label>
-      <select id="productRawCycle"><option>생산 계산기값</option><option>30분</option><option>1시간</option><option>2시간</option></select>
+    <p class="section-note">목표량을 채우는 데 필요한 상품 생산분의 원료 소모만을 계산합니다.</p>
+    <details class="section-guide"><summary>필요량 환산 기준</summary><p>원료 필요량은 6레벨 건물을 기준으로 환산합니다. 상세 설정을 켜면 건물 구성별 생산 주기·행복도·운영 시간을 함께 반영합니다.</p></details>
+    <div class="settings"><div class="control-field"><label for="productRawCycle">필요량 환산 기준 주기</label><select id="productRawCycle"><option>생산 계산기값</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
     </div>
     <div class="table-wrap"><table id="ta"><thead><tr><th>생산 항목</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>운영 시간(h)</th><th>추가 필요량</th></tr></thead><tbody></tbody></table></div>
   </section>
   <section class="card" id="mayaConversion">
     <h2>생산력 환산표</h2>
     <p class="section-note">행복도 100%인 6레벨 건물 1채의 기준 생산력을 100으로 둡니다. 기초 자원은 연속 생산, 상품은 30분 주기 기준입니다.</p>
-    <div class="table-wrap"><table id="tc"><thead><tr><th>생산 항목</th><th>생산 방식</th><th>Lv1</th><th>Lv2</th><th>Lv3</th><th>Lv4</th><th>Lv5</th><th>Lv6</th></tr></thead><tbody></tbody></table></div>
+    <p class="conversion-hint">좌우로 스크롤하면 레벨별 생산력을 볼 수 있습니다.</p>
+    <div class="table-wrap conversion-scroll" tabindex="0" role="region" aria-label="레벨별 생산력 환산표"><table id="tc"><thead><tr><th>생산 항목</th><th>생산 방식</th><th>Lv1</th><th>Lv2</th><th>Lv3</th><th>Lv4</th><th>Lv5</th><th>Lv6</th></tr></thead><tbody></tbody></table></div>
   </section>
 </div>
 
@@ -559,18 +609,18 @@ function modeOptions(name,lv,cur){ const modes=DATA.modes[name+'|'+lv]||[]; retu
 function stepper(k,value,placeholder=''){ return '<div class="step-wrap"><input type="number" class="step-one" data-k="'+k+'" value="'+value+'" step="any" min="0"'+(placeholder?' placeholder="'+placeholder+'"':'')+'><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>'; }
 function levelStepper(value){ return '<div class="step-wrap"><input type="number" class="step-one" data-k="lv" value="'+value+'" step="1" min="1" max="6"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>'; }
 
+function summaryMetric(label,value,support='',tone=''){
+  return '<div class="summary-metric '+tone+'"><span>'+label+'</span><strong>'+value+'</strong>'+
+    (support?'<small>'+support+'</small>':'')+'</div>';
+}
 function renderBonus(){
   const rows=DATA.bonusDisplay[settings.wonder+'|'+settings.wLv]||[];
   const staff=staffInfo();
   const bonusText=rows.length?rows.map(([r,v])=>r+' '+fmtPct(v)).join(' · '):'없음';
-  const nw=staff.nextWorker?staff.nextWorker+'레벨':'최대 레벨';
-  const np=staff.nextPriest?staff.nextPriest+'레벨':'최대 레벨';
   document.getElementById('bonusBox').innerHTML=
-    '<div class="bonus-item"><span>생산 보너스</span><b>'+bonusText+'</b></div>'+
-    '<div class="bonus-item"><span>추가 일꾼 수</span><b>'+staff.worker+'명</b></div>'+
-    '<div class="bonus-item"><span>다음 일꾼 증가</span><b>'+nw+'</b></div>'+
-    '<div class="bonus-item"><span>추가 사제 수</span><b>'+staff.priest+'명</b></div>'+
-    '<div class="bonus-item"><span>다음 사제 증가</span><b>'+np+'</b></div>';
+    summaryMetric('생산 보너스',bonusText)+
+    summaryMetric('추가 일꾼',staff.worker+'명',staff.nextWorker?'다음 증가 · Lv.'+staff.nextWorker:'최대 단계')+
+    summaryMetric('추가 사제',staff.priest+'명',staff.nextPriest?'다음 증가 · Lv.'+staff.nextPriest:'최대 단계');
 }
 
 function bindProductionRows(){
@@ -694,11 +744,11 @@ function wonderRow(product){
   return '<tr>'+
     '<td class="name">'+product+'</td>'+
     '<td class="num calc '+remainClass(remain)+'">'+fmtQty(remain)+'</td>'+
-    '<td class="num calc">'+fmtHours(time)+'</td>'+
     '<td class="num calc">'+fmtQty(need)+'</td>'+
     '<td class="num calc">'+fmtQty(stock)+'</td>'+
     '<td class="num calc">'+fmtQty(prod)+'</td>'+
-    '<td class="num calc">'+fmtQty(expected)+'</td></tr>';
+    '<td class="num calc">'+fmtQty(expected)+'</td>'+
+    '<td class="num calc">'+fmtHours(time)+'</td></tr>';
 }
 function renderWonder(){
   document.querySelector('#tw tbody').innerHTML=productOrder.map(wonderRow).join('');
@@ -707,7 +757,8 @@ function renderWonder(){
   const shortage=productOrder.filter(name=>state.products[name].stock+productOutput(name)<wonderNeed(name));
   let level=wLvSet.cur;
   while(level<50&&productOrder.every(name=>state.products[name].stock+productOutput(name)>=cumulative(level+1,name)-cumulative(wLvSet.cur,name))) level++;
-  document.getElementById('goalSummary').textContent='최대 도달 레벨 Lv.'+level+' · '+(shortage.length?'부족 상품 '+shortage.join(' · '):'목표량 충족');
+  document.getElementById('goalSummary').innerHTML=summaryMetric('최대 도달 레벨','Lv.'+level,'현재 보유량과 예상 생산량 기준')+
+    summaryMetric('목표 달성 현황',shortage.length?'부족 상품 '+shortage.length+'종':'목표량 충족',shortage.join(' · '),shortage.length?'warning':'success');
 }
 
 function fmtSignedPower(n){
@@ -1011,9 +1062,9 @@ function resourceRow(name){
     '<td class="input-cell">'+stepper('hours',s.hours,'일괄')+'</td>'+
     '<td class="input-cell">'+stockInput(s.stock)+'</td>'+
     '<td class="num calc '+remainClass(remain)+'">'+fmtQty(remain)+'</td>'+
-    '<td class="num calc">'+fmtHours(time)+'</td>'+
     '<td class="num calc">'+fmtQty(prod)+'</td>'+
-    '<td class="num calc">'+fmtQty(cons)+'</td></tr>';
+    '<td class="num calc">'+fmtQty(cons)+'</td>'+
+    '<td class="num calc">'+fmtHours(time)+'</td></tr>';
 }
 function productRow(name){
   const s=state.products[name],out=productOutput(name),detail=detailEnabled(name);
@@ -1135,6 +1186,7 @@ function renderConversion(){
 
 function detailRowHtml(name,row,index){
   return '<div class="detail-row" data-detail-index="'+index+'">'+
+    '<span class="detail-row-number">구성 '+(index+1)+'</span>'+
     '<div class="detail-field"><label>레벨</label>'+levelStepper(row.lv).replace('data-k=','data-detail-k=')+'</div>'+
     '<div class="detail-field"><label>생산 주기</label><select data-detail-k="mode">'+modeOptions(name,row.lv,row.mode)+'</select></div>'+
     '<div class="detail-field"><label>건물 수</label>'+detailCountStepper('data-detail-k',row.count)+'</div>'+
@@ -1164,6 +1216,7 @@ function resourceDetailLevelStepper(name,value){
 }
 function resourceDetailRowHtml(name,row,index){
   return '<div class="detail-row" data-resource-detail-index="'+index+'">'+
+    '<span class="detail-row-number">구성 '+(index+1)+'</span>'+
     '<div class="detail-field"><label>레벨</label>'+resourceDetailLevelStepper(name,row.lv)+'</div>'+
     '<div class="detail-field"><label>건물 수</label>'+detailCountStepper('data-resource-detail-k',row.count)+'</div>'+
     '<div class="detail-field"><label>행복도(%)</label>'+happinessInput('happiness',row.happiness,'data-resource-detail-k')+'</div>'+
@@ -1270,9 +1323,11 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();incrementStepInput(e.target,e.key==='ArrowUp'?1:-1);}
 });
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-pressed','false');});
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active'); document.getElementById('panel-'+t.dataset.tab).classList.add('active'); postSize();
+  t.classList.add('active'); t.setAttribute('aria-pressed','true');
+  const panel=document.getElementById('panel-'+t.dataset.tab);
+  panel.classList.add('active'); panel.scrollIntoView?.({block:'start'}); postSize();
 }));
 
 document.getElementById('wonder').addEventListener('change',e=>{settings.wonder=e.target.value;renderAll();saveState();});
@@ -1369,7 +1424,7 @@ document.addEventListener('keydown',e=>{
   if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
 });
 
-const secondaryColumns={t1:[3,9,10,11],t2:[9,10,11],tw:[4,5,6,7],ts:[5,6],ta:[5,6]};
+const secondaryColumns={t1:[3,9,10],t2:[9,10,11],tw:[3,4,5,6],ts:[5,6],ta:[5,6]};
 function labelTable(id){
   const table=document.getElementById(id);
   const columns=secondaryColumns[id]||[];
@@ -1379,6 +1434,7 @@ function labelTable(id){
       cell.classList.toggle('secondary-column',columns.includes(index+1));
       if(cell.tagName==='TD'){
         cell.dataset.label=headers[index].textContent;
+        cell.classList.toggle('result-cell',cell.classList.contains('remain-ok')||cell.classList.contains('remain-bad')||id==='t2'&&index===7);
         const input=cell.querySelector('input,select');
         if(input) input.setAttribute('aria-label',row.dataset.name+' '+cell.dataset.label);
         for(const button of cell.querySelectorAll('.step-btn')) button.setAttribute('aria-label',cell.dataset.label+(button.dataset.delta==='1'?' 늘리기':' 줄이기'));
