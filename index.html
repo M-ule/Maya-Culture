@@ -313,16 +313,6 @@ h1{font-size:25px}
   #panel-prod tbody .input-cell{justify-content:flex-start}
   #t1 input,#t2 input,#t2 select{font-size:16px;min-height:44px}
   #t1 .stock-input,#t2 .stock-input{max-width:168px}
-  #panel-wonder table:not(#tc) th,#panel-wonder table:not(#tc) td{padding:6px 3px;font-size:12px;line-height:1.35;overflow-wrap:anywhere;word-break:keep-all}
-  #panel-wonder table:not(#tc) td:first-child,#panel-wonder table:not(#tc) th:first-child{position:static}
-  #panel-wonder.show-details table:not(#tc){display:block}
-  #panel-wonder.show-details table:not(#tc) thead{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
-  #panel-wonder.show-details table:not(#tc) tbody{display:block}
-  #panel-wonder.show-details table:not(#tc) tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:7px;margin-bottom:6px;background:var(--soft-2);border:1px solid var(--outline);border-radius:8px}
-  #panel-wonder.show-details table:not(#tc) td{display:flex;flex-direction:column;justify-content:center;gap:3px;border:0;border-radius:4px}
-  #panel-wonder.show-details #ta tr.adjust-product-start td:not(.name){border-top:0!important}
-  #panel-wonder.show-details table:not(#tc) td.name{grid-column:1/-1;font-weight:700;text-align:left;padding-left:7px}
-  #panel-wonder.show-details table:not(#tc) td:not(.name)::before{content:attr(data-label);font-size:11px;font-weight:600}
   .conversion-hint{display:block}
   .conversion-scroll{max-width:100%;overscroll-behavior-x:contain}
   #tc{min-width:526px!important}
@@ -405,6 +395,50 @@ h1{font-size:25px}
   .city-tree{display:none}
   .city-stage-list{grid-template-columns:minmax(0,1fr)}
   .city-tech label,.city-tech button,.city-filter button{min-height:44px}
+}
+/* Wonder layout follows the shared China calculator structure. */
+#panel-wonder .card{min-width:0}
+#panel-wonder .card-title{align-items:center}
+.wonder-heading{display:flex;align-items:center;gap:6px;width:fit-content;max-width:100%;margin-bottom:12px;padding-right:8px;border-radius:4px;background:var(--soft)}
+.wonder-heading h2{margin:0;padding-right:0;word-break:keep-all}
+.card-title .wonder-heading{margin:0}
+.wonder-help{flex:none;width:22px;height:22px;line-height:1;padding:0;border:1px solid var(--border);border-radius:50%;background:var(--soft-2);color:var(--primary);font:700 12px var(--font);cursor:pointer;vertical-align:middle}
+.wonder-help:hover{background:var(--soft)}
+#wonderHelpDialog{width:min(440px,calc(100% - 24px));padding:16px;border:1px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text)}
+#wonderHelpDialog::backdrop{background:#17352a66}
+#wonderHelpDialog h3,#wonderHelpDialog p{margin:0}
+#wonderHelpDialog p{line-height:1.65}
+#wonderContext{display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px;font-size:13px;color:var(--muted)}
+#wonderContext strong{background:var(--soft);border-radius:4px;padding:4px 7px;color:var(--primary)}
+#panel-wonder .settings{padding:0;background:transparent;border:0}
+.wonder-sleep-settings{width:100%}
+.wonder-field-label{display:flex;align-items:center;gap:5px;min-width:0}
+#sleepModes{margin:6px 0 10px;font-size:12px}
+#panel-wonder:not(.show-details) #sleepModes{display:none}
+#panel-wonder table:not(#tc) td:first-child,#panel-wonder table:not(#tc) th:first-child{position:static}
+#tc{min-width:740px!important}
+#tc .wonder-conversion-name{width:142px}
+#tc .wonder-conversion-mode{width:100px}
+@media(max-width:720px){
+  #panel-wonder .card-title{flex-wrap:nowrap}
+  #wonderView{min-height:44px;flex:none}
+  #goalSummary{grid-template-columns:1fr}
+  #panel-wonder .settings select,#panel-wonder .settings input{min-height:48px}
+  #panel-wonder .control-field:has(#sleepCycle),#panel-wonder .control-field:has(#productRawCycle){grid-template-columns:minmax(0,1fr);gap:5px}
+  #panel-wonder table:not(#tc),#panel-wonder table:not(#tc) tbody{display:block}
+  #panel-wonder table:not(#tc) thead{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
+  #panel-wonder table:not(#tc) tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:7px;border:1px solid var(--outline);border-radius:7px;overflow:hidden}
+  #panel-wonder table:not(#tc) td{display:flex;flex-direction:column;justify-content:center;gap:4px;padding:7px;min-height:48px;min-width:0;overflow-wrap:anywhere}
+  #panel-wonder table:not(#tc) td.name{grid-column:1/-1;min-height:36px;text-align:left;padding-left:9px}
+  #panel-wonder table:not(#tc) td:not(.name)::before{content:attr(data-label);font-size:12px;font-weight:600}
+  #panel-wonder:not(.show-details) table:not(#tc) td.secondary-column{display:none}
+  #panel-wonder:not(.show-details) :is(#ts,#ta) tbody tr{grid-template-columns:minmax(80px,35%) minmax(0,1fr)}
+  #panel-wonder:not(.show-details) :is(#ts,#ta) tbody td.name{grid-column:1;min-height:68px;text-align:center}
+  #panel-wonder:not(.show-details) :is(#ts,#ta) tbody td:nth-child(2){grid-column:2;min-height:68px;font-weight:700}
+  #panel-wonder :is(#ts,#ta) tbody td:not(.name){border-top:0!important}
+  #tc{min-width:542px!important}
+  #tc .wonder-conversion-name{width:85px}
+  #tc .wonder-conversion-mode{width:76px}
 }
 </style>
 </head>
@@ -523,63 +557,67 @@ h1{font-size:25px}
 </div>
 
 <div id="panel-wonder" class="panel" aria-labelledby="tab-wonder">
-  <nav class="section-links" aria-label="불가사의 목표 바로가기"><a href="#mayaGoal">달성 현황</a><a href="#mayaSleep">수면 대비</a><a href="#mayaPower">생산력 비교</a><a href="#mayaConversion">환산표</a></nav>
-  <section class="card">
-  <div class="card-title"><h2>불가사의 목표</h2><button id="wonderView" class="convert-toggle" type="button" aria-expanded="false" aria-controls="tw ts ta">상세 보기</button></div>
+  <nav class="section-links wonder-links" aria-label="불가사의 목표 바로가기"><a href="#mayaGoal">목표 현황</a><a href="#mayaSleep">수면</a><a href="#mayaPower">생산력</a><a href="#mayaConversion">환산표</a></nav>
+  <section class="card" id="mayaWonderSettings">
+  <div class="card-title"><div class="wonder-heading"><h2>불가사의 목표</h2><button class="wonder-help" type="button" data-wonder-help="불가사의 목표" title="현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다." aria-label="불가사의 목표 설명">i</button></div><button id="wonderView" class="convert-toggle" type="button" aria-expanded="false" aria-controls="tw ts ta">상세 보기 ▼</button></div>
   <div class="settings">
-    <div class="control-field"><label for="curLv">현재 레벨</label><div class="step-wrap settings-step"><input type="number" id="curLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="현재 레벨 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="현재 레벨 줄이기">▼</button></div></div></div>
-    <div class="control-field"><label for="tgtLv">목표 레벨</label><div class="step-wrap settings-step"><input type="number" id="tgtLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="목표 레벨 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="목표 레벨 줄이기">▼</button></div></div></div>
+    <div class="control-field"><div class="wonder-field-label"><label for="curLv">현재 레벨</label><button class="wonder-help" type="button" data-wonder-help="현재 레벨" title="현재 불가사의 레벨입니다. 생산 보너스 적용 레벨은 생산 계산기에서 따로 정합니다." aria-label="현재 레벨 설명">i</button></div><div class="step-wrap settings-step"><input type="number" id="curLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="현재 레벨 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="현재 레벨 줄이기">▼</button></div></div></div>
+    <div class="control-field"><div class="wonder-field-label"><label for="tgtLv">목표 레벨</label><button class="wonder-help" type="button" data-wonder-help="목표 레벨" title="목표 레벨은 현재 레벨 이상으로 설정할 수 있습니다." aria-label="목표 레벨 설명">i</button></div><div class="step-wrap settings-step"><input type="number" id="tgtLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="목표 레벨 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="목표 레벨 줄이기">▼</button></div></div></div>
 
+    <div id="wonderContext" class="wonder-context" aria-live="polite">
+      <span>불가사의</span><strong id="wonderContextName"></strong><span>보너스</span><strong id="wonderContextLevel"></strong>
+    </div>
   </div>
-
-  <p id="wonderContext" class="section-note"></p>
-  <div id="goalSummary" class="summary-grid" role="status"></div>
+  <div id="goalSummary" class="summary-grid" role="status">
+    <div class="summary-metric"><span>최대 도달(상품 기준) <button class="wonder-help" type="button" data-wonder-help="최대 도달(상품 기준)" title="현재 보유량과 운영 시간 내 예상 생산량을 합산해 네 가지 마야 상품으로 도달할 수 있는 레벨을 표시합니다." aria-label="최대 도달(상품 기준) 설명">i</button></span><strong id="wonderMaxLevel"></strong></div>
+    <div class="summary-metric" id="wonderShortage"><span>생산력 부족 항목</span><strong id="wonderShortageNames"></strong><small id="wonderMissingHours" hidden></small></div>
+  </div>
   </section>
   <section class="card" id="mayaGoal">
-  <h2>목표 달성 현황</h2>
-  <details class="section-guide"><summary>소요 시간 계산 기준</summary><p>소요 시간은 현재 보유량에서 시작해 목표 수량을 처음 채우는 데 걸리는 시간입니다. 설정한 운영 시간을 넘어도 표시하며, 상세 구성에서 운영 시간을 0으로 지정한 건물은 제외합니다.</p></details>
+  <div class="wonder-heading"><h2>목표 달성 현황</h2><button class="wonder-help" type="button" data-wonder-help="목표 달성 현황" title="보유량과 운영 시간 내 예상 생산량을 비교합니다. 소요 시간은 목표량에 도달할 때까지 걸리는 시간입니다." aria-label="목표 달성 현황 설명">i</button></div>
   <div class="table-wrap">
     <table id="tw">
       <thead><tr>
-        <th>상품</th><th>잔여/부족</th><th>구간 필요량</th><th>현재 보유량</th><th>예상 생산량</th><th>예상 보유량</th><th>소요 시간(h)</th>
+        <th>상품</th><th>잔여/부족</th><th>구간 필요량</th><th>현재 보유량</th><th>예상 생산량</th><th>예상 보유량</th><th>소요 시간</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
 
   </section>
   <section class="card" id="mayaSleep">
-  <h2>수면 대비 자원 확보</h2>
-  <div class="settings sleep-settings">
-    <div class="control-field"><label for="sleepPrepH">수면까지 남은 시간(h)</label><div class="step-wrap sleep-time-wrap"><input type="number" id="sleepPrepH" class="step-one" min="0" step="any" placeholder="기본"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="수면까지 남은 시간(h) 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="수면까지 남은 시간(h) 줄이기">▼</button></div></div></div>
-    <div class="control-field"><label for="sleepCycle">예약 생산 주기</label><select id="sleepCycle"><option value="최장">레벨별 최장</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
-    <div class="control-field"><label for="sleepCount">예약 횟수</label><div class="step-wrap"><input type="number" id="sleepCount" class="step-one" min="0" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="예약 횟수 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="예약 횟수 줄이기">▼</button></div></div></div>
+  <div class="wonder-heading"><h2>수면 대비 자원 확보</h2><button class="wonder-help" type="button" data-wonder-help="수면 대비 자원 확보" title="현재 보유량과 수면 전 생산·소비를 반영해 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다." aria-label="수면 대비 자원 확보 설명">i</button></div>
+  <div class="settings sleep-settings wonder-sleep-settings">
+    <div class="control-field"><div class="wonder-field-label"><label for="sleepPrepH">수면까지 남은 시간(h)</label><button class="wonder-help" type="button" data-wonder-help="수면까지 남은 시간(h)" title="비워 두면 기본 운영 시간을 사용합니다. 각 건물의 운영 시간을 반영해 수면 전까지의 생산과 소비를 계산합니다." aria-label="수면까지 남은 시간(h) 설명">i</button></div><div class="step-wrap sleep-time-wrap"><input type="number" id="sleepPrepH" class="step-one" min="0" step="any" placeholder="기본"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="수면까지 남은 시간(h) 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="수면까지 남은 시간(h) 줄이기">▼</button></div></div></div>
+    <div class="control-field"><div class="wonder-field-label"><label for="sleepCycle">예약 생산 주기</label><button class="wonder-help" type="button" data-wonder-help="예약 생산 주기" title="지정한 주기를 이용할 수 없으면 해당 레벨에서 가장 가까운 주기를 적용합니다. 레벨별 최장은 각 건물에서 가능한 가장 긴 주기를 사용합니다." aria-label="예약 생산 주기 설명">i</button></div><select id="sleepCycle"><option value="최장">레벨별 최장</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
+    <div class="control-field"><div class="wonder-field-label"><label for="sleepCount">예약 횟수</label><button class="wonder-help" type="button" data-wonder-help="예약 횟수" title="잠들기 전에 예약할 생산 횟수입니다. 0이면 예약에 필요한 원료는 0입니다." aria-label="예약 횟수 설명">i</button></div><div class="step-wrap"><input type="number" id="sleepCount" class="step-one" min="0" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="예약 횟수 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="예약 횟수 줄이기">▼</button></div></div></div>
   </div>
-  <p class="section-note">수면 전 예상 보유량과 잠들기 전에 예약할 상품 생산에 필요한 원료를 비교합니다.</p>
   <p id="sleepModes" class="section-note"></p>
   <div class="table-wrap">
     <table id="ts">
       <thead><tr>
-        <th>자원</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>예약 필요량</th><th>수면 전 예상 보유량</th><th>잔여/부족</th>
+        <th>자원</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>필요량</th><th>예상 확보량</th><th>잔여/부족</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
 
   </section>
   <section class="card" id="mayaPower">
-    <h2>목표 레벨 생산력 비교</h2>
-    <p class="section-note">목표량을 채우는 데 필요한 상품 생산분의 원료 소모만을 계산합니다.</p>
-    <details class="section-guide"><summary>필요량 환산 기준</summary><p>원료 필요량은 6레벨 건물을 기준으로 환산합니다. 상세 설정을 켜면 건물 구성별 생산 주기·행복도·운영 시간을 함께 반영합니다.</p></details>
-    <div class="settings"><div class="control-field"><label for="productRawCycle">필요량 환산 기준 주기</label><select id="productRawCycle"><option>생산 계산기값</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
+    <div class="wonder-heading"><h2>목표 레벨 생산력 비교</h2><button class="wonder-help" type="button" data-wonder-help="목표 레벨 생산력 비교" title="목표량을 채우는 데 필요한 상품 생산분의 원료 소모만을 계산합니다. 원료 필요량은 6레벨 생산 기준으로 환산하며 상세 구성별 주기·행복도·운영 시간을 반영합니다." aria-label="목표 레벨 생산력 비교 설명">i</button></div>
+    <div class="settings"><div class="control-field"><div class="wonder-field-label"><label for="productRawCycle">필요량 환산 기준 주기</label><button class="wonder-help" type="button" data-wonder-help="필요량 환산 기준 주기" title="생산 계산기값은 상품별 설정 주기를 사용합니다. 직접 주기를 선택하면 해당 주기로 원료 필요량을 환산합니다." aria-label="필요량 환산 기준 주기 설명">i</button></div><select id="productRawCycle"><option>생산 계산기값</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
     </div>
-    <div class="table-wrap"><table id="ta"><thead><tr><th>생산 항목</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>운영 시간(h)</th><th>추가 필요량</th></tr></thead><tbody></tbody></table></div>
+    <div class="table-wrap"><table id="ta"><thead><tr><th>생산 항목</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th></tr></thead><tbody></tbody></table></div>
   </section>
   <section class="card" id="mayaConversion">
-    <h2>생산력 환산표</h2>
-    <p class="section-note">행복도 100%인 6레벨 건물 1채의 기준 생산력을 100으로 둡니다. 기초 자원은 연속 생산, 상품은 30분 주기 기준입니다.</p>
+    <div class="wonder-heading"><h2>생산력 환산표</h2><button class="wonder-help" type="button" data-wonder-help="생산력 환산표" title="행복도 100%인 Lv6 건물 1채의 생산력을 100으로 둡니다. 기초 자원은 연속 생산, 상품은 30분 주기가 기준입니다." aria-label="생산력 환산표 설명">i</button></div>
     <p class="conversion-hint">좌우로 스크롤하면 레벨별 생산력을 볼 수 있습니다.</p>
-    <div class="table-wrap conversion-scroll" tabindex="0" role="region" aria-label="레벨별 생산력 환산표"><table id="tc"><thead><tr><th>생산 항목</th><th>생산 방식</th><th>Lv1</th><th>Lv2</th><th>Lv3</th><th>Lv4</th><th>Lv5</th><th>Lv6</th></tr></thead><tbody></tbody></table></div>
+    <div class="table-wrap conversion-scroll" tabindex="0" role="region" aria-label="레벨별 생산력 환산표"><table id="tc"><colgroup><col class="wonder-conversion-name"><col class="wonder-conversion-mode"><col span="6"></colgroup><thead><tr><th>생산 항목</th><th>생산 방식</th><th>Lv1</th><th>Lv2</th><th>Lv3</th><th>Lv4</th><th>Lv5</th><th>Lv6</th></tr></thead><tbody></tbody></table></div>
   </section>
 </div>
+
+<dialog id="wonderHelpDialog" aria-labelledby="wonderHelpTitle">
+  <div class="card-title"><h3 id="wonderHelpTitle"></h3><form method="dialog"><button class="convert-toggle" type="submit">닫기</button></form></div>
+  <p id="wonderHelpText"></p>
+</dialog>
 
 <div id="panel-city" class="panel" aria-labelledby="tab-city">
   <nav class="section-links city-links" aria-label="도시 관리 바로가기">
@@ -841,6 +879,7 @@ function renderSleepReserve(){
     const modes=new Set(productionConfigs('products',name).filter(row=>row.count>0).map(row=>referenceRecipe(name,row.lv,settings.sleepCycle)?.mode).filter(Boolean));
     return modes.size?[name+' '+[...modes].join('·')]:[];
   });
+  document.getElementById('sleepPrepH').placeholder='기본 '+fmtHours(settings.baseH);
   document.getElementById('sleepModes').textContent=settings.sleepCount&&reservations.length?'실제 예약 주기 · '+reservations.join(' / '):'예약 생산 없음';
 }
 
@@ -870,6 +909,11 @@ function wonderTime(product){
   }
   return high/60;
 }
+function wonderDuration(hours){
+  if(!Number.isFinite(hours)) return '—';
+  const minutes=Math.ceil(hours*60-1e-7);
+  return minutes<60?minutes+'분':Math.floor(minutes/60)+'시간'+(minutes%60?' '+minutes%60+'분':'');
+}
 function wonderRow(product){
   const need=wonderNeed(product),prod=productOutput(product),stock=state.products[product].stock||0,expected=stock+prod,remain=expected-need,time=wonderTime(product);
   return '<tr>'+
@@ -879,17 +923,17 @@ function wonderRow(product){
     '<td class="num calc">'+fmtQty(stock)+'</td>'+
     '<td class="num calc">'+fmtQty(prod)+'</td>'+
     '<td class="num calc">'+fmtQty(expected)+'</td>'+
-    '<td class="num calc">'+fmtHours(time)+'</td></tr>';
+    '<td class="num calc">'+wonderDuration(time)+'</td></tr>';
 }
 function renderWonder(){
   document.querySelector('#tw tbody').innerHTML=productOrder.map(wonderRow).join('');
-  document.getElementById('wonderContext').textContent=settings.wonder+' · 기본 운영 시간 '+fmtHours(settings.baseH)+'시간';
+  document.getElementById('wonderContextName').textContent=settings.wonder;
+  document.getElementById('wonderContextLevel').textContent='Lv.'+settings.wLv;
+  document.getElementById('tgtLv').min=wLvSet.cur;
   labelTable('tw');
-  const shortage=productOrder.filter(name=>state.products[name].stock+productOutput(name)<wonderNeed(name));
   let level=wLvSet.cur;
   while(level<50&&productOrder.every(name=>state.products[name].stock+productOutput(name)>=cumulative(level+1,name)-cumulative(wLvSet.cur,name))) level++;
-  document.getElementById('goalSummary').innerHTML=summaryMetric('최대 도달 레벨','Lv.'+level,'현재 보유량과 예상 생산량 기준')+
-    summaryMetric('목표 달성 현황',shortage.length?'부족 상품 '+shortage.length+'종':'목표량 충족',shortage.join(' · '),shortage.length?'warning':'success');
+  document.getElementById('wonderMaxLevel').textContent='Lv.'+level;
 }
 
 function fmtSignedPower(n){
@@ -927,6 +971,7 @@ function targetResourceNeed(name,target){
 }
 function renderAdjustment(){
   const target=Object.fromEntries(productOrder.map(name=>[name,Math.max(0,wonderNeed(name)-state.products[name].stock)]));
+  const shortage=[],missingHours=[];
   const rows=[...resourceOrder,...productOrder].map(name=>{
     const resource=name in resourceKeys;
     const hours=productionWindow(resource?'resources':'products',name);
@@ -938,12 +983,19 @@ function renderAdjustment(){
     const required=needed===0?0:reference>0?needed/reference*100:null;
     const diff=required===null?null:current-required;
     const cls=diff===null?'':remainClass(diff);
+    if(diff===null) missingHours.push(name);
+    else if(diff< -1e-8) shortage.push(name);
     return '<tr'+(name===productOrder[0]?' class="adjust-product-start"':'')+'><td class="name">'+name+'</td>'+
-      '<td class="num calc '+cls+'">'+fmtSignedPower(diff)+'</td><td class="num calc">'+fmtPower(current)+
-      '</td><td class="num calc">'+(required===null?'운영 시간 확인':fmtPower(required))+'</td><td class="num calc">'+fmtHours(hours)+'</td><td class="num calc">'+fmtQty(needed)+'</td></tr>';
+      '<td class="num calc '+cls+'">'+(diff===null?'운영 시간 확인':fmtSignedPower(diff))+'</td><td class="num calc">'+fmtPower(current)+
+      '</td><td class="num calc">'+fmtPower(required)+'</td></tr>';
   });
   document.querySelector('#ta tbody').innerHTML=rows.join('');
   labelTable('ta');
+  document.getElementById('wonderShortageNames').textContent=shortage.join(' · ')||(!missingHours.length?'없음':'운영 시간 확인');
+  const detail=document.getElementById('wonderMissingHours');
+  detail.hidden=!missingHours.length;
+  detail.textContent=missingHours.length?(shortage.length?'운영 시간 확인 · ':'')+missingHours.join(' · '):'';
+  document.getElementById('wonderShortage').classList.toggle('warning',Boolean(shortage.length||missingHours.length));
 }
 function renderDetailLauncher(){
   const el=document.getElementById('productDetailSummary');
@@ -1124,7 +1176,7 @@ function loadState(){
     if(saved?.productDetails) productOrder.forEach(name=>Object.assign(productDetails[name],saved.productDetails[name]||{}));
     if(saved?.resourceDetails) resourceOrder.forEach(name=>Object.assign(resourceDetails[name],saved.resourceDetails[name]||{}));
   }catch(e){}
-  normalizeState(); syncUIFromState(); saveState();
+  normalizeState(); syncUIFromState(); syncWonderView(); saveState();
 }
 function productionSnapshot(){
   const {wonder,wLv,baseH}=settings;
@@ -1277,7 +1329,7 @@ function sleepResourcePower(resource){
   return {resource,current,needed,diff,required,projected,remain,status:diff< -1e-10?'up':(diff>1e-10?'down':'ok')};
 }
 function sleepPowerText(v){
-  return v===null||v===undefined||!Number.isFinite(v)?'<span class="badge sleep-adjust-warn-badge">준비 시간 확인</span>':fmtSignedPower(v);
+  return v===null||v===undefined||!Number.isFinite(v)?'운영 시간 확인':fmtSignedPower(v);
 }
 function sleepReserveRow(resource){
   const a=sleepResourcePower(resource),cls=a.diff===null?'':(a.diff<0?'remain-bad':'remain-ok');
@@ -1556,7 +1608,7 @@ document.addEventListener('keydown',e=>{
   if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
 });
 
-const secondaryColumns={t1:[3,9,10],t2:[9,10,11],tw:[3,4,5,6],ts:[5,6],ta:[5,6]};
+const secondaryColumns={t1:[3,9,10],t2:[9,10,11],tw:[3,4,5,6],ts:[3,4,5,6,7],ta:[3,4]};
 function labelTable(id){
   const table=document.getElementById(id);
   const columns=secondaryColumns[id]||[];
@@ -1564,6 +1616,7 @@ function labelTable(id){
   for(const row of [table.tHead.rows[0],...table.tBodies[0].rows]){
     [...row.cells].forEach((cell,index)=>{
       cell.classList.toggle('secondary-column',columns.includes(index+1));
+      if(cell.tagName==='TH') cell.scope='col';
       if(cell.tagName==='TD'){
         cell.dataset.label=headers[index].textContent;
         cell.classList.toggle('result-cell',cell.classList.contains('remain-ok')||cell.classList.contains('remain-bad')||id==='t2'&&index===7);
@@ -1574,14 +1627,30 @@ function labelTable(id){
     });
   }
 }
-for(const id of ['productionView','wonderView']){
-  const button=document.getElementById(id);
+const productionView=document.getElementById('productionView');
+productionView.addEventListener('click',()=>{
+  const open=productionView.getAttribute('aria-expanded')!=='true';
+  productionView.closest('.panel').classList.toggle('show-details',open);
+  productionView.setAttribute('aria-expanded',String(open));
+  productionView.textContent=open?'상세 접기':'상세 보기';
+  postSize();
+});
+function syncWonderView(){
+  const button=document.getElementById('wonderView'),open=settings.wonderDetailsVisible===true;
+  button.closest('.panel').classList.toggle('show-details',open);
+  button.setAttribute('aria-expanded',String(open));
+  button.textContent=open?'상세 닫기 ▲':'상세 보기 ▼';
+}
+document.getElementById('wonderView').addEventListener('click',()=>{
+  settings.wonderDetailsVisible=settings.wonderDetailsVisible!==true;
+  syncWonderView();saveState();postSize();
+});
+for(const button of document.querySelectorAll('.wonder-help')){
   button.addEventListener('click',()=>{
-    const open=button.getAttribute('aria-expanded')!=='true';
-    button.closest('.panel').classList.toggle('show-details',open);
-    button.setAttribute('aria-expanded',String(open));
-    button.textContent=open?'상세 접기':'상세 보기';
-    postSize();
+    const dialog=document.getElementById('wonderHelpDialog');
+    document.getElementById('wonderHelpTitle').textContent=button.dataset.wonderHelp;
+    document.getElementById('wonderHelpText').textContent=button.title;
+    dialog.showModal();
   });
 }
 
