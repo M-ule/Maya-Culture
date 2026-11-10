@@ -658,7 +658,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <a href="#cityConstruction">건설 비용</a><a href="#cityResearch">연구</a>
 </nav>
 <section class="card" id="cityOverview">
-<div class="section-title-row"><h2>도시 현황</h2></div>
+<div class="section-title-row"><h2>도시 현황<button aria-label="도시 현황 설명" class="info-tip" data-help-label="도시 현황" data-tip="주택과 불가사의의 일꾼·사제, 배치한 건물의 필요 인력과 사용 면적을 비교합니다. 카카오는 보유량·생산량에서 건설과 연구 비용을 차감합니다." type="button">i</button></h2></div>
 <p class="section-note" hidden="" id="cityContext"></p>
 <div aria-live="polite" class="summary city-metrics" id="cityMetrics"></div>
 <details class="calculation-details"><summary>일꾼·사제 계산 내역</summary><p id="cityStaffBreakdown"></p></details>
@@ -672,12 +672,12 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <details class="section-guide"><summary>구획과 면적 계산 기준</summary><p>시작 구획 5개를 포함합니다. 게임에서 해금한 추가 구획 수를 입력하세요. 보석 구획 계획은 해금 비용과 해금 후 면적을 따로 표시합니다. 면적은 총 칸 수로 비교하며 건물의 실제 배치는 게임에서 확인해야 합니다.</p></details>
 </section>
 <section class="card" id="cityBuildings">
-<div class="section-title-row"><h2>주택·건물 구성<button aria-label="주택·건물 구성 설명" class="info-tip" data-help-label="주택·건물 구성" data-tip="생산 건물 수는 생산 계산기에서 가져옵니다. 도시 건물 수를 따로 입력하면 이 탭에만 적용되며, 입력칸을 비우면 다시 연동됩니다." type="button"></button></h2><button aria-controls="cityBuildingTable" aria-expanded="false" id="cityBuildingView" type="button">생산 건물 보기 ▼</button></div>
+<div class="section-title-row"><h2>주택·건물 구성<button aria-label="주택·건물 구성 설명" class="info-tip" data-help-label="주택·건물 구성" data-tip="생산 건물 수는 생산 계산기에서 가져옵니다. 도시 건물 수를 따로 입력하면 이 탭에만 적용되며, 입력칸을 비우면 다시 연동됩니다." type="button">i</button></h2><button aria-controls="cityBuildingTable" aria-expanded="false" id="cityBuildingView" type="button">생산 건물 보기 ▼</button></div>
 
 <div id="cityBuildingGroups"></div>
 </section>
 <section class="card" id="cityCocoa">
-<div class="section-title-row"><h2>카카오 현황·사용 계획<button aria-label="카카오 현황·사용 계획 설명" class="info-tip" data-help-label="카카오 현황·사용 계획" data-tip="시간당 카카오를 비우면 시청·주택의 기본 생산량을 시간당으로 환산합니다. 행복도 등 실제 보정이 반영된 수치를 알고 있다면 직접 입력하세요." type="button"></button></h2></div>
+<div class="section-title-row"><h2>카카오 현황·사용 계획<button aria-label="카카오 현황·사용 계획 설명" class="info-tip" data-help-label="카카오 현황·사용 계획" data-tip="시간당 카카오를 비우면 시청·주택의 기본 생산량을 시간당으로 환산합니다. 행복도 등 실제 보정이 반영된 수치를 알고 있다면 직접 입력하세요." type="button">i</button></h2></div>
 <div class="settings city-settings">
 <div class="control-field"><label for="cityCocoaStock">현재 보유량</label><input aria-describedby="cityCocoaError" aria-label="현재 보유량" data-city-field="stock" id="cityCocoaStock" inputmode="decimal" placeholder="0" type="text"/></div>
 <div class="control-field"><label for="cityCocoaRate">시간당 생산량</label><input aria-describedby="cityCocoaError" aria-label="시간당 생산량" data-city-field="rate" id="cityCocoaRate" inputmode="decimal" placeholder="시청·주택 기준" type="text"/></div>
@@ -689,13 +689,13 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 
 </section>
 <section class="card" id="cityConstruction">
-<div class="section-title-row"><h2>건물 건설 비용<button aria-label="건물 건설 비용 설명" class="info-tip" data-help-label="건물 건설 비용" data-tip="미건설(0)부터 새로 짓거나 현재 레벨에서 업그레이드할 비용을 계산합니다. 건설 계획은 건물 구성에 자동 추가되지 않습니다." type="button"></button></h2><button class="convert-toggle" id="cityAddBuild" type="button">+ 건설 계획 추가</button></div>
+<div class="section-title-row"><h2>건물 건설 비용<button aria-label="건물 건설 비용 설명" class="info-tip" data-help-label="건물 건설 비용" data-tip="미건설(0)부터 새로 짓거나 현재 레벨에서 업그레이드할 비용을 계산합니다. 건설 계획은 건물 구성에 자동 추가되지 않습니다." type="button">i</button></h2><button class="convert-toggle" id="cityAddBuild" type="button">+ 건설 계획 추가</button></div>
 
 <p aria-live="polite" class="city-total" id="cityBuildTotal"></p>
 <div class="city-build-rows" id="cityBuildRows"></div>
 </section>
 <section class="card" id="cityResearch">
-<div class="section-title-row"><h2>연구</h2><button class="reset-btn" id="cityResetResearch" type="button">연구 초기화</button></div>
+<div class="section-title-row"><h2>연구<button aria-label="연구 설명" class="info-tip" data-help-label="연구" data-tip="연구를 눌러 완료 상태나 목표를 지정하세요. 목표 연구의 미완료 선행 연구 비용도 함께 계산합니다." type="button">i</button></h2><button class="reset-btn" id="cityResetResearch" type="button">연구 초기화</button></div>
 <p class="section-note">목표 연구를 선택하면 미완료 선행 연구까지 계산합니다. 완료를 체크하면 해당 연구의 선행 연구도 완료로 처리합니다.</p>
 <div class="settings city-settings">
 <div class="control-field"><label for="cityResearchTarget">목표 연구</label><select aria-label="목표 연구" data-city-field="target" id="cityResearchTarget"></select></div>
