@@ -345,6 +345,67 @@ h1{font-size:25px}
   .detail-footer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);position:static;margin:0;padding:7px 0 max(8px,env(safe-area-inset-bottom))}
   .detail-footer button{width:100%;min-height:44px}
 }
+.city-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+.city-subheading{font-size:15px;margin:16px 0 8px}
+.city-settings input,.city-settings select{width:156px;min-width:0;text-align:center}
+.city-settings select{max-width:220px}
+.city-building-group,.city-research-stage{border:1px solid var(--outline);border-radius:8px;margin:8px 0;background:var(--soft-2)}
+.city-building-group>summary,.city-research-stage>summary{padding:10px;color:var(--primary);font-weight:700;cursor:pointer;min-height:40px}
+.city-building-list,.city-stage-list,.city-build-rows{display:grid;gap:7px}
+.city-building-list,.city-stage-list{padding:0 8px 8px}
+.city-building-row,.city-build-row{display:grid;align-items:center;gap:10px;min-width:0;padding:8px;border:1px solid var(--outline);border-radius:7px;background:var(--panel)}
+.city-building-row{grid-template-columns:minmax(124px,1.4fr) minmax(92px,1fr) minmax(80px,.75fr) minmax(95px,1fr)}
+.city-building-row strong,.city-tech strong{display:block;color:var(--primary);overflow-wrap:anywhere}
+.city-building-row small,.city-build-row small,.city-tech small{display:block;color:var(--muted);line-height:1.45}
+.city-building-row label,.city-build-row label{display:flex;flex-direction:column;gap:3px;font-size:12px;min-width:0}
+.city-building-row :is(input,select),.city-build-row :is(input,select){width:100%;min-width:0;min-height:38px}
+.city-building-row .city-building-total{font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.city-build-row{grid-template-columns:minmax(130px,1.6fr) repeat(3,minmax(64px,1fr)) minmax(90px,1fr) auto;align-items:end}
+.city-build-row select{overflow:hidden;text-overflow:ellipsis}
+.city-build-row .city-remove{min-height:38px}
+.city-build-row output{font-weight:700;color:var(--primary);overflow-wrap:anywhere}
+.city-build-row .city-build-cost{display:grid;gap:4px;min-width:0}
+.city-total{padding:9px 12px;border-radius:7px;background:var(--soft-2);font-weight:700;color:var(--primary)}
+.city-tree-scroll{height:min(62vh,620px);min-height:300px;overflow:auto;overscroll-behavior:contain;border:1px solid var(--outline);border-radius:8px;background:var(--soft-2)}
+.city-tree-canvas{position:relative;min-width:680px}
+.city-tree-canvas svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.city-tree-line{fill:none;stroke:#89a184;stroke-width:1.4;vector-effect:non-scaling-stroke}
+.city-tree-line.required{stroke:#9a681d;stroke-width:2}
+.city-tree-node{position:absolute;transform:translate(-50%,-50%);width:21%;min-height:56px;padding:5px;white-space:normal;line-height:1.3;word-break:keep-all;background:var(--panel)}
+.city-tree-node span{display:block;margin-top:3px;font-size:11px;font-weight:500}
+.city-tree-node.done{background:var(--ok-bg)}
+.city-tree-node.needed{background:var(--input);border-color:var(--input-border)}
+.city-tree-node[aria-pressed="true"]{background:var(--primary);color:white}
+.city-filter{display:flex;gap:6px;margin:12px 0}
+.city-filter button[aria-pressed="true"]{background:var(--primary);color:white;border-color:var(--primary)}
+.city-stage-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+.city-tech{border:1px solid var(--outline);border-radius:7px;background:var(--panel);padding:8px;min-width:0}
+.city-tech.done{background:var(--ok-bg)}
+.city-tech.needed{background:#fff7d8;border-color:var(--input-border)}
+.city-tech.target{outline:2px solid var(--primary);outline-offset:-2px}
+.city-tech label{display:flex;align-items:center;gap:7px;min-height:34px;cursor:pointer}
+.city-tech input[type=checkbox]{width:19px;height:19px;min-width:19px;flex:none;accent-color:var(--primary)}
+.city-tech button{margin-top:6px;min-height:36px}
+.city-tech .city-tech-state{color:var(--primary);font-weight:700}
+.city-entry-error{outline:2px solid var(--bad)}
+.city-field-error{color:var(--bad)}
+.city-build-note{grid-column:1/-1}
+#cityStatus:empty{display:none}
+@media(max-width:720px){
+  .tabs .tab{padding:7px 4px;font-size:13px;min-width:0}
+  .city-links{grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .city-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .city-metrics>.summary-metric:last-child:nth-child(odd){grid-column:1/-1}
+  .city-settings :is(input,select),.city-building-row :is(input,select),.city-build-row :is(input,select){width:100%;max-width:none;min-height:44px;font-size:16px}
+  .city-building-row,.city-build-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .city-building-row>div:first-child,.city-building-row .city-building-total,.city-build-row>label:first-child{grid-column:1/-1;text-align:left}
+  .city-building-row .city-building-total{background:var(--soft-2);border-radius:5px;padding:5px}
+  .city-build-row .city-build-cost{align-self:center}
+  .city-build-row .city-remove{min-height:44px}
+  .city-tree{display:none}
+  .city-stage-list{grid-template-columns:minmax(0,1fr)}
+  .city-tech label,.city-tech button,.city-filter button{min-height:44px}
+}
 </style>
 </head>
 <body>
@@ -357,6 +418,7 @@ h1{font-size:25px}
 <nav class="tabs" aria-label="계산기 탭">
   <button class="tab active" id="tab-prod" type="button" aria-controls="panel-prod" aria-pressed="true" data-tab="prod">생산 계산기</button>
   <button class="tab" id="tab-wonder" type="button" aria-controls="panel-wonder" aria-pressed="false" data-tab="wonder">불가사의 목표</button>
+  <button class="tab" id="tab-city" type="button" aria-controls="panel-city" aria-pressed="false" data-tab="city">도시 관리</button>
 </nav>
 
 <div id="panel-prod" class="panel active" aria-labelledby="tab-prod">
@@ -517,6 +579,81 @@ h1{font-size:25px}
     <p class="conversion-hint">좌우로 스크롤하면 레벨별 생산력을 볼 수 있습니다.</p>
     <div class="table-wrap conversion-scroll" tabindex="0" role="region" aria-label="레벨별 생산력 환산표"><table id="tc"><thead><tr><th>생산 항목</th><th>생산 방식</th><th>Lv1</th><th>Lv2</th><th>Lv3</th><th>Lv4</th><th>Lv5</th><th>Lv6</th></tr></thead><tbody></tbody></table></div>
   </section>
+</div>
+
+<div id="panel-city" class="panel" aria-labelledby="tab-city">
+  <nav class="section-links city-links" aria-label="도시 관리 바로가기">
+    <a href="#cityOverview">도시 현황</a><a href="#cityBuildings">건물 구성</a><a href="#cityCocoa">카카오</a>
+    <a href="#cityConstruction">건설 비용</a><a href="#cityResearch">연구</a>
+  </nav>
+  <section class="card" id="cityOverview">
+    <h2>도시 현황</h2>
+    <p id="cityContext" class="section-note"></p>
+    <div id="cityMetrics" class="summary-grid city-metrics" aria-live="polite"></div>
+    <details class="section-guide"><summary>인력 계산 내역</summary><p id="cityStaffBreakdown"></p></details>
+    <h3 class="city-subheading">영토 현황</h3>
+    <div class="settings city-settings">
+      <div class="control-field"><label for="cityRegularPlots">일반 추가 구획</label><input id="cityRegularPlots" data-city-field="regular" type="number" min="0" step="1" inputmode="numeric"></div>
+      <div class="control-field"><label for="cityPremiumPlots">보석으로 해금한 구획</label><input id="cityPremiumPlots" data-city-field="premium" type="number" min="0" step="1" inputmode="numeric"></div>
+      <div class="control-field"><label for="cityFuturePlots">추가로 해금할 보석 구획</label><input id="cityFuturePlots" data-city-field="futurePremium" type="number" min="0" step="1" inputmode="numeric"></div>
+    </div>
+    <p id="cityTerritoryBreakdown" class="section-note"></p>
+    <details class="section-guide"><summary>구획과 면적 계산 기준</summary><p>시작 구획 5개를 포함합니다. 게임에서 해금한 추가 구획 수를 입력하세요. 보석 구획 계획은 해금 비용과 해금 후 면적을 따로 표시합니다. 면적은 총 칸 수로 비교하며 건물의 실제 배치는 게임에서 확인해야 합니다.</p></details>
+  </section>
+
+  <section class="card" id="cityBuildings">
+    <h2>주택·건물 구성</h2>
+    <p class="section-note">생산 건물 수는 생산 계산기에서 가져옵니다. 도시 건물 수를 따로 입력하면 이 탭에만 적용되며, 입력칸을 비우면 다시 연동됩니다.</p>
+    <div id="cityBuildingGroups"></div>
+  </section>
+
+  <section class="card" id="cityCocoa">
+    <h2>카카오 현황·사용 계획</h2>
+    <div class="settings city-settings">
+      <div class="control-field"><label for="cityCocoaStock">현재 보유 카카오</label><input id="cityCocoaStock" aria-describedby="cityCocoaError" data-city-field="stock" type="text" inputmode="decimal" placeholder="0"></div>
+      <div class="control-field"><label for="cityCocoaRate">시간당 카카오</label><input id="cityCocoaRate" aria-describedby="cityCocoaError" data-city-field="rate" type="text" inputmode="decimal" placeholder="시청·주택 기준"></div>
+      <div class="control-field"><label for="cityCocoaHours">운영 시간(h)</label><input id="cityCocoaHours" data-city-field="hours" type="number" min="0" max="8760" step="any" inputmode="decimal" placeholder="기본 운영 시간"></div>
+    </div>
+    <p id="cityCocoaError" class="section-note city-field-error" role="status" hidden></p>
+    <div id="cityBudgetMetrics" class="summary-grid city-metrics" aria-live="polite"></div>
+    <details class="section-guide"><summary>카카오·보석 계산 내역</summary><p id="cityBudgetBreakdown"></p></details>
+    <p class="section-note">시간당 카카오를 비우면 시청·주택의 기본 생산량을 시간당으로 환산합니다. 행복도 등 실제 보정이 반영된 수치를 알고 있다면 직접 입력하세요.</p>
+  </section>
+
+  <section class="card" id="cityConstruction">
+    <div class="card-title"><h2>건물 건설 비용</h2><button id="cityAddBuild" class="convert-toggle" type="button">+ 건설 계획 추가</button></div>
+    <p class="section-note">미건설(0)부터 새로 짓거나 현재 레벨에서 업그레이드할 비용을 계산합니다. 건설 계획은 건물 구성에 자동 추가되지 않습니다.</p>
+    <p id="cityBuildTotal" class="city-total" aria-live="polite"></p>
+    <div id="cityBuildRows" class="city-build-rows"></div>
+  </section>
+
+  <section class="card" id="cityResearch">
+    <div class="card-title"><h2>연구</h2><button id="cityResetResearch" type="button" class="reset-btn">연구 초기화</button></div>
+    <p class="section-note">목표 연구를 선택하면 미완료 선행 연구까지 계산합니다. 완료를 체크하면 해당 연구의 선행 연구도 완료로 처리합니다.</p>
+    <div class="settings city-settings">
+      <div class="control-field"><label for="cityResearchTarget">목표 연구</label><select id="cityResearchTarget" data-city-field="target"></select></div>
+      <div class="control-field"><label for="cityResearchStage">단계 필터</label><select id="cityResearchStage"></select></div>
+      <div class="control-field"><label for="cityResearchSearch">연구 검색</label><input id="cityResearchSearch" type="search" placeholder="연구 이름"></div>
+    </div>
+    <p id="cityResearchStatus" class="section-note" role="status" hidden></p>
+    <div id="cityResearchMetrics" class="summary-grid city-metrics" aria-live="polite"></div>
+    <details id="cityResearchTree" class="section-guide city-tree">
+      <summary>연구 트리 보기</summary>
+      <p class="section-note">노드를 누르면 목표로 지정됩니다. 연결선은 선행 연구를 나타냅니다.</p>
+      <div class="city-tree-scroll" tabindex="0" role="region" aria-label="마야 연구 트리">
+        <div id="cityTreeCanvas" class="city-tree-canvas"></div>
+      </div>
+    </details>
+    <div class="city-filter" role="group" aria-label="연구 상태 필터">
+      <button class="convert-toggle" type="button" data-research-filter="all" aria-pressed="true">전체</button>
+      <button class="convert-toggle" type="button" data-research-filter="done" aria-pressed="false">완료</button>
+      <button class="convert-toggle" type="button" data-research-filter="needed" aria-pressed="false">목표에 필요</button>
+    </div>
+    <div id="cityResearchList"></div>
+    <p class="section-note">연구 이름은 코어데이터의 식별자를 기준으로 한글로 옮겼습니다.</p>
+  </section>
+  <p id="cityStatus" class="section-note city-field-error" role="status"></p>
+  <p class="section-note">도시 계획은 불가사의별로 이 브라우저에 저장됩니다. <a href="https://github.com/M-ule/HoH-coredata/blob/1a84394/coreData.json">코어데이터</a> <span id="cityDataVersion"></span></p>
 </div>
 
 <script>
@@ -1254,6 +1391,7 @@ function closeResourceDetailModal(){
 
 function renderAll(keepControls=false){
   renderBonus(); renderTables(keepControls); renderWonder(); renderSleepReserve(); renderAdjustment(); renderConversion(); renderDetailLauncher(); renderResourceDetailLauncher();
+  cityManagement.refresh();
 }
 
 /* 자원 상세 설정 이벤트 */
@@ -1507,6 +1645,466 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('scroll',()=>closeHappinessMenu(),true);
 window.addEventListener('resize',closeHappinessMenu);
+
+/* City data extracted from HoH-coredata 1a84394. The production calculator uses its own verified recipes. */
+const cityManagement = (() => {
+  'use strict';
+  const cityData = {
+    version:"2026-09-08_08-13-17",
+    buildings:{
+      "City_CityHall":{"name":"시청","group":"hall","size":[5,5],"levels":[{"provide":[3,2],"need":[0,0],"price":null,"cocoa":[28800,20000]},{"provide":[3,2],"need":[0,0],"price":null,"cocoa":[28800,80000]}]},
+      "Home_Worker":{"name":"일꾼 주택","group":"home","size":[2,3],"levels":[{"provide":[2,0],"need":[0,0],"price":["cocoa",120],"cocoa":[10800,2000]},{"provide":[2,0],"need":[0,0],"price":["cocoa",450],"cocoa":[10800,4000]},{"provide":[2,0],"need":[0,0],"price":["cocoa",8000],"cocoa":[10800,6000]},{"provide":[2,0],"need":[0,0],"price":["cocoa",15000],"cocoa":[10800,12000]},{"provide":[2,0],"need":[0,0],"price":["cocoa",30000],"cocoa":[10800,15500]},{"provide":[2,0],"need":[0,0],"price":["cocoa",38000],"cocoa":[10800,20000]}]},
+      "Home_Priest":{"name":"사제 주택","group":"home","size":[3,4],"levels":[{"provide":[0,2],"need":[0,0],"price":["cocoa",200],"cocoa":[21600,7000]},{"provide":[0,2],"need":[0,0],"price":["cocoa",750],"cocoa":[21600,14000]},{"provide":[0,2],"need":[0,0],"price":["cocoa",11000],"cocoa":[21600,20000]},{"provide":[0,2],"need":[0,0],"price":["cocoa",23000],"cocoa":[21600,42000]},{"provide":[0,2],"need":[0,0],"price":["cocoa",53000],"cocoa":[21600,55000]},{"provide":[0,2],"need":[0,0],"price":["cocoa",68000],"cocoa":[21600,70000]}]},
+      "Home_Premium":{"name":"호화 주택","group":"home","size":[3,3],"levels":[{"provide":[2,1],"need":[0,0],"price":["premium",250],"cocoa":[28800,8500]},{"provide":[2,1],"need":[0,0],"price":["premium",80],"cocoa":[28800,17000]},{"provide":[2,1],"need":[0,0],"price":["premium",80],"cocoa":[28800,25500]},{"provide":[2,1],"need":[0,0],"price":["premium",80],"cocoa":[28800,51000]},{"provide":[2,1],"need":[0,0],"price":["premium",80],"cocoa":[28800,66000]},{"provide":[2,1],"need":[0,0],"price":["premium",80],"cocoa":[28800,85000]}]},
+      "Quarry_Jade":{"name":"옥 채석장","group":"resource","size":[4,4],"sync":"옥","levels":[{"provide":[0,0],"need":[3,0],"price":["cocoa",250],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",1000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",10000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",30000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",68000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",90000],"cocoa":null}]},
+      "Quarry_Obsidian":{"name":"흑요석 채석장","group":"resource","size":[4,4],"sync":"흑요석","levels":[{"provide":[0,0],"need":[3,0],"price":["cocoa",250],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",1000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",10000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",30000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",68000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",90000],"cocoa":null}]},
+      "Aviary_Average":{"name":"새장","group":"resource","size":[4,4],"sync":"깃털","levels":[{"provide":[0,0],"need":[3,0],"price":["cocoa",280],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",1300],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",13000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",38000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",90000],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["cocoa",120000],"cocoa":null}]},
+      "Workshop_MaskSculptor":{"name":"마스크 작업장","group":"product","size":[4,5],"sync":"마스크","levels":[{"provide":[0,0],"need":[3,1],"price":["cocoa",500],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",2000],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",20000],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",60000],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",140000],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",180000],"cocoa":null}]},
+      "Workshop_Chronicler":{"name":"달력돌 작업장","group":"product","size":[4,5],"sync":"달력돌","levels":[{"provide":[0,0],"need":[3,1],"price":["cocoa",500],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",2000],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",20000],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",60000],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",140000],"cocoa":null},{"provide":[0,0],"need":[3,1],"price":["cocoa",180000],"cocoa":null}]},
+      "Workshop_RitualCarver":{"name":"단검 작업장","group":"product","size":[4,5],"sync":"단검","levels":[{"provide":[0,0],"need":[5,1],"price":["cocoa",1000],"cocoa":null},{"provide":[0,0],"need":[5,1],"price":["cocoa",2500],"cocoa":null},{"provide":[0,0],"need":[5,1],"price":["cocoa",25000],"cocoa":null},{"provide":[0,0],"need":[5,1],"price":["cocoa",75000],"cocoa":null},{"provide":[0,0],"need":[5,1],"price":["cocoa",170000],"cocoa":null},{"provide":[0,0],"need":[5,1],"price":["cocoa",230000],"cocoa":null}]},
+      "Workshop_CeremonyOutfitter":{"name":"머리장식 작업장","group":"product","size":[4,5],"sync":"머리장식","levels":[{"provide":[0,0],"need":[4,1],"price":["cocoa",750],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["cocoa",2300],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["cocoa",23000],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["cocoa",68000],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["cocoa",160000],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["cocoa",210000],"cocoa":null}]},
+      "Quarry_Premium":{"name":"호화 채석장","group":"special","size":[3,5],"levels":[{"provide":[0,0],"need":[3,0],"price":["premium",250],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null}]},
+      "Aviary_Premium":{"name":"호화 새장","group":"special","size":[3,5],"levels":[{"provide":[0,0],"need":[3,0],"price":["premium",150],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null},{"provide":[0,0],"need":[3,0],"price":["premium",50],"cocoa":null}]},
+      "Workshop_Premium":{"name":"호화 작업장","group":"special","size":[3,5],"levels":[{"provide":[0,0],"need":[4,1],"price":["premium",490],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["premium",290],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["premium",290],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["premium",290],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["premium",290],"cocoa":null},{"provide":[0,0],"need":[4,1],"price":["premium",290],"cocoa":null}]},
+      "RitualSite_Average":{"name":"의식 장소","group":"ritual","size":[3,3],"levels":[{"provide":[0,0],"need":[0,0],"price":null,"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["cocoa",2000],"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["cocoa",40000],"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["cocoa",190000],"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["cocoa",440000],"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["cocoa",560000],"cocoa":null}]},
+      "RitualSite_Premium":{"name":"호화 의식 장소","group":"ritual","size":[3,3],"levels":[{"provide":[0,0],"need":[0,0],"price":null,"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["premium",90],"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["premium",190],"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["premium",290],"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["premium",390],"cocoa":null},{"provide":[0,0],"need":[0,0],"price":["premium",490],"cocoa":null}]},
+    },
+    plots:{"치첸이트사":{"mapSize":64,"initial":5,"size":4,"premium":[90,150,150,190,190,250,250,250,290,290,290,350,350,350,390,390,390,450,450,490],"regular":40},"티칼":{"mapSize":64,"initial":5,"size":4,"regular":40,"premium":[90,150,150,190,190,250,250,250,290,290,290,350,350,350,390,390,390,450,450,490]},"사일 궁전":{"mapSize":64,"initial":5,"size":4,"regular":40,"premium":[90,150,150,190,190,250,250,250,290,290,290,350,350,350,390,390,390,450,450,490]}},
+    research:[
+      {"id":"RiseOfTheMayas","name":"마야의 부상","stage":1,"column":1,"cost":10,"parents":[]},
+      {"id":"SustainableMining","name":"지속 가능한 채굴","stage":2,"column":1,"cost":30,"parents":["RiseOfTheMayas"]},
+      {"id":"Xocolatl","name":"쇼콜라틀","stage":2,"column":2,"cost":30,"parents":["RiseOfTheMayas"]},
+      {"id":"StoneCarving","name":"석조 조각","stage":3,"column":1,"cost":100,"parents":["SustainableMining"]},
+      {"id":"RitualSites","name":"의식 장소","stage":3,"column":2,"cost":150,"parents":["Xocolatl"]},
+      {"id":"EtchedLandmarks","name":"새겨진 기념물","stage":3,"column":3,"cost":750,"parents":["Xocolatl"]},
+      {"id":"PreciseChronicle","name":"정밀한 연대기","stage":4,"column":1,"cost":2700,"parents":["StoneCarving"]},
+      {"id":"JadeProspecting","name":"옥 탐사","stage":4,"column":2,"cost":4000,"parents":["RitualSites"]},
+      {"id":"ObsidianProspecting","name":"흑요석 탐사","stage":4,"column":3,"cost":4700,"parents":["EtchedLandmarks"]},
+      {"id":"ChocolateMaking","name":"초콜릿 제조","stage":5,"column":1,"cost":7500,"parents":["PreciseChronicle","JadeProspecting","ObsidianProspecting"]},
+      {"id":"RitualDaggers","name":"의식용 단검","stage":6,"column":1,"cost":25000,"parents":["ChocolateMaking"]},
+      {"id":"JadeDeposits","name":"옥 매장지","stage":7,"column":1,"cost":50000,"parents":["RitualDaggers"]},
+      {"id":"SacrificialOfferings","name":"제물 봉헌","stage":7,"column":2,"cost":65000,"parents":["RitualDaggers"]},
+      {"id":"ObsidianDeposits","name":"흑요석 매장지","stage":7,"column":3,"cost":80000,"parents":["RitualDaggers"]},
+      {"id":"PriestSchooling","name":"사제 교육","stage":7,"column":4,"cost":130000,"parents":["RitualDaggers"]},
+      {"id":"MayaGlyphs","name":"마야 문자","stage":8,"column":1,"cost":150000,"parents":["JadeDeposits","SacrificialOfferings"]},
+      {"id":"SacredShrines","name":"신성한 성소","stage":8,"column":2,"cost":170000,"parents":["ObsidianDeposits","PriestSchooling"]},
+      {"id":"StateLaws","name":"국가의 법","stage":9,"column":1,"cost":110000,"parents":["MayaGlyphs","SacredShrines"]},
+      {"id":"BetterJadeExtraction","name":"옥 채굴 개선","stage":10,"column":1,"cost":130000,"parents":["StateLaws"]},
+      {"id":"BetterObsidianExtraction","name":"흑요석 채굴 개선","stage":10,"column":2,"cost":130000,"parents":["StateLaws"]},
+      {"id":"CurativeRituals","name":"치유 의식","stage":10,"column":3,"cost":330000,"parents":["StateLaws"]},
+      {"id":"Birdkeeping","name":"새 기르기","stage":10,"column":4,"cost":250000,"parents":["StateLaws"]},
+      {"id":"NatureSpirits","name":"자연의 정령","stage":11,"column":1,"cost":440000,"parents":["BetterJadeExtraction","BetterObsidianExtraction"]},
+      {"id":"HeaddressCraft","name":"머리장식 제작","stage":11,"column":2,"cost":560000,"parents":["Birdkeeping","CurativeRituals"]},
+      {"id":"Shamanism","name":"샤머니즘","stage":12,"column":1,"cost":490000,"parents":["NatureSpirits"]},
+      {"id":"SolarRituals","name":"태양 의식","stage":12,"column":2,"cost":590000,"parents":["NatureSpirits"]},
+      {"id":"Aviculture","name":"조류 사육","stage":12,"column":3,"cost":490000,"parents":["HeaddressCraft"]},
+      {"id":"AstralRituals","name":"별의 의식","stage":13,"column":1,"cost":590000,"parents":["Shamanism","SolarRituals","Aviculture"]},
+      {"id":"PopulationGrowth","name":"인구 증가","stage":14,"column":1,"cost":390000,"parents":["AstralRituals"]},
+      {"id":"ImprovedDaggers","name":"개량 단검","stage":14,"column":2,"cost":450000,"parents":["AstralRituals"]},
+      {"id":"Divining","name":"점술","stage":14,"column":3,"cost":640000,"parents":["AstralRituals"]},
+      {"id":"AdvancedJadeMining","name":"고급 옥 채굴","stage":15,"column":1,"cost":440000,"parents":["PopulationGrowth"]},
+      {"id":"AdvancedObsidianMining","name":"고급 흑요석 채굴","stage":15,"column":2,"cost":380000,"parents":["ImprovedDaggers"]},
+      {"id":"AstralAlignment","name":"천체 정렬","stage":15,"column":3,"cost":720000,"parents":["Divining"]},
+      {"id":"FeatherMastery","name":"깃털 숙련","stage":16,"column":1,"cost":1100000,"parents":["AdvancedJadeMining","AdvancedObsidianMining","AstralAlignment"]},
+      {"id":"DivineAscension","name":"신성한 승천","stage":17,"column":1,"cost":720000,"parents":["FeatherMastery"]},
+      {"id":"XocolatlVirtuoso","name":"쇼콜라틀의 대가","stage":17,"column":2,"cost":640000,"parents":["FeatherMastery"]},
+      {"id":"JadeMastery","name":"옥 채굴 숙련","stage":18,"column":1,"cost":1200000,"parents":["DivineAscension"]},
+      {"id":"RitualMastery","name":"의식 숙련","stage":18,"column":2,"cost":980000,"parents":["DivineAscension","XocolatlVirtuoso"]},
+      {"id":"ObsidianMastery","name":"흑요석 채굴 숙련","stage":18,"column":3,"cost":1300000,"parents":["XocolatlVirtuoso"]},
+      {"id":"DaggerPerfection","name":"완성된 단검","stage":19,"column":1,"cost":1400000,"parents":["JadeMastery"]},
+      {"id":"PerfectedHeaddresses","name":"완성된 머리장식","stage":19,"column":2,"cost":1700000,"parents":["JadeMastery","RitualMastery"]},
+      {"id":"SpiritualAncestry","name":"영적 계보","stage":19,"column":3,"cost":1300000,"parents":["RitualMastery"]},
+      {"id":"MayanConsensus","name":"마야의 합의","stage":19,"column":4,"cost":1600000,"parents":["ObsidianMastery"]},
+    ]
+  };
+  const storageKey = 'mayaCityPlans:v1';
+  const maxBudgetHours = 8760;
+  const panel = document.getElementById('panel-city');
+  const byId = id => document.getElementById(id);
+  const countFormat = new Intl.NumberFormat('ko-KR',{maximumFractionDigits:3});
+  const moneyFormat = new Intl.NumberFormat('ko-KR');
+  const buildings = Object.entries(cityData.buildings);
+  const pricedBuildings = buildings.filter(([,b])=>b.levels.some(level=>level.price));
+  const research = new Map(cityData.research.map(item=>[item.id,item]));
+  const stageCounts = new Map();
+  for(const tech of cityData.research) stageCounts.set(tech.stage,(stageCounts.get(tech.stage)||0)+1);
+  const stages = [...stageCounts.keys()];
+  const ancestors = new Map();
+  for(const tech of cityData.research){
+    ancestors.set(tech.id,new Set(tech.parents.flatMap(id=>[id,...ancestors.get(id)])));
+  }
+  const groups = [['hall','시청'],['home','주택'],['resource','기초 자원 건물'],['product','상품 작업장'],['special','호화 생산 건물'],['ritual','의식 장소']];
+  const record = value => value && typeof value==='object' && !Array.isArray(value) ? value : {};
+  const number = (value,max=1e6) => clamp(num(value,0),0,max);
+  const whole = (value,max) => Math.trunc(number(value,max));
+  const costText = totals => moneyFormat.format(totals.cocoa)+' 카카오 · '+moneyFormat.format(totals.premium)+' 보석';
+  const fmtCount = value => countFormat.format(Math.abs(value)<1e-9?0:value);
+  const status = message => { byId('cityStatus').textContent=message; };
+  let activeWonder = '';
+  let filter = 'all';
+  let plans = {};
+  try{ plans=record(JSON.parse(localStorage.getItem(storageKey)||'{}')); }catch(e){}
+
+  function normalizeBuild(raw){
+    const key=pricedBuildings.some(([id])=>id===raw.key)?raw.key:pricedBuildings[0][0];
+    const levels=cityData.buildings[key].levels;
+    const minimum=levels[0].price?0:1;
+    const from=clamp(whole(raw.from,levels.length),minimum,levels.length);
+    const to=clamp(whole(raw.to,levels.length),Math.min(levels.length,from+1),levels.length);
+    return {key,from,to,count:whole(raw.count??1)};
+  }
+  function normalizePlan(wonder,raw){
+    const plots=cityData.plots[wonder];
+    const occupied=plots.mapSize-plots.initial;
+    const regular=whole(raw.regular,Math.min(plots.regular,occupied));
+    const premium=whole(raw.premium,Math.min(plots.premium.length,occupied-regular));
+    const futurePremium=whole(raw.futurePremium,Math.min(plots.premium.length-premium,occupied-regular-premium));
+    const configs={};
+    for(const [id,b] of buildings){
+      const entry=record(record(raw.configs)[id]);
+      const count=entry.count===''||entry.count==null?(b.sync?'':0):number(entry.count);
+      configs[id]={count,level:clamp(whole(entry.level,b.levels.length),1,b.levels.length)};
+    }
+    return {regular,premium,futurePremium,configs,
+      stock:whole(raw.stock,1e12),rate:raw.rate===''||raw.rate==null?'':number(raw.rate,1e12),
+      hours:raw.hours===''||raw.hours==null?'':number(raw.hours,maxBudgetHours),
+      rows:Array.isArray(raw.rows)?raw.rows.slice(0,50).map(row=>normalizeBuild(record(row))):[],
+      completed:Array.isArray(raw.completed)?[...new Set(raw.completed.filter(id=>research.has(id)))]:[],
+      target:research.has(raw.target)?raw.target:''};
+  }
+  function save(){
+    try{ localStorage.setItem(storageKey,JSON.stringify(plans)); }
+    catch(e){ status('이 브라우저에서 도시 계획을 저장할 수 없습니다.'); }
+  }
+
+  function researchPlan(plan){
+    const done=new Set(plan.completed.flatMap(id=>[id,...ancestors.get(id)]));
+    const path=plan.target?new Set([plan.target,...ancestors.get(plan.target)]):new Set();
+    const needed=new Set([...path].filter(id=>!done.has(id)));
+    const cost=[...needed].reduce((sum,id)=>sum+research.get(id).cost,0);
+    return {done,needed,cost};
+  }
+  function buildCost(row){
+    const result={cocoa:0,premium:0};
+    for(const level of cityData.buildings[row.key].levels.slice(row.from,row.to)){
+      if(level.price) result[level.price[0]]+=level.price[1]*row.count;
+    }
+    return result;
+  }
+  function syncedCount(building){
+    if(!building.sync) return 0;
+    return building.group==='resource'?resourceActualBuildings(building.sync):productActualBuildings(building.sync);
+  }
+  function buildingCount(building,config){
+    if(building.group==='hall') return 1;
+    return config.count===''?syncedCount(building):config.count;
+  }
+  function buildingTotals(plan){
+    const result={area:0,provided:[0,0],used:[0,0],cocoa:0};
+    for(const [id,b] of buildings){
+      const config=plan.configs[id],count=buildingCount(b,config);
+      const level=b.levels[config.level-1];
+      result.area+=count*b.size[0]*b.size[1];
+      for(const i of [0,1]){
+        result.provided[i]+=count*level.provide[i];
+        result.used[i]+=count*level.need[i];
+      }
+      if(level.cocoa) result.cocoa+=count*level.cocoa[1]*3600/level.cocoa[0];
+    }
+    return result;
+  }
+  function budget(plan,totals,techs){
+    const builds={cocoa:0,premium:0};
+    for(const row of plan.rows){
+      const cost=buildCost(row);
+      builds.cocoa+=cost.cocoa; builds.premium+=cost.premium;
+    }
+    const plots=cityData.plots[activeWonder];
+    const expansion=plots.premium.slice(plan.premium,plan.premium+plan.futurePremium).reduce((sum,cost)=>sum+cost,0);
+    const hours=plan.hours===''?Math.min(maxBudgetHours,settings.baseH):plan.hours;
+    const rate=plan.rate===''?totals.cocoa:plan.rate;
+    const production=Math.floor(rate*hours+1e-8);
+    return {builds,expansion,hours,rate,production,available:plan.stock+production,required:builds.cocoa+techs.cost,premium:builds.premium+expansion};
+  }
+  const balance = (value,unit) => (value<-1e-9?'부족 ':'잔여 ')+fmtCount(Math.abs(value))+unit;
+  function renderOverview(plan,totals,techs){
+    const plots=cityData.plots[activeWonder],staff=staffInfo();
+    const plotsNow=plots.initial+plan.regular+plan.premium;
+    const unitArea=plots.size**2;
+    const area=plotsNow*unitArea;
+    const workers=totals.provided[0]+staff.worker;
+    const priests=totals.provided[1]+staff.priest;
+    const diffs=[area-totals.area,workers-totals.used[0],priests-totals.used[1]];
+    byId('cityContext').textContent=activeWonder+' · 불가사의 보너스 적용 Lv.'+settings.wLv;
+    byId('cityMetrics').innerHTML=[
+      ['영토 면적',diffs[0],'칸','사용 '+fmtCount(totals.area)+' / 확보 '+fmtCount(area)+'칸'],
+      ['일꾼',diffs[1],'명','필요 '+fmtCount(totals.used[0])+' / 확보 '+fmtCount(workers)+'명'],
+      ['사제',diffs[2],'명','필요 '+fmtCount(totals.used[1])+' / 확보 '+fmtCount(priests)+'명']
+    ].map(([label,value,unit,detail])=>summaryMetric(label,balance(value,unit),detail,value<-1e-9?'warning':'success')).join('');
+    byId('cityStaffBreakdown').textContent='시청·주택에서 일꾼 '+fmtCount(totals.provided[0])+'명, 사제 '+fmtCount(totals.provided[1])+'명. 불가사의에서 일꾼 '+staff.worker+'명, 사제 '+staff.priest+'명을 추가합니다. 배치한 생산 건물을 모두 가동할 때 필요한 인력입니다.';
+    byId('cityTerritoryBreakdown').textContent='시작 '+plots.initial+' + 일반 '+plan.regular+' + 보석 '+plan.premium+' = '+plotsNow+'구획 · 구획당 '+plots.size+'×'+plots.size+'칸'+
+      (plan.futurePremium?' · 계획 후 '+(plotsNow+plan.futurePremium)+'구획 / '+(area+plan.futurePremium*unitArea)+'칸':'');
+    const b=budget(plan,totals,techs),left=b.available-b.required;
+    byId('cityBudgetMetrics').innerHTML=summaryMetric('확보 카카오',moneyFormat.format(b.available),'보유 '+moneyFormat.format(plan.stock)+' + 예상 생산 '+moneyFormat.format(b.production))+
+      summaryMetric('필요 카카오',moneyFormat.format(b.required),'건설 + 연구')+
+      summaryMetric('계획 후 카카오',balance(left,''),'필요 보석 '+moneyFormat.format(b.premium),left<0?'warning':'success');
+    byId('cityBudgetBreakdown').textContent='시간당 '+fmtCount(b.rate)+' 카카오 × '+fmtCount(b.hours)+'시간. 건설 '+costText(b.builds)+' / 연구 '+moneyFormat.format(techs.cost)+' 카카오 / 보석 영토 해금 '+moneyFormat.format(b.expansion)+' 보석.';
+    byId('cityBuildTotal').textContent='건설 비용 합계 · '+costText(b.builds);
+  }
+  function levelOptions(max,selected,min=1){
+    return Array.from({length:max-min+1},(_,i)=>{
+      const n=i+min;
+      return '<option value="'+n+'"'+(n===selected?' selected':'')+'>'+(n===0?'미건설 (0)':'Lv.'+n)+'</option>';
+    }).join('');
+  }
+  function renderBuildingGroups(plan){
+    byId('cityBuildingGroups').innerHTML=groups.map(([kind,label])=>{
+      const rows=buildings.filter(([,b])=>b.group===kind).map(([id,b])=>{
+        const config=plan.configs[id];
+        const count=b.group==='hall'?'<span>수량 <strong>1</strong></span>':
+          '<label>수량<input type="number" inputmode="decimal" min="0" max="1000000" step="any" data-city-count="'+id+'" aria-label="'+b.name+' 수량" value="'+config.count+'"'+(b.sync?' placeholder="연동"':'')+'></label>';
+        const lv=b.sync?'<span>레벨 <strong>생산 연동</strong></span>':
+          '<label>레벨<select data-city-level="'+id+'" aria-label="'+b.name+' 레벨">'+levelOptions(b.levels.length,config.level)+'</select></label>';
+        return '<div class="city-building-row"><div><strong>'+b.name+'</strong><small>'+b.size.join('×')+'칸'+(b.sync?' · '+b.sync+' 생산 건물':'')+'</small></div>'+count+lv+
+          '<div class="city-building-total" data-city-building-total="'+id+'"></div></div>';
+      }).join('');
+      return '<details class="city-building-group"'+(['hall','home'].includes(kind)?' open':'')+'><summary>'+label+'</summary><div class="city-building-list">'+rows+'</div></details>';
+    }).join('');
+  }
+  function renderBuildingTotals(plan){
+    for(const [id,b] of buildings){
+      const config=plan.configs[id],count=buildingCount(b,config);
+      const level=b.levels[config.level-1];
+      const stats=[];
+      if(b.sync) stats.push(config.count===''?'연동 '+fmtCount(count)+'채':'직접 입력');
+      stats.push(fmtCount(count*b.size[0]*b.size[1])+'칸 사용');
+      for(const [i,unit] of ['일꾼','사제'].entries()){
+        if(level.provide[i]) stats.push(unit+' +'+fmtCount(count*level.provide[i])+'명');
+        if(level.need[i]) stats.push(unit+' '+fmtCount(count*level.need[i])+'명 필요');
+      }
+      if(level.cocoa) stats.push('시간당 '+fmtCount(count*level.cocoa[1]*3600/level.cocoa[0])+' 카카오');
+      panel.querySelector('[data-city-building-total="'+id+'"]').textContent=stats.join(' · ');
+      const input=panel.querySelector('[data-city-count="'+id+'"]');
+      if(input&&b.sync) input.placeholder='연동 '+fmtCount(syncedCount(b));
+    }
+  }
+  function renderBuildRows(plan){
+    byId('cityAddBuild').disabled=plan.rows.length>=50;
+    byId('cityBuildRows').innerHTML=plan.rows.map((row,index)=>{
+      const b=cityData.buildings[row.key],max=b.levels.length,min=b.levels[0].price?0:1;
+      const options=pricedBuildings.map(([id,item])=>'<option value="'+id+'"'+(id===row.key?' selected':'')+'>'+item.name+'</option>').join('');
+      return '<div class="city-build-row" data-build-index="'+index+'">'+
+        '<label>건물<select data-build-key="key" aria-label="계획 '+(index+1)+' 건물">'+options+'</select></label>'+
+        '<label>현재 레벨<select data-build-key="from">'+levelOptions(max,row.from,min)+'</select></label>'+
+        '<label>목표 레벨<select data-build-key="to">'+levelOptions(max,row.to,Math.min(max,row.from+1))+'</select></label>'+
+        '<label>수량<input type="number" data-build-key="count" min="0" max="1000000" step="1" inputmode="numeric" value="'+row.count+'"></label>'+
+        '<div class="city-build-cost"><small>필요 비용</small><output>'+costText(buildCost(row))+'</output></div>'+
+        '<button class="reset-btn city-remove" type="button" data-build-remove="'+index+'" aria-label="계획 '+(index+1)+' 삭제">삭제</button>'+
+        '<small class="city-build-note"'+(b.levels[0].price?' hidden':'')+'>신규 건설 가격은 코어데이터에 없어 업그레이드만 계산합니다.</small>'+'</div>';
+    }).join('')||'<p class="section-note">추가한 건설 계획이 없습니다.</p>';
+  }
+  function renderResearchSummary(plan,techs){
+    byId('cityResearchMetrics').innerHTML=summaryMetric('완료 연구',techs.done.size+' / '+research.size)+
+      summaryMetric('목표까지 남은 연구',plan.target?techs.needed.size+'개':'목표 선택')+
+      summaryMetric('필요 카카오',moneyFormat.format(techs.cost));
+  }
+  function renderResearchTree(plan,techs){
+    if(!byId('cityResearchTree').open) return;
+    const canvas=byId('cityTreeCanvas');
+    const focused=canvas.contains(document.activeElement)?document.activeElement.dataset.cityTarget:null;
+    const width=1000,rowHeight=76,height=stages.at(-1)*rowHeight+12;
+    canvas.style.height=height+'px';
+    const point=tech=>{
+      const count=stageCounts.get(tech.stage);
+      return [width/2+(tech.column-(count+1)/2)*232,tech.stage*rowHeight-rowHeight/2+6];
+    };
+    const path=plan.target?new Set([plan.target,...ancestors.get(plan.target)]):new Set();
+    const lines=cityData.research.flatMap(tech=>tech.parents.map(id=>{
+      const [x1,y1]=point(research.get(id)),[x2,y2]=point(tech),mid=(y1+y2)/2;
+      return '<path class="city-tree-line'+(path.has(id)&&path.has(tech.id)?' required':'')+'" d="M'+x1+' '+y1+' C'+x1+' '+mid+' '+x2+' '+mid+' '+x2+' '+y2+'"/>';
+    })).join('');
+    const nodes=cityData.research.map(tech=>{
+      const [x,y]=point(tech),target=plan.target===tech.id,done=techs.done.has(tech.id);
+      const needed=techs.needed.has(tech.id);
+      const tag=target?'목표':done?'완료':needed?'목표에 필요':moneyFormat.format(tech.cost)+' 카카오';
+      return '<button type="button" class="convert-toggle city-tree-node '+(done?'done':needed?'needed':'')+'" data-city-target="'+tech.id+'" aria-pressed="'+target+
+        '" style="left:'+x/10+'%;top:'+y+'px">'+tech.name+'<span>'+tag+'</span></button>';
+    }).join('');
+    canvas.innerHTML='<svg viewBox="0 0 '+width+' '+height+'" preserveAspectRatio="none" aria-hidden="true">'+lines+'</svg>'+nodes;
+    if(focused) canvas.querySelector('[data-city-target="'+focused+'"]')?.focus({preventScroll:true});
+  }
+  function renderResearchList(plan,techs){
+    const container=byId('cityResearchList');
+    const previouslyOpen=new Set([...container.querySelectorAll('details[open]')].map(el=>el.dataset.stage));
+    const focus=container.contains(document.activeElement)?document.activeElement:null;
+    const focusKey=focus?.dataset.cityTech||focus?.dataset.cityTarget;
+    const focusType=focus?.dataset.cityTech?'city-tech':'city-target';
+    const stage=byId('cityResearchStage').value;
+    const query=byId('cityResearchSearch').value.trim().toLowerCase();
+    const items=cityData.research.filter(tech=>(!stage||String(tech.stage)===stage)&&
+      (!query||tech.name.toLowerCase().includes(query)||tech.id.toLowerCase().includes(query))&&
+      (filter==='all'||techs[filter].has(tech.id)));
+    container.innerHTML=stages.map(n=>{
+      const itemsInStage=items.filter(tech=>tech.stage===n);
+      if(!itemsInStage.length) return '';
+      const open=n===1||stage||query||filter!=='all'||previouslyOpen.has(String(n))||itemsInStage.some(tech=>tech.id===plan.target||tech.id===focusKey);
+      return '<details class="city-research-stage" data-stage="'+n+'"'+(open?' open':'')+'><summary>'+n+'단계 · '+itemsInStage.length+'개</summary><div class="city-stage-list">'+
+        itemsInStage.map(tech=>{
+          const done=techs.done.has(tech.id),needed=techs.needed.has(tech.id),target=plan.target===tech.id;
+          const parents=tech.parents.map(id=>research.get(id).name).join(' · ');
+          return '<article class="city-tech '+(done?'done':needed?'needed':'')+(target?' target':'')+'">'+
+            '<label><input type="checkbox" data-city-tech="'+tech.id+'"'+(done?' checked':'')+' aria-label="'+tech.name+' 완료"><strong>'+tech.name+'</strong></label>'+
+            '<small>'+moneyFormat.format(tech.cost)+' 카카오'+(target?' · <span class="city-tech-state">목표</span>':needed?' · <span class="city-tech-state">목표에 필요</span>':done?' · 완료':'')+'</small>'+
+            '<small>선행 연구 · '+(parents||'없음')+'</small>'+
+            '<button class="convert-toggle" type="button" data-city-target="'+tech.id+'" aria-pressed="'+target+'">'+(target?'목표 해제':'목표로 지정')+'</button></article>';
+        }).join('')+'</div></details>';
+    }).join('')||'<p class="section-note">조건에 맞는 연구가 없습니다.</p>';
+    renderResearchTree(plan,techs);
+    if(focusKey){
+      const target=container.querySelector('[data-'+focusType+'="'+focusKey+'"]');
+      (target||panel.querySelector('[data-research-filter="'+filter+'"]')).focus({preventScroll:true});
+    }
+  }
+  function updateTotals(plan){
+    const techs=researchPlan(plan);
+    renderOverview(plan,buildingTotals(plan),techs);
+    renderBuildingTotals(plan);
+    renderResearchSummary(plan,techs);
+    return techs;
+  }
+  function syncFields(plan){
+    const plots=cityData.plots[activeWonder],remaining=plots.mapSize-plots.initial;
+    byId('cityRegularPlots').max=Math.min(plots.regular,remaining-plan.premium);
+    byId('cityPremiumPlots').max=Math.min(plots.premium.length,remaining-plan.regular);
+    byId('cityFuturePlots').max=Math.min(plots.premium.length-plan.premium,remaining-plan.regular-plan.premium);
+    for(const input of panel.querySelectorAll('[data-city-field]:not([aria-invalid=true])')) input.value=plan[input.dataset.cityField];
+    byId('cityCocoaHours').placeholder='기본 '+fmtCount(settings.baseH)+'시간';
+  }
+  function refresh(){
+    if(activeWonder!==settings.wonder){
+      activeWonder=settings.wonder;
+      const plan=plans[activeWonder]=normalizePlan(activeWonder,record(plans[activeWonder]));
+      status('');
+      byId('cityResearchStatus').hidden=true;
+      byId('cityCocoaError').hidden=true;
+      for(const input of panel.querySelectorAll('.city-entry-error')){input.classList.remove('city-entry-error');input.removeAttribute('aria-invalid');}
+      syncFields(plan);
+      renderBuildingGroups(plan);
+      renderBuildRows(plan);
+      renderResearchList(plan,updateTotals(plan));
+    }else{
+      byId('cityCocoaHours').placeholder='기본 '+fmtCount(settings.baseH)+'시간';
+      updateTotals(plans[activeWonder]);
+    }
+  }
+
+  byId('cityDataVersion').textContent=cityData.version;
+  byId('cityResearchTarget').innerHTML='<option value="">선택 안 함</option>'+cityData.research.map(tech=>
+    '<option value="'+tech.id+'">'+tech.stage+'단계 · '+tech.name+'</option>').join('');
+  byId('cityResearchStage').innerHTML='<option value="">전체 단계</option>'+stages.map(n=>'<option value="'+n+'">'+n+'단계</option>').join('');
+  byId('cityResearchTree').addEventListener('toggle',()=>{
+    const plan=plans[activeWonder]; if(plan) renderResearchTree(plan,researchPlan(plan));
+  });
+  byId('cityResearchSearch').addEventListener('input',()=>{
+    const plan=plans[activeWonder]; if(plan) renderResearchList(plan,researchPlan(plan));
+  });
+  panel.addEventListener('change',event=>{
+    const input=event.target,plan=plans[activeWonder];
+    if(!plan) return;
+    const {cityField,cityCount,cityLevel,cityTech,buildKey}=input.dataset;
+    let updateResearch=false;
+    if(input.id==='cityResearchStage'){
+      renderResearchList(plan,researchPlan(plan)); return;
+    }
+    if(cityField){
+      if(cityField==='target'){
+        plan.target=research.has(input.value)?input.value:'';
+        updateResearch=true;
+      }else if(cityField==='stock'||cityField==='rate'){
+        const raw=input.value.trim();
+        const isRate=cityField==='rate';
+        const rateMatch=raw.replaceAll(',','').match(/^(\d+(?:\.\d*)?|\.\d+)\s*([km])?$/i);
+        const parsed=raw===''?(isRate?'':0):isRate?
+          (rateMatch?Number(rateMatch[1])*({k:1000,m:1000000}[rateMatch[2]?.toLowerCase()]||1):null):parseStock(raw);
+        if(parsed===null||parsed<0||parsed>1e12){
+          input.setAttribute('aria-invalid','true');input.classList.add('city-entry-error');
+          byId('cityCocoaError').textContent='카카오 입력값을 0 이상 1조 이하의 숫자나 K·M 단위로 입력하세요.';
+          byId('cityCocoaError').hidden=false;
+          return;
+        }
+        input.removeAttribute('aria-invalid');input.classList.remove('city-entry-error');byId('cityCocoaError').hidden=!panel.querySelector('.city-entry-error');
+        plan[cityField]=parsed;
+      }else if(cityField==='hours'){
+        plan.hours=input.value===''?'':number(input.value,maxBudgetHours);
+      }else{
+        plan[cityField]=whole(input.value,Number(input.max));
+        Object.assign(plan,normalizePlan(activeWonder,plan));
+      }
+      syncFields(plan);
+    }else if(cityCount){
+      const b=cityData.buildings[cityCount];
+      plan.configs[cityCount].count=input.value===''&&b.sync?'':number(input.value);
+      input.value=plan.configs[cityCount].count;
+    }else if(cityLevel){
+      plan.configs[cityLevel].level=Number(input.value);
+    }else if(cityTech){
+      if(input.checked) plan.completed=[...new Set([...plan.completed,cityTech])];
+      else plan.completed=plan.completed.filter(id=>id!==cityTech&&!ancestors.get(id).has(cityTech));
+      updateResearch=true;
+    }else if(buildKey){
+      const rowEl=input.closest('[data-build-index]'),index=Number(rowEl.dataset.buildIndex);
+      const previous=plan.rows[index];
+      const raw=buildKey==='key'?{key:input.value,count:previous.count,from:0,to:1}:{...previous,[buildKey]:input.value};
+      plan.rows[index]=normalizeBuild(raw);
+      const row=plan.rows[index],b=cityData.buildings[row.key],max=b.levels.length;
+      if(buildKey==='key') rowEl.querySelector('[data-build-key="from"]').innerHTML=levelOptions(max,row.from,b.levels[0].price?0:1);
+      if(buildKey==='key'||buildKey==='from') rowEl.querySelector('[data-build-key="to"]').innerHTML=levelOptions(max,row.to,Math.min(max,row.from+1));
+      input.value=row[buildKey];
+      rowEl.querySelector('output').textContent=costText(buildCost(row));
+      rowEl.querySelector('.city-build-note').hidden=Boolean(b.levels[0].price);
+    }else return;
+    save();
+    const techs=updateTotals(plan);
+    if(updateResearch) renderResearchList(plan,techs);
+  });
+  panel.addEventListener('click',event=>{
+    const button=event.target.closest('button'),plan=plans[activeWonder];
+    if(!button||!plan) return;
+    const {buildRemove,researchFilter,cityTarget}=button.dataset;
+    if(researchFilter){
+      filter=researchFilter;
+      for(const control of panel.querySelectorAll('[data-research-filter]')) control.setAttribute('aria-pressed',String(control.dataset.researchFilter===filter));
+      renderResearchList(plan,researchPlan(plan));return;
+    }
+    if(button.id==='cityAddBuild'){
+      if(plan.rows.length>=50) return;
+      plan.rows.push(normalizeBuild({from:0,to:1,count:1}));
+      renderBuildRows(plan);
+      byId('cityBuildRows').querySelector('[data-build-index="'+(plan.rows.length-1)+'"] select')?.focus();
+    }else if(buildRemove!==undefined){
+      plan.rows.splice(Number(buildRemove),1);
+      renderBuildRows(plan);
+      byId('cityAddBuild').focus({preventScroll:true});
+    }else if(cityTarget){
+      plan.target=plan.target===cityTarget?'':cityTarget;
+      syncFields(plan);
+      renderResearchList(plan,researchPlan(plan));
+    }else if(button.id==='cityResetResearch'){
+      if(!window.confirm(activeWonder+'의 완료 연구와 목표 연구를 초기화할까요?')) return;
+      plan.completed=[];plan.target='';syncFields(plan);
+      renderResearchList(plan,researchPlan(plan));
+      byId('cityResearchStatus').textContent='연구 계획을 초기화했습니다.';
+      byId('cityResearchStatus').hidden=false;
+    }else return;
+    save();updateTotals(plan);
+  });
+  panel.addEventListener('keydown',event=>{
+    if(event.key==='Enter'&&event.target.matches('input:not([type="checkbox"])')){
+      event.preventDefault();event.target.blur();
+    }
+  });
+  return {refresh};
+})();
 
 function postSize(){ try{ parent.postMessage({type:'wrks:viz:resize',height:document.documentElement.scrollHeight},'*'); }catch(e){} }
 window.addEventListener('load',()=>{loadState();renderAll();postSize();});
