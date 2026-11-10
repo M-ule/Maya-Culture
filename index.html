@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>마야 문명 생산 계산기 시뮬레이터</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20x%3D%22.5%22%20y%3D%22.5%22%20width%3D%2231%22%20height%3D%2231%22%20rx%3D%225%22%20fill%3D%22%23e7f0e3%22%20stroke%3D%22%230b603a%22%20stroke-opacity%3D%22.16%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2224%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b603a%22%20font-size%3D%2225%22%20font-family%3D%22Georgia%2Cserif%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E" type="image/svg+xml">
+<title>마야 문명 시뮬레이터</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20x%3D%22.5%22%20y%3D%22.5%22%20width%3D%2231%22%20height%3D%2231%22%20rx%3D%225%22%20fill%3D%22%23e7f0e3%22%20stroke%3D%22%230b603a%22%20stroke-opacity%3D%22.16%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2224%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b603a%22%20font-size%3D%2225%22%20font-family%3D%22Georgia%2Cserif%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E" type="image/svg+xml">
 <!-- 기준: coreData 2026-07-20_23-50-23 재검증 / 행복도 공식·0% 기본 생산량·100% 생산량·소비량 대조 / 중복 함수 정리 v5 -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
 <style>
@@ -231,39 +231,105 @@ body.detail-modal-open{overflow:hidden}
 .detail-row .happiness-combo .happiness-input{background:#fff9dc}
 @media(max-width:720px){.detail-field .happiness-combo,.detail-field .happiness-combo .happiness-input,.detail-field .happiness-combo .happiness-toggle{min-height:44px}.happiness-combo{grid-template-columns:minmax(0,1fr) 30px}.happiness-combo .happiness-toggle{width:30px;min-width:30px;font-size:13px}.happiness-option{min-height:40px;font-size:14px}}
 
+/* Shared simulator layout, using the Maya palette. */
+[hidden]{display:none!important}
+body{max-width:1440px;margin:auto;padding:20px;font-size:14px}
+h1{font-size:25px}
+.tabs{position:sticky;top:0;z-index:20;background:var(--page);padding-top:8px}
+.tab{min-height:44px;font-size:15px}
+.card{background:var(--panel);border:1px solid #c0d4b9;border-radius:12px;margin:14px 0;padding:16px;scroll-margin-top:66px}
+.card h2{font-size:19px;background:var(--soft);padding:8px 12px;margin:0 0 12px;border-radius:4px;line-height:1.4}
+.card-title,.production-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.card-title h2,.step2-title-actions h2{margin:0}
+.step2-title-actions{margin:0 0 12px}
+.production-section-title{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.production-actions{justify-content:flex-start}
+.production-actions button,.detail-open-btn,.convert-toggle{min-height:40px;font-size:13px}
+.production-actions button:disabled{opacity:.5;cursor:default}
+.settings{gap:10px 14px}
+.settings label,.settings input,.settings select{font-size:14px}
+.settings input,.settings select{min-height:38px}
+.settings .step-wrap{width:112px}
+.settings .step-wrap input{width:100%}
+.section-note,.note{font-size:13px;line-height:1.65;color:#496253}
+.card .bonus-box{margin:10px 0 0;font-size:14px}
+.panel:not(.show-details) .secondary-column{display:none}
+#t1,#t2,#tw,#ts,#ta{width:100%!important;min-width:0!important}
+#t1 th,#t1 td,#t2 th,#t2 td,#tw th,#tw td,#ts th,#ts td,#ta th,#ta td,#tc th,#tc td{width:auto!important;min-width:0!important;max-width:none!important;font-size:13px;white-space:normal;padding:8px 5px}
+#t1 .step-wrap,#t2 .step-wrap,#t1 input,#t2 input,#t2 select{min-width:0}
+#t1 input,#t2 input,#t2 select{min-height:34px;font-size:13px;text-align:center}
+#t1 .stock-input,#t2 .stock-input{font-variant-numeric:tabular-nums}
+#tc{width:100%!important;min-width:650px!important}
+#tc th:first-child,#tc td:first-child{width:118px!important;position:sticky;left:0}
+#tc th:first-child{z-index:4}
+#tc th:nth-child(2){width:95px!important}
+@media(max-width:1100px){
+  #t1,#t2,#tw,#ts,#ta,#t1 tbody,#t2 tbody,#tw tbody,#ts tbody,#ta tbody{display:block}
+  .card table:not(#tc) thead{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
+  .card table:not(#tc) tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px;margin:0 0 8px;border:1px solid #c0d4b9;border-radius:8px;background:var(--soft-2)}
+  .card table:not(#tc) tbody td{display:flex;position:static;min-height:54px;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;border-radius:5px;padding:5px}
+  .card table:not(#tc) tbody td.name{grid-column:1/-1;min-height:32px;flex-direction:row}
+  .card table:not(#tc) tbody td:not(.name)::before{content:attr(data-label);position:static;width:auto;background:transparent;font-size:11px;font-weight:600;line-height:1.25}
+  .card table:not(#tc) tbody td.secondary-column{display:none}
+  .show-details .card table:not(#tc) tbody td.secondary-column{display:flex}
+  .card table:not(#tc) tbody td .step-wrap,.card table:not(#tc) tbody td .happiness-combo{max-width:145px}
+}
+@media(max-width:620px){
+  body{padding:10px}
+  h1{font-size:21px}
+  .tabs .tab{flex:1}
+  .card{padding:10px}
+  .card h2{font-size:16px}
+  .settings{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .settings select{width:100%;min-width:0}
+  .settings .step-wrap{width:100%}
+  .step2-title-actions{align-items:center}
+  .step2-title-actions h2{flex:0 0 auto}
+  .card table:not(#tc) tbody tr{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #tc{min-width:530px!important}
+  #tc th:first-child,#tc td:first-child{width:85px!important}
+  #tc th:nth-child(2){width:74px!important}
+}
 </style>
 </head>
 <body>
-<h1>마야 문명 생산 계산기 시뮬레이터</h1>
+<h1>마야 문명 시뮬레이터</h1>
 <div class="legend">
   <div class="legend-item"><span class="legend-box legend-input"></span>입력 가능 (노란색)</div>
   <div class="legend-item"><span class="legend-box legend-calc"></span>자동 계산</div>
 </div>
 
-<div class="tabs">
+<nav class="tabs" aria-label="계산기 탭">
   <button class="tab active" data-tab="prod">생산 계산기</button>
-  <button class="tab" data-tab="wonder">불가사의 계산기</button>
-</div>
+  <button class="tab" data-tab="wonder">불가사의 목표</button>
+</nav>
 
 <div id="panel-prod" class="panel active">
+  <section class="card" id="productionSettings">
+  <div class="card-title"><h2>생산 설정</h2><button id="productionView" class="convert-toggle" type="button" aria-expanded="false" aria-controls="t1 t2">상세 보기</button></div>
   <div class="settings">
     <label for="wonder">불가사의</label>
     <select id="wonder"><option>티칼</option><option>치첸이트사</option><option>사일 궁전</option></select>
     <label for="wLv">보너스 적용 레벨</label>
     <div class="step-wrap settings-step"><input type="number" id="wLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
-    <label for="baseH">일괄 운영 시간(h)</label>
+    <label for="baseH">기본 운영 시간(h)</label>
     <div class="step-wrap"><input type="number" id="baseH" class="step-one" min="0" step="any"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
-    <button id="resetBtn" type="button" class="reset-btn">입력값 초기화</button>
+    </div>
+  <div class="production-actions">
+    <button id="saveProduction" type="button" class="convert-toggle">입력값 저장</button>
+    <button id="restoreProduction" type="button" class="convert-toggle" disabled>저장값 불러오기</button>
+    <button id="resetBtn" type="button" class="reset-btn">초기화</button>
     <span id="resetStatus" class="reset-status" role="status" aria-live="polite"></span>
   </div>
 
   <div class="bonus-box" id="bonusBox"></div>
+  </section>
+  <section class="card" id="resourcesCard">
 
   <div class="step2-title-actions">
-    <h2>1단계 · 기초 자원 생산 (옥 · 흑요석 · 깃털)</h2>
+    <div class="production-section-title"><h2>기초 자원</h2><span id="resourceDetailSummary" class="detail-summary">기본 설정 사용</span></div>
     <div class="product-detail-actions">
       <button id="resourceDetailOpen" type="button" class="detail-open-btn">자원 건물 상세 설정</button>
-      <span id="resourceDetailSummary" class="detail-summary">상세 설정 미사용</span>
     </div>
   </div>
   <div class="table-wrap">
@@ -274,6 +340,7 @@ body.detail-modal-open{overflow:hidden}
     </table>
   </div>
 
+  </section>
   <div id="resourceDetailModal" class="detail-modal" hidden aria-hidden="true">
     <div class="detail-backdrop" data-resource-detail-close></div>
     <section class="detail-sheet" role="dialog" aria-modal="true" aria-labelledby="resourceDetailTitle">
@@ -299,11 +366,11 @@ body.detail-modal-open{overflow:hidden}
     </section>
   </div>
 
+  <section class="card" id="productsCard">
   <div class="step2-title-actions">
-    <h2>2단계 · 상품 생산 (마스크 · 달력돌 · 단검 · 머리장식)</h2>
+    <div class="production-section-title"><h2>상품</h2><span id="productDetailSummary" class="detail-summary">기본 설정 사용</span></div>
     <div class="product-detail-actions">
       <button id="productDetailOpen" type="button" class="detail-open-btn">상품 건물 상세 설정</button>
-      <span id="productDetailSummary" class="detail-summary">상세 설정 미사용</span>
     </div>
   </div>
   <div class="table-wrap">
@@ -314,6 +381,7 @@ body.detail-modal-open{overflow:hidden}
     </table>
   </div>
 
+  </section>
   <div id="productDetailModal" class="detail-modal" hidden aria-hidden="true">
     <div class="detail-backdrop" data-detail-close></div>
     <section class="detail-sheet" role="dialog" aria-modal="true" aria-labelledby="productDetailTitle">
@@ -339,25 +407,25 @@ body.detail-modal-open{overflow:hidden}
     </section>
   </div>
 
-  <div class="note">
-    1. <b>불가사의</b>와 <b>보너스 적용 레벨</b>을 입력하면 자원 생산 보너스가 자동 반영되고 추가 일꾼 수와 다음 증가 레벨이 표시됩니다.<br>
-    2. 자원과 상품의 <b>레벨</b>, <b>생산 방식</b>, <b>건물 수</b>, <b>행복도(%)</b>, <b>운영 시간(h)</b>, <b>현재 보유량</b> 등을 입력하면 각 항목을 자동으로 계산합니다.<br>
-    3. <b>일괄 운영 시간</b>을 기본으로 사용합니다. <b>운영 시간(h)</b>이 입력된 행은 해당 시간이 우선 적용됩니다.<br>
-    4. 자원의 <b>소요 시간(h)</b>은 <b>현재 보유량</b>을 포함하여 <b>잔여/부족</b>이 처음 ‘잔여’가 되기까지 필요한 운영 시간입니다.<br>
-  </div>
+  <p class="note">운영 시간을 비워 두면 기본 운영 시간을 사용합니다. 기초 자원은 운영 시간에 비례하고, 상품은 완료된 생산 주기만큼 계산합니다. 행복도는 생산량에 반영됩니다. 예상 생산량은 내림하고 원료 필요량은 올림합니다.</p>
 </div>
 
 <div id="panel-wonder" class="panel">
+  <section class="card">
+  <div class="card-title"><h2>불가사의 목표</h2><button id="wonderView" class="convert-toggle" type="button" aria-expanded="false" aria-controls="tw ts">상세 보기</button></div>
   <div class="settings">
     <label for="curLv">현재 레벨</label>
     <div class="step-wrap settings-step"><input type="number" id="curLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
     <label for="tgtLv">목표 레벨</label>
     <div class="step-wrap settings-step"><input type="number" id="tgtLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
-    <button id="convertToggle" type="button" class="convert-toggle" aria-expanded="false">생산력 환산표 보기</button>
-    <span class="spacer"></span>
+
   </div>
 
-  <h2>1단계 · 목표 달성 현황</h2>
+  <p id="wonderContext" class="section-note"></p>
+  <div id="goalSummary" class="bonus-box" role="status"></div>
+  </section>
+  <section class="card">
+  <h2>목표 달성 현황</h2>
   <div class="table-wrap">
     <table id="tw">
       <thead><tr>
@@ -366,59 +434,39 @@ body.detail-modal-open{overflow:hidden}
     </table>
   </div>
 
-  <div class="step-title-row">
-    <h2>2단계 · 수면 대비 자원 확보</h2>
-  </div>
+  </section>
+  <section class="card">
+  <h2>수면 대비 자원 확보</h2>
   <div class="settings sleep-settings">
     <label for="sleepPrepH">수면까지 남은 시간(h)</label>
-    <div class="step-wrap sleep-time-wrap"><input type="number" id="sleepPrepH" class="step-one" min="0" step="any"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
+    <div class="step-wrap sleep-time-wrap"><input type="number" id="sleepPrepH" class="step-one" min="0" step="any" placeholder="기본"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
+    <label for="sleepCycle">예약 생산 주기</label><select id="sleepCycle"><option value="최장">레벨별 최장</option><option>30분</option><option>1시간</option><option>2시간</option></select>
+    <label for="sleepCount">예약 횟수</label><div class="step-wrap"><input type="number" id="sleepCount" class="step-one" min="0" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
   </div>
+  <p class="section-note">수면 전 예상 보유량과 잠들기 전에 예약할 상품 생산에 필요한 원료를 비교합니다.</p>
+  <p id="sleepModes" class="section-note"></p>
   <div class="table-wrap">
     <table id="ts">
       <thead><tr>
-        <th>자원</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>수면 중 필요량</th><th>수면 시작 예상 보유량</th><th>잔여/부족</th>
+        <th>자원</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>예약 필요량</th><th>수면 전 예상 보유량</th><th>잔여/부족</th>
       </tr></thead><tbody></tbody>
     </table>
   </div>
 
-  <div class="step-title-row">
-    <h2>3단계 · 목표 레벨 생산력 비교</h2>
-  </div>
-  <div class="adjust-layout">
-    <div class="adjust-main">
-      <div class="adjust-table-row">
-        <div class="table-wrap">
-          <table id="ta">
-            <thead><tr>
-              <th>항목</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>잔여/부족</th>
-            </tr></thead><tbody></tbody>
-          </table>
-        </div>
-        
-      </div>
-</div>
-
-    <div class="adjust-side">
-      <div id="convertPanel" class="convert-panel" hidden>
-        <div class="convert-body">
-          <div class="table-wrap">
-            <table id="tc">
-              <thead><tr>
-                <th>항목</th><th>생산 방식</th><th>Lv2</th><th>Lv3</th><th>Lv4</th><th>Lv5</th><th>Lv6</th>
-              </tr></thead><tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+  </section>
+  <section class="card">
+    <h2>목표 레벨 생산력 비교</h2>
+    <p class="section-note">목표량을 채우는 데 필요한 상품 생산분의 원료 소모만을 계산합니다.</p>
+    <div class="settings"><label for="productRawCycle">필요량 환산 기준 주기</label>
+      <select id="productRawCycle"><option>생산 계산기값</option><option>30분</option><option>1시간</option><option>2시간</option></select>
     </div>
-  </div>
-
-  <div class="note">
-    1. <b>1단계:</b> <b>현재 레벨</b>과 <b>목표 레벨</b>을 기준으로 필요한 상품량과 목표 달성 여부를 계산합니다. <b>소요 시간(h)</b>은 현재 보유량을 포함하여 부족한 상품이 처음 ‘잔여’가 되기까지 필요한 운영 시간입니다.<br>
-    2. <b>2단계:</b> <b>수면까지 남은 시간(h)</b> 동안의 자원 생산, 상품 생산에 사용되는 자원, 자원의 현재 보유량을 함께 반영하여 수면 중 필요한 자원을 확보하기 위한 생산력을 계산합니다. <b>수면 요구량</b>은 각 상품 건물의 현재 레벨에서 이용 가능한 가장 긴 생산 방식 × 3회를 기준으로 합니다.<br>
-    3. <b>3단계:</b> <b>현재 생산력</b>과 <b>목표 레벨 달성에 필요한 생산력</b>을 비교하여 <b>생산력 차이</b>를 계산합니다.<br>
-    ※ <span style="color:#c62828;font-weight:700;">생산력</span>은 <span style="color:#c62828;font-weight:700;">행복도 100%의 Lv6 건물 1개를 100</span>으로 둔 지수입니다. <b>현재 생산력</b>은 현재 설정된 건물 구성의 생산 능력을 나타내며, <b>필요 생산력</b>은 각 단계에서 현재 보유량을 고려해 목표를 충족하는 데 필요한 생산 능력을 환산한 값입니다.
-  </div>
+    <div class="table-wrap"><table id="ta"><thead><tr><th>생산 항목</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th></tr></thead><tbody></tbody></table></div>
+  </section>
+  <section class="card">
+    <h2>생산력 환산표</h2>
+    <p class="section-note">행복도 100%인 6레벨 건물 1채의 기준 생산력을 100으로 둡니다. 기초 자원은 연속 생산, 상품은 30분 주기 기준입니다.</p>
+    <div class="table-wrap"><table id="tc"><thead><tr><th>생산 항목</th><th>생산 방식</th><th>Lv1</th><th>Lv2</th><th>Lv3</th><th>Lv4</th><th>Lv5</th><th>Lv6</th></tr></thead><tbody></tbody></table></div>
+  </section>
 </div>
 
 <script>
@@ -434,20 +482,40 @@ const state={
   resources: JSON.parse(JSON.stringify(INIT.resources)),
   products: JSON.parse(JSON.stringify(INIT.products))
 };
-const settings={...INIT.settings};
+const settings={...INIT.settings,sleepPrepH:'',sleepCycle:'최장',sleepCount:3,productRawCycle:'생산 계산기값'};
+const resourceKeys={'옥':'jade','흑요석':'obs','깃털':'feather'};
+const rawCycles=['생산 계산기값','30분','1시간','2시간'];
 const wLvSet={...INIT.wLvSet};
 const productDetails=Object.fromEntries(productOrder.map(name=>[name,{enabled:false,rows:[]} ]));
 const resourceDetails=Object.fromEntries(resourceOrder.map(name=>[name,{enabled:false,rows:[]} ]));
 let detailProduct=productOrder[0];
 let detailResource=resourceOrder[0];
 const STORAGE_KEY='mayaCalcState';
+const DEFAULT_STORAGE_KEY='mayaProductionDefault';
 let resetStatusTimer=null;
 
 function clamp(n,min,max){ return Math.min(max,Math.max(min,n)); }
 function num(v,fallback=0){ const n=parseFloat(v); return Number.isFinite(n)?n:fallback; }
 function displayZero(n){ return Math.abs(n)<1e-9 ? 0 : n; }
-function fmtQty(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; return displayZero(Math.round(n)).toLocaleString('ko-KR'); }
-function fmtHours(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*100)/100); return r.toLocaleString('ko-KR',{maximumFractionDigits:2}); }
+function fmtQty(n){
+  if(!Number.isFinite(n)) return '—';
+  const magnitude=Math.abs(n);
+  if(magnitude>=1e6) return (n/1e6).toLocaleString('en-US',{maximumFractionDigits:2})+'M';
+  if(magnitude>=1e5) return (n/1e3).toLocaleString('en-US',{maximumFractionDigits:2})+'K';
+  return n.toLocaleString('ko-KR');
+}
+function availableQty(n){ return Math.floor(n+1e-8); }
+function requiredQty(n){ return Math.ceil(n-1e-8); }
+function parseStock(value){
+  const match=String(value).trim().replaceAll(',','').match(/^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*([km])?$/i);
+  if(!match) return null;
+  const qty=Number(match[1])*({k:1000,m:1000000}[match[2]?.toLowerCase()]||1);
+  return Number.isSafeInteger(Math.round(qty))?Math.round(qty):null;
+}
+function stockInput(value){
+  return '<input type="text" class="stock-input" inputmode="decimal" data-k="stock" value="'+fmtQty(value)+'" data-exact="'+value+'">';
+}
+function fmtHours(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=requiredQty(n*100)/100; return r.toLocaleString('ko-KR',{maximumFractionDigits:2}); }
 function fmtPct(n){ return (Math.round(n*1000)/10).toLocaleString('ko-KR',{maximumFractionDigits:1})+'%'; }
 function fmtBldg(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*100)/100); return r.toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:2}); }
 function fmtRatio(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*100)/100); return r.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
@@ -503,6 +571,8 @@ function syncUIFromState(){
   document.getElementById('wLv').value=settings.wLv;
   document.getElementById('baseH').value=settings.baseH;
   const sleepEl=document.getElementById('sleepPrepH'); if(sleepEl) sleepEl.value=settings.sleepPrepH;
+  for(const id of ['sleepCycle','sleepCount','productRawCycle']) document.getElementById(id).value=settings[id];
+  try{document.getElementById('restoreProduction').disabled=!localStorage.getItem(DEFAULT_STORAGE_KEY);}catch(e){}
   document.getElementById('curLv').value=wLvSet.cur;
   document.getElementById('tgtLv').value=wLvSet.tgt;
 }
@@ -571,6 +641,10 @@ function bindProductionRows(){
   document.querySelectorAll('#panel-prod tbody tr').forEach(tr=>{
     const group=tr.dataset.group,name=tr.dataset.name;
     tr.querySelectorAll('[data-k]').forEach(el=>{
+      if(el.dataset.k==='stock'){
+        el.addEventListener('focus',()=>{el.value=el.dataset.exact;el.select();});
+        el.addEventListener('blur',()=>{if(el.value===el.dataset.exact) el.value=fmtQty(state[group][name].stock);});
+      }
       const commit=()=>commitRow(el,group,name);
       el.addEventListener('change',commit);
       el.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();el.blur();} });
@@ -578,86 +652,60 @@ function bindProductionRows(){
   });
 }
 /* 구버전 commitRow 제거: 아래 통합 구현 사용 */
-function renderTables(){
-  document.querySelector('#t1 tbody').innerHTML=resourceOrder.map(resourceRow).join('');
-  document.querySelector('#t2 tbody').innerHTML=productOrder.map(productRow).join('');
-  bindProductionRows();
+function renderTables(keepControls){
+  for(const [id,html] of [['t1',resourceOrder.map(resourceRow).join('')],['t2',productOrder.map(productRow).join('')]]){
+    const body=document.querySelector('#'+id+' tbody');
+    if(!keepControls){
+      body.innerHTML=html;
+    }else{
+      const updated=document.createElement('tbody');
+      updated.innerHTML=html;
+      [...body.rows].forEach((row,i)=>[...row.cells].forEach((cell,j)=>{
+        if(cell.querySelector('[data-k]')) return;
+        const next=updated.rows[i].cells[j];
+        cell.className=next.className;
+        cell.innerHTML=next.innerHTML;
+      }));
+    }
+    labelTable(id);
+  }
+  if(!keepControls) bindProductionRows();
 }
 
 
 /* 구버전 resourceOutputForHours 제거: 아래 통합 구현 사용 */
 /* 구버전 productUseForHours 제거: 아래 통합 구현 사용 */
-function sleepRecipe(name,lv){
-  const exact=DATA.products[name+'|'+lv+'|2시간'];
-  if(exact) return {p:exact,cycles:3,mode:'2시간',fallback:false};
+function referenceRecipe(name,lv,mode){
   const modes=DATA.modes[name+'|'+lv]||[];
-  let best=null;
-  modes.forEach(mode=>{
-    const p=DATA.products[name+'|'+lv+'|'+mode];
-    if(p&&(!best||p.min>best.p.min)) best={p,mode};
-  });
-  if(!best||best.p.min<=0) return null;
-  return {p:best.p,cycles:3,mode:best.mode,fallback:true};
+  const recipes=modes.map(mode=>({mode,p:DATA.products[name+'|'+lv+'|'+mode]}));
+  if(mode==='최장') return recipes.reduce((best,r)=>!best||r.p.min>best.p.min?r:best,null);
+  const minutes={'1분':1,'5분':5,'30분':30,'1시간':60,'2시간':120}[mode];
+  return recipes.reduce((best,r)=>!best||Math.abs(r.p.min-minutes)<Math.abs(best.p.min-minutes)?r:best,null);
 }
-function sleepRequirementForProduct(name,key){
-  if(detailEnabled(name)){
-    return productDetails[name].rows.reduce((sum,row)=>{
-      const r=sleepRecipe(name,row.lv);
-      return sum+(r?r.cycles*(r.p[key]||0)*Math.max(0,num(row.count,0)):0);
-    },0);
-  }
-  const s=state.products[name],r=sleepRecipe(name,s.lv);
-  return r?r.cycles*(r.p[key]||0)*s.bldgs:0;
+function productConfigs(name){
+  const s=state.products[name];
+  return detailEnabled(name)?productDetails[name].rows:[{lv:s.lv,count:s.bldgs,happiness:s.happiness}];
 }
+function sleepPrepHours(){ return settings.sleepPrepH===''?settings.baseH:settings.sleepPrepH; }
 function sleepRequirement(resource){
-  const key=resource==='옥'?'jade':resource==='흑요석'?'obs':'feather';
-  return productOrder.reduce((sum,name)=>sum+sleepRequirementForProduct(name,key),0);
+  const key=resourceKeys[resource];
+  return productOrder.reduce((sum,name)=>{
+    const use=productConfigs(name).reduce((total,row)=>{
+      const recipe=referenceRecipe(name,row.lv,settings.sleepCycle);
+      return total+(recipe?.p[key]||0)*row.count*settings.sleepCount;
+    },0);
+    return sum+requiredQty(use);
+  },0);
 }
-/* 구버전 sleepProjectedStock 제거: 아래 통합 구현 사용 */
-function sleepResourceAdjustment(resource){
-  const current=state.resources[resource].bldgs;
-  const h=settings.sleepPrepH;
-  const required=sleepRequirement(resource);
-  const key=resource==='옥'?'jade':resource==='흑요석'?'obs':'feather';
-  const used=productOrder.reduce((sum,name)=>sum+productUseForHours(name,key,h),0);
-  const stock=state.resources[resource].stock||0;
-  const projected=stock+resourceOutputForHours(resource,h,current)-used;
-  const remain=projected-required;
-
-  // 자원 건물이 없어도 현재 보유량만으로 수면 요구량을 충족할 수 있는 경우
-  const requiredFromProduction=Math.max(0,required-stock+used);
-  if(requiredFromProduction<=1e-10){
-    const needed=0;
-    const delta=needed-current;
-    return {resource,projected,required,remain,current,delta,needed,status:delta<-1e-10?'down':'ok'};
-  }
-
-  // 준비 시간이 없으면 건물 수를 늘려도 수면 전 추가 생산이 불가능함
-  if(h<=0) return {resource,projected,required,remain,current,delta:null,needed:null,status:'time'};
-  const perBuilding=resourceOutputForHours(resource,h,1);
-  if(perBuilding<=0) return {resource,projected,required,remain,current,delta:null,needed:null,status:'time'};
-
-  // 수면 예정 시각에 요구량을 확보할 수 있는 최소 건물 수(소수 둘째 자리 올림)
-  const needed=ceil2(requiredFromProduction/perBuilding);
-  const delta=needed-current;
-  const status=delta>1e-10?'up':(delta<-1e-10?'down':'ok');
-  return {resource,projected,required,remain,current,delta,needed,status};
-}
-function sleepBuildingDifference(adj){
-  if(adj.status==='time'||adj.needed===null||!Number.isFinite(adj.current)) return null;
-  return adj.current-adj.needed;
-}
-function sleepAdjustmentText(adj){
-  const diff=sleepBuildingDifference(adj);
-  if(diff===null) return '<span class="badge sleep-adjust-warn-badge">준비 시간 확인</span>';
-  const r=displayZero(Math.round(diff*100)/100);
-  if(r>0) return '+'+fmtBldg(r);
-  return fmtBldg(r);
-}
-/* 구버전 sleepReserveRow 제거: 아래 통합 구현 사용 */
 function renderSleepReserve(){
   const tbody=document.querySelector('#ts tbody');
   if(tbody) tbody.innerHTML=resourceOrder.map(sleepReserveRow).join('');
+  labelTable('ts');
+  const reservations=productOrder.flatMap(name=>{
+    const modes=new Set(productConfigs(name).filter(row=>row.count>0).map(row=>referenceRecipe(name,row.lv,settings.sleepCycle)?.mode).filter(Boolean));
+    return modes.size?[name+' '+[...modes].join('·')]:[];
+  });
+  document.getElementById('sleepModes').textContent=settings.sleepCount&&reservations.length?'실제 예약 주기 · '+reservations.join(' / '):'예약 생산 없음';
 }
 
 function cumulative(lv,product){ return DATA.wonderCosts[String(lv)]?.[product]||0; }
@@ -684,96 +732,64 @@ function wonderRow(product){
 }
 function renderWonder(){
   document.querySelector('#tw tbody').innerHTML=productOrder.map(wonderRow).join('');
+  document.getElementById('wonderContext').textContent=settings.wonder+' · 기본 운영 시간 '+fmtHours(settings.baseH)+'시간';
+  labelTable('tw');
+  const shortage=productOrder.filter(name=>state.products[name].stock+productOutput(name)<wonderNeed(name));
+  let level=wLvSet.cur;
+  while(level<50&&productOrder.every(name=>state.products[name].stock+productOutput(name)>=cumulative(level+1,name)-cumulative(wLvSet.cur,name))) level++;
+  document.getElementById('goalSummary').textContent='최대 도달 레벨 Lv.'+level+' · '+(shortage.length?'부족 상품 '+shortage.join(' · '):'목표량 충족');
 }
 
-/* 구버전 productAdjustment 제거: 아래 통합 구현 사용 */
-
-/* 구버전 adjustedResourceConsumption 제거: 아래 통합 구현 사용 */
-
-/* 구버전 resourceAdjustment 제거: 아래 통합 구현 사용 */
-
-function currentPowerIndex(adj){
-  return Number.isFinite(adj.current)?Math.max(0,adj.current)*100:null;
-}
-function requiredPowerEquivalent(adj){
-  if(adj.status==='warn'||adj.remain===null||!Number.isFinite(adj.current)) return null;
-  const perBuilding=adj.kind==='상품' ? productLv6PerBuildingOutput(adj.name) : resourceLv6PerBuildingOutput(adj.name);
-  if(!(perBuilding>0)) return null;
-  return Math.max(0,adj.current-(adj.remain/perBuilding));
-}
-function requiredPowerIndex(adj){
-  const required=requiredPowerEquivalent(adj);
-  return Number.isFinite(required)?required*100:null;
-}
-function powerDifferenceIndex(adj){
-  const current=currentPowerIndex(adj);
-  const required=requiredPowerIndex(adj);
-  return Number.isFinite(current)&&Number.isFinite(required)?current-required:null;
-}
 function fmtSignedPower(n){
-  if(n===null||n===undefined||!Number.isFinite(n)) return '—';
-  const r=displayZero(Math.round(n*10)/10);
-  if(r>0) return '+'+fmtPower(r);
-  return fmtPower(r);
+  if(!Number.isFinite(n)) return '—';
+  if(Math.abs(n)>1e-8&&Math.abs(n)<0.05) return n<0?'0.1 미만 부족':'0.1 미만 잔여';
+  return (n>=0.05?'+':'')+fmtPower(n);
 }
 
-function adjustmentText(adj){
-  if(adj.status==='warn') return '<span class="adj-warn">운영 시간 확인</span>';
-  if(adj.status==='up') return adj.delta<0.01-1e-10?'0.01 미만 부족':fmtBldg(adj.delta)+' 부족';
-  if(adj.status==='down') return fmtBldg(-adj.delta)+' 잔여';
-  if(adj.status==='down-tiny') return '0.01 미만 잔여';
-  return '유지';
+function productBenchmark(name){
+  const recipe=referenceRecipe(name,6,'30분');
+  return recipe?happyCycleOutput(name,6,recipe.p,100)*60/recipe.p.min:0;
 }
-
-function adjustmentRow(adj){
-  const remainText=adj.remain===null?'—':fmtQty(adj.remain);
-  const currentPower=currentPowerIndex(adj);
-  const requiredPower=requiredPowerIndex(adj);
-  const difference=powerDifferenceIndex(adj);
-  const currentPowerHtml=currentPower===null
-    ? '<span class="adj-warn">—</span>'
-    : fmtPower(currentPower);
-  const requiredPowerHtml=requiredPower===null
-    ? '<span class="adj-warn">—</span>'
-    : fmtPower(requiredPower);
-  const diffCellClass=difference===null?'':(difference<0?'remain-bad':'remain-ok');
-  const differenceHtml=difference===null
-    ? '<span class="adj-warn">—</span>'
-    : fmtSignedPower(difference);
-  const rowCls=adj.kind==='상품'&&adj.name===productOrder[0]?' class="adjust-product-start"':'';
-  return '<tr'+rowCls+'>'+
-    '<td class="name">'+adj.name+'</td>'+
-    '<td class="num calc '+diffCellClass+'">'+differenceHtml+'</td>'+
-    '<td class="num calc">'+currentPowerHtml+'</td>'+
-    '<td class="num calc">'+requiredPowerHtml+'</td>'+
-    '<td class="num calc">'+remainText+'</td>'+
-  '</tr>';
+function targetUseRatio(name,key){
+  const mode=settings.productRawCycle;
+  const s=state.products[name];
+  const recipe=referenceRecipe(name,6,mode==='생산 계산기값'?s.mode:mode);
+  if(!recipe) return 0;
+  const rows=productConfigs(name);
+  const count=rows.reduce((sum,row)=>sum+row.count,0);
+  const output=count>0?rows.reduce((sum,row)=>sum+row.count*happyCycleOutput(name,6,recipe.p,row.happiness),0)/count:happyCycleOutput(name,6,recipe.p,s.happiness);
+  return output>0?(recipe.p[key]||0)/output:0;
 }
-
+function targetResourceNeed(name,target){
+  const key=resourceKeys[name];
+  const gross=productOrder.reduce((sum,product)=>sum+requiredQty(target[product]*targetUseRatio(product,key)),0);
+  return Math.max(0,gross-state.resources[name].stock);
+}
 function renderAdjustment(){
-  const productAdjustments={};
-  productOrder.forEach(name=>{ productAdjustments[name]=productAdjustment(name); });
-  const rows=[
-    ...resourceOrder.map(name=>resourceAdjustment(name,productAdjustments)),
-    ...productOrder.map(name=>productAdjustments[name])
-  ];
-  const tbody=document.querySelector('#ta tbody');
-  if(tbody) tbody.innerHTML=rows.map(adjustmentRow).join('');
+  const target=Object.fromEntries(productOrder.map(name=>[name,Math.max(0,wonderNeed(name)-state.products[name].stock)]));
+  const rows=[...resourceOrder,...productOrder].map(name=>{
+    const resource=name in resourceKeys;
+    const hours=effectiveHours(resource?'resources':'products',name);
+    const benchmark=resource?resourceLv6PerBuildingOutputForHours(name,1):productBenchmark(name);
+    const reference=benchmark*hours;
+    const output=resource?resourceOutput(name):productOutput(name);
+    const needed=resource?targetResourceNeed(name,target):target[name];
+    const current=reference>0?output/reference*100:0;
+    const required=needed===0?0:reference>0?needed/reference*100:null;
+    const diff=required===null?null:current-required;
+    const cls=diff===null?'':remainClass(diff);
+    return '<tr'+(name===productOrder[0]?' class="adjust-product-start"':'')+'><td class="name">'+name+'</td>'+
+      '<td class="num calc '+cls+'">'+fmtSignedPower(diff)+'</td><td class="num calc">'+fmtPower(current)+
+      '</td><td class="num calc">'+(required===null?'운영 시간 확인':fmtPower(required))+'</td></tr>';
+  });
+  document.querySelector('#ta tbody').innerHTML=rows.join('');
+  labelTable('ta');
 }
-
-/* 구버전 resourceConversionRatio 제거: 아래 통합 구현 사용 */
-
-/* 구버전 productConversionRatio 제거: 아래 통합 구현 사용 */
-
-/* 구버전 conversionRow 제거: 아래 통합 구현 사용 */
-
-/* 구버전 renderConversion 제거: 아래 통합 구현 사용 */
-
 function renderDetailLauncher(){
   const el=document.getElementById('productDetailSummary');
   if(!el) return;
   const active=productOrder.filter(detailEnabled);
-  el.textContent=active.length?'상세 설정 적용: '+active.join(' · '):'상세 설정 미사용';
+  el.textContent=active.length?'상세 설정 적용: '+active.join(' · '):'기본 설정 사용';
 }
 function detailModeOptions(name){
   return allProductModes(name).map(m=>'<option value="'+m+'"'+(m===state.products[name].mode?' selected':'')+'>'+m+'</option>').join('');
@@ -918,7 +934,10 @@ function normalizeState(){
   if(!['티칼','치첸이트사','사일 궁전'].includes(settings.wonder)) settings.wonder=INIT.settings.wonder;
   settings.wLv=clamp(parseInt(settings.wLv)||0,0,50);
   settings.baseH=Math.max(0,num(settings.baseH,0));
-  settings.sleepPrepH=Math.max(0,num(settings.sleepPrepH,0));
+  settings.sleepPrepH=settings.sleepPrepH===''?'':Math.max(0,num(settings.sleepPrepH,0));
+  settings.sleepCycle=['최장',...rawCycles.slice(1)].includes(settings.sleepCycle)?settings.sleepCycle:'최장';
+  settings.sleepCount=Math.max(0,Math.floor(num(settings.sleepCount,3)));
+  settings.productRawCycle=rawCycles.includes(settings.productRawCycle)?settings.productRawCycle:rawCycles[0];
   wLvSet.cur=clamp(parseInt(wLvSet.cur)||0,0,50);
   wLvSet.tgt=clamp(parseInt(wLvSet.tgt)||0,0,50);
   if(wLvSet.tgt<wLvSet.cur) wLvSet.tgt=wLvSet.cur;
@@ -944,22 +963,25 @@ function loadState(){
   }catch(e){}
   normalizeState(); syncUIFromState(); saveState();
 }
-function resetState(){
-  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-  const currentWonder=settings.wonder;
-  resourceOrder.forEach(name=>Object.assign(state.resources[name],JSON.parse(JSON.stringify(INIT.resources[name]))));
-  productOrder.forEach(name=>Object.assign(state.products[name],JSON.parse(JSON.stringify(INIT.products[name]))));
-  productOrder.forEach(name=>Object.assign(productDetails[name],{enabled:false,rows:[]}));
-  resourceOrder.forEach(name=>Object.assign(resourceDetails[name],{enabled:false,rows:[]}));
-  Object.assign(settings,INIT.settings,{wonder:currentWonder});
-  Object.assign(wLvSet,INIT.wLvSet);
-  normalizeState(); syncUIFromState(); renderAll(); saveState();
+function productionSnapshot(){
+  const {wonder,wLv,baseH}=settings;
+  return {state,settings:{wonder,wLv,baseH},productDetails,resourceDetails};
+}
+function reportProductionStatus(message){
   const status=document.getElementById('resetStatus');
-  if(status){
-    status.textContent='초기화 완료';
-    if(resetStatusTimer) clearTimeout(resetStatusTimer);
-    resetStatusTimer=setTimeout(()=>{status.textContent='';},1800);
+  status.textContent=message;
+  clearTimeout(resetStatusTimer);
+  resetStatusTimer=setTimeout(()=>{status.textContent='';},2500);
+}
+function restoreProduction(snapshot,message){
+  for(const [group,names,details] of [['resources',resourceOrder,resourceDetails],['products',productOrder,productDetails]]){
+    for(const name of names){
+      state[group][name]={...INIT[group][name],...snapshot.state?.[group]?.[name]};
+      details[name]={enabled:false,rows:[],...(snapshot[group==='resources'?'resourceDetails':'productDetails']?.[name]||{})};
+    }
   }
+  for(const key of ['wonder','wLv','baseH']) settings[key]=snapshot.settings?.[key]??INIT.settings[key];
+  normalizeState();syncUIFromState();renderAll();saveState();reportProductionStatus(message);
 }
 
 function resourceOutputForHours(name,hours){
@@ -979,7 +1001,7 @@ function resourceOutputForHours(name,hours){
   if(!p) return 0;
   return ((p.out/p.hours)+happinessBonusPerHour(name,s.lv,s.happiness))*h*s.bldgs*wonderBonus;
 }
-function resourceOutput(name){ return resourceOutputForHours(name,effectiveHours('resources',name)); }
+function resourceOutput(name){ return availableQty(resourceOutputForHours(name,effectiveHours('resources',name))); }
 
 function productOutputForHours(name,hours){
   const h=Math.max(0,num(hours,0));
@@ -996,7 +1018,7 @@ function productOutputForHours(name,hours){
   const cycles=Math.floor((h*60)/p.min+1e-10);
   return cycles*happyCycleOutput(name,s.lv,p,s.happiness)*s.bldgs;
 }
-function productOutput(name){ return productOutputForHours(name,effectiveHours('products',name)); }
+function productOutput(name){ return availableQty(productOutputForHours(name,effectiveHours('products',name))); }
 
 function productUseForHours(name,key,hours){
   const h=Math.max(0,num(hours,0));
@@ -1013,7 +1035,7 @@ function productUseForHours(name,key,hours){
   const cycles=Math.floor((h*60)/p.min+1e-10);
   return cycles*(p[key]||0)*s.bldgs;
 }
-function productUse(name,key){ return productUseForHours(name,key,effectiveHours('products',name)); }
+function productUse(name,key){ return requiredQty(productUseForHours(name,key,effectiveHours('products',name))); }
 function productCycles(name){
   const p=productInfo(name); if(!p) return 0;
   return Math.floor((effectiveHours('products',name)*60)/p.min+1e-10);
@@ -1034,7 +1056,7 @@ function productCycleMinutes(name){
 }
 
 function resourceConsumption(resource){
-  const key=resource==='옥'?'jade':resource==='흑요석'?'obs':'feather';
+  const key=resourceKeys[resource];
   return productOrder.reduce((sum,p)=>sum+productUse(p,key),0);
 }
 function resourceRequiredHours(name,consumption){
@@ -1053,7 +1075,7 @@ function resourceRow(name){
     '<td class="name">'+name+(detail?'<span class="detail-badge">상세</span>':'')+'</td>'+
     levelCell+'<td class="fixed-input">연속</td>'+bldgCell+happinessCell+
     '<td class="input-cell">'+stepper('hours',s.hours,'일괄')+'</td>'+
-    '<td class="input-cell"><input type="number" class="stock-input" data-k="stock" value="'+s.stock+'" step="1"></td>'+
+    '<td class="input-cell">'+stockInput(s.stock)+'</td>'+
     '<td class="num calc '+remainClass(remain)+'">'+fmtQty(remain)+'</td>'+
     '<td class="num calc">'+fmtHours(time)+'</td>'+
     '<td class="num calc">'+fmtQty(prod)+'</td>'+
@@ -1069,7 +1091,7 @@ function productRow(name){
     '<td class="name">'+name+(detail?'<span class="detail-badge">상세</span>':'')+'</td>'+
     levelCell+'<td class="input-cell"><select data-k="mode">'+modeHtml+'</select></td>'+bldgCell+happinessCell+
     '<td class="input-cell">'+stepper('hours',s.hours,'일괄')+'</td>'+
-    '<td class="input-cell"><input type="number" class="stock-input" data-k="stock" value="'+s.stock+'" step="1"></td>'+
+    '<td class="input-cell">'+stockInput(s.stock)+'</td>'+
     '<td class="num calc">'+fmtQty(out)+'</td>'+
     '<td class="num calc">'+fmtQty(productUse(name,'jade'))+'</td>'+
     '<td class="num calc">'+fmtQty(productUse(name,'obs'))+'</td>'+
@@ -1089,59 +1111,41 @@ function commitRow(el,group,name){
     if(group==='products') normalizeDetailProduct(name);
   }else if(k==='bldgs') s.bldgs=Math.max(0,num(v,0));
   else if(k==='happiness') s.happiness=normalizedHappiness(v,100);
-  else if(k==='stock') s.stock=Math.round(num(v,0));
+  else if(k==='stock'){
+    const stock=v===fmtQty(s.stock)?s.stock:parseStock(v);
+    if(stock===null&&v.trim()!==''){
+      el.value=fmtQty(s.stock);
+      reportProductionStatus('보유량은 숫자 또는 K·M 단위로 입력하세요.');
+      return;
+    }
+    s.stock=stock??0;
+  }
   else if(k==='hours'){ const hours=num(v,0); s.hours=v===''||hours<0?'':hours; }
-  renderAll();
+  const keepControls=k!=='lv'&&k!=='mode';
+  if(keepControls) el.value=k==='stock'?fmtQty(s.stock):s[k];
+  if(k==='stock') el.dataset.exact=String(s.stock);
+  renderAll(keepControls);
   if(group==='products'&&!document.getElementById('productDetailModal')?.hasAttribute('hidden')) renderDetailModal();
   if(group==='resources'&&!document.getElementById('resourceDetailModal')?.hasAttribute('hidden')) renderResourceDetailModal();
   saveState();
 }
 
-function productLv6PerBuildingOutput(name){
-  const mode=state.products[name].mode,p=DATA.products[name+'|6|'+mode];
-  if(!p) return 0;
-  const h=effectiveHours('products',name),cycles=Math.floor((h*60)/p.min+1e-10);
-  return cycles*happyCycleOutput(name,6,p,100);
-}
-function productLv6PerBuildingUse(name,key){
-  const mode=state.products[name].mode,p=DATA.products[name+'|6|'+mode];
-  if(!p) return 0;
-  const h=effectiveHours('products',name),cycles=Math.floor((h*60)/p.min+1e-10);
-  return cycles*(p[key]||0);
-}
 function resourceLv6PerBuildingOutputForHours(name,h){
   const p=DATA.resources[name]?.['6']; if(!p||h<=0) return 0;
   const wonderBonus=1+(bonusRates()[name]||0);
   return ((p.out/p.hours)+happinessBonusPerHour(name,6,100))*h*wonderBonus;
 }
-function resourceLv6PerBuildingOutput(name){ return resourceLv6PerBuildingOutputForHours(name,effectiveHours('resources',name)); }
-function productCurrentLv6Equivalent(name){
-  const ref=productLv6PerBuildingOutput(name);
-  return ref>0?productOutput(name)/ref:0;
-}
-function resourceCurrentLv6Equivalent(name){
-  const ref=resourceLv6PerBuildingOutput(name);
-  return ref>0?resourceOutput(name)/ref:0;
-}
-
-function sleepProjectedStock(resource){
-  const key=resource==='옥'?'jade':resource==='흑요석'?'obs':'feather',h=settings.sleepPrepH;
-  const produced=resourceOutputForHours(resource,h);
-  const used=productOrder.reduce((sum,name)=>sum+productUseForHours(name,key,h),0);
-  return (state.resources[resource].stock||0)+produced-used;
-}
 function sleepResourcePower(resource){
-  const key=resource==='옥'?'jade':resource==='흑요석'?'obs':'feather';
-  const h=settings.sleepPrepH;
+  const key=resourceKeys[resource];
+  const h=sleepPrepHours();
   const required=sleepRequirement(resource);
-  const used=productOrder.reduce((sum,name)=>sum+productUseForHours(name,key,h),0);
+  const used=productOrder.reduce((sum,name)=>sum+requiredQty(productUseForHours(name,key,Math.min(h,effectiveHours('products',name)))),0);
   const stock=state.resources[resource].stock||0;
-  const produced=resourceOutputForHours(resource,h);
+  const produced=availableQty(resourceOutputForHours(resource,Math.min(h,effectiveHours('resources',resource))));
   const projected=stock+produced-used;
   const remain=projected-required;
   const ref=resourceLv6PerBuildingOutputForHours(resource,h);
-  const fallback=resourceCurrentLv6Equivalent(resource)*100;
-  const current=ref>0?produced/ref*100:fallback;
+  const current=ref>0?produced/ref*100:0;
   const needFromProduction=Math.max(0,required+used-stock);
   if(needFromProduction<=1e-10) return {resource,current,needed:0,diff:current,required,projected,remain,status:'ok'};
   if(!(ref>0)) return {resource,current,needed:null,diff:null,required,projected,remain,status:'time'};
@@ -1163,71 +1167,10 @@ function sleepReserveRow(resource){
     '<td class="num calc '+remainClass(a.remain)+'">'+fmtQty(a.remain)+'</td></tr>';
 }
 
-function productAdjustment(name){
-  const current=productCurrentLv6Equivalent(name);
-  const remain=(state.products[name].stock||0)+productOutput(name)-wonderNeed(name);
-  const perBuilding=productLv6PerBuildingOutput(name);
-  if(remain<0){
-    if(perBuilding<=0) return {kind:'상품',name,remain,current,delta:null,suggested:null,status:'warn'};
-    const rawDelta=(-remain)/perBuilding,suggested=ceil2(current+rawDelta);
-    return {kind:'상품',name,remain,current,delta:Math.max(0,suggested-current),rawDelta,suggested,status:'up'};
-  }
-  if(remain>0&&perBuilding>0&&current>0){
-    const rawReducible=Math.min(current,remain/perBuilding);
-    if(rawReducible>1e-10){
-      const suggested=ceil2(Math.max(0,current-rawReducible)),safeReducible=Math.max(0,current-suggested);
-      if(safeReducible>=0.005) return {kind:'상품',name,remain,current,delta:-safeReducible,rawDelta:-rawReducible,suggested,status:'down'};
-      return {kind:'상품',name,remain,current,delta:-rawReducible,rawDelta:-rawReducible,suggested:current,status:'down-tiny'};
-    }
-  }
-  return {kind:'상품',name,remain,current,delta:0,rawDelta:0,suggested:ceil2(current),status:'keep'};
-}
-function adjustedResourceConsumption(resource,productAdjustments){
-  const key=resource==='옥'?'jade':resource==='흑요석'?'obs':'feather';
-  let total=resourceConsumption(resource);
-  for(const name of productOrder){
-    const adj=productAdjustments[name];
-    if(adj&&adj.status==='up'&&Number.isFinite(adj.suggested)&&Number.isFinite(adj.current)){
-      const inc=Math.max(0,adj.suggested-adj.current);
-      total+=inc*productLv6PerBuildingUse(name,key);
-    }
-  }
-  return total;
-}
-function resourceAdjustment(name,productAdjustments){
-  const current=resourceCurrentLv6Equivalent(name);
-  const blocking=productOrder.some(product=>{
-    const adj=productAdjustments[product];
-    if(!adj||adj.status!=='warn') return false;
-    const p=DATA.products[product+'|6|'+state.products[product].mode];
-    const key=name==='옥'?'jade':name==='흑요석'?'obs':'feather';
-    return !!(p&&(p[key]||0)>0);
-  });
-  if(blocking) return {kind:'자원',name,remain:null,current,delta:null,suggested:null,status:'warn'};
-  const adjustedConsumption=adjustedResourceConsumption(name,productAdjustments);
-  const remain=(state.resources[name].stock||0)+resourceOutput(name)-adjustedConsumption;
-  const perBuilding=resourceLv6PerBuildingOutput(name);
-  if(remain<0){
-    if(perBuilding<=0) return {kind:'자원',name,remain,current,delta:null,suggested:null,status:'warn'};
-    const rawDelta=(-remain)/perBuilding,suggested=ceil2(current+rawDelta);
-    return {kind:'자원',name,remain,current,delta:Math.max(0,suggested-current),rawDelta,suggested,status:'up'};
-  }
-  if(remain>0&&perBuilding>0&&current>0){
-    const rawReducible=Math.min(current,remain/perBuilding);
-    if(rawReducible>1e-10){
-      const suggested=ceil2(Math.max(0,current-rawReducible)),safeReducible=Math.max(0,current-suggested);
-      if(safeReducible>=0.005) return {kind:'자원',name,remain,current,delta:-safeReducible,suggested,status:'down'};
-      return {kind:'자원',name,remain,current,delta:-rawReducible,suggested:current,status:'down-tiny'};
-    }
-  }
-  return {kind:'자원',name,remain,current,delta:0,suggested:ceil2(current),status:'keep'};
-}
-
 function productConversionRatio(name,lv){
-  const mode=state.products[name].mode,cur=DATA.products[name+'|'+lv+'|'+mode],base=DATA.products[name+'|6|'+mode];
-  if(!cur||!base) return null;
-  const a=happyCycleOutput(name,lv,cur,100),b=happyCycleOutput(name,6,base,100);
-  return b>0?a/b:null;
+  const mode=state.products[name].mode,p=DATA.products[name+'|'+lv+'|'+mode];
+  const base=productBenchmark(name);
+  return p&&base>0?happyCycleOutput(name,lv,p,100)*60/p.min/base:null;
 }
 function resourceConversionRatio(name,lv){
   const cur=DATA.resources[name]?.[String(lv)],base=DATA.resources[name]?.['6'];
@@ -1238,7 +1181,7 @@ function resourceConversionRatio(name,lv){
 }
 function conversionRow(kind,name){
   const isProduct=kind==='상품',mode=isProduct?state.products[name].mode:'연속';
-  const ratios=[2,3,4,5,6].map(lv=>isProduct?productConversionRatio(name,lv):resourceConversionRatio(name,lv));
+  const ratios=[1,2,3,4,5,6].map(lv=>isProduct?productConversionRatio(name,lv):resourceConversionRatio(name,lv));
   const rowCls=kind==='상품'&&name===productOrder[0]?' class="convert-product-start"':'';
   return '<tr'+rowCls+'><td class="name">'+name+'</td><td class="calc">'+mode+'</td>'+
     ratios.map(r=>'<td class="num calc convert-ratio">'+fmtPower(r===null?null:r*100)+'</td>').join('')+'</tr>';
@@ -1269,7 +1212,7 @@ function renderDetailResult(name){
 function renderResourceDetailLauncher(){
   const el=document.getElementById('resourceDetailSummary'); if(!el) return;
   const active=resourceOrder.filter(resourceDetailEnabled);
-  el.textContent=active.length?'상세 설정 적용: '+active.join(' · '):'상세 설정 미사용';
+  el.textContent=active.length?'상세 설정 적용: '+active.join(' · '):'기본 설정 사용';
 }
 function resourceDetailLevelStepper(name,value){
   const safe=clamp(parseInt(value)||1,1,6);
@@ -1315,8 +1258,8 @@ function closeResourceDetailModal(){
   document.getElementById('resourceDetailOpen')?.focus(); postSize();
 }
 
-function renderAll(){
-  renderBonus(); renderTables(); renderWonder(); renderSleepReserve(); renderAdjustment(); renderConversion(); renderDetailLauncher(); renderResourceDetailLauncher();
+function renderAll(keepControls=false){
+  renderBonus(); renderTables(keepControls); renderWonder(); renderSleepReserve(); renderAdjustment(); renderConversion(); renderDetailLauncher(); renderResourceDetailLauncher();
 }
 
 /* 자원 상세 설정 이벤트 */
@@ -1387,7 +1330,7 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
 document.getElementById('wonder').addEventListener('change',e=>{settings.wonder=e.target.value;renderAll();saveState();});
 document.getElementById('wLv').addEventListener('change',e=>{settings.wLv=clamp(parseInt(e.target.value)||0,0,50);e.target.value=settings.wLv;renderAll();saveState();});
 document.getElementById('baseH').addEventListener('change',e=>{settings.baseH=Math.max(0,num(e.target.value,0));e.target.value=settings.baseH;renderAll();saveState();});
-document.getElementById('sleepPrepH')?.addEventListener('change',e=>{settings.sleepPrepH=Math.max(0,num(e.target.value,0));e.target.value=settings.sleepPrepH;renderSleepReserve();saveState();postSize();});
+document.getElementById('sleepPrepH')?.addEventListener('change',e=>{settings.sleepPrepH=e.target.value===''?'':Math.max(0,num(e.target.value,0));e.target.value=settings.sleepPrepH;renderSleepReserve();saveState();postSize();});
 document.getElementById('curLv').addEventListener('change',e=>{
   wLvSet.cur=clamp(parseInt(e.target.value)||0,0,50);
   if(wLvSet.tgt<wLvSet.cur) wLvSet.tgt=wLvSet.cur;
@@ -1396,11 +1339,29 @@ document.getElementById('curLv').addEventListener('change',e=>{
 });
 document.getElementById('tgtLv').addEventListener('change',e=>{wLvSet.tgt=Math.max(wLvSet.cur,clamp(parseInt(e.target.value)||0,0,50));e.target.value=wLvSet.tgt;renderWonder();renderAdjustment();saveState();});
 ['wLv','baseH','sleepPrepH','curLv','tgtLv'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}}));
-document.getElementById('resetBtn').addEventListener('click',()=>{
-  const ok=window.confirm('입력한 값을 초기화할까요?\n현재 저장된 값이 기본값으로 돌아갑니다.');
-  if(!ok) return;
-  resetState();
+document.getElementById('saveProduction').addEventListener('click',()=>{
+  try{
+    localStorage.setItem(DEFAULT_STORAGE_KEY,JSON.stringify(productionSnapshot()));
+    document.getElementById('restoreProduction').disabled=false;
+    reportProductionStatus('생산 입력값 저장 완료');
+  }catch(e){ reportProductionStatus('입력값을 저장할 수 없습니다.'); }
 });
+document.getElementById('restoreProduction').addEventListener('click',()=>{
+  try{
+    const saved=JSON.parse(localStorage.getItem(DEFAULT_STORAGE_KEY)||'null');
+    if(saved) restoreProduction(saved,'저장한 생산 입력값을 불러왔습니다.');
+  }catch(e){ reportProductionStatus('저장값을 불러올 수 없습니다.'); }
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  if(window.confirm('생산 계산기의 입력값을 초기화할까요?')){
+    restoreProduction({settings:{wonder:settings.wonder}},'생산 계산기 초기화 완료');
+  }
+});
+for(const id of ['sleepCycle','sleepCount','productRawCycle']){
+  document.getElementById(id).addEventListener('change',e=>{
+    settings[id]=e.target.value;normalizeState();syncUIFromState();renderAll();saveState();
+  });
+}
 
 document.getElementById('productDetailOpen')?.addEventListener('click',()=>openDetailModal());
 document.getElementById('productDetailModal')?.addEventListener('click',e=>{
@@ -1460,24 +1421,33 @@ document.getElementById('productDetailRows')?.addEventListener('change',e=>{
 });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('productDetailModal')?.hasAttribute('hidden')) closeDetailModal(); });
 
-const convertToggle=document.getElementById('convertToggle');
-const convertPanel=document.getElementById('convertPanel');
-if(convertToggle&&convertPanel){
-  convertToggle.addEventListener('click',()=>{
-    const open=convertPanel.hasAttribute('hidden');
-    if(open){
-      convertPanel.removeAttribute('hidden');
-      convertToggle.textContent='생산력 환산표 접기';
-      convertToggle.setAttribute('aria-expanded','true');
-    }else{
-      convertPanel.setAttribute('hidden','');
-      convertToggle.textContent='생산력 환산표 보기';
-      convertToggle.setAttribute('aria-expanded','false');
-    }
+const secondaryColumns={t1:[3,9,10,11],t2:[9,10,11],tw:[4,5,6,7],ts:[5,6]};
+function labelTable(id){
+  const table=document.getElementById(id);
+  const columns=secondaryColumns[id]||[];
+  const headers=[...table.tHead.rows[0].cells];
+  for(const row of [table.tHead.rows[0],...table.tBodies[0].rows]){
+    [...row.cells].forEach((cell,index)=>{
+      cell.classList.toggle('secondary-column',columns.includes(index+1));
+      if(cell.tagName==='TD'){
+        cell.dataset.label=headers[index].textContent;
+        const input=cell.querySelector('input,select');
+        if(input) input.setAttribute('aria-label',row.dataset.name+' '+cell.dataset.label);
+        for(const button of cell.querySelectorAll('.step-btn')) button.setAttribute('aria-label',cell.dataset.label+(button.dataset.delta==='1'?' 늘리기':' 줄이기'));
+      }
+    });
+  }
+}
+for(const id of ['productionView','wonderView']){
+  const button=document.getElementById(id);
+  button.addEventListener('click',()=>{
+    const open=button.getAttribute('aria-expanded')!=='true';
+    button.closest('.panel').classList.toggle('show-details',open);
+    button.setAttribute('aria-expanded',String(open));
+    button.textContent=open?'상세 접기':'상세 보기';
     postSize();
   });
 }
-
 
 /* 행복도 자유 입력 + 추천값 드롭다운 */
 let happinessActiveInput=null;
@@ -1544,5 +1514,6 @@ function postSize(){ try{ parent.postMessage({type:'wrks:viz:resize',height:docu
 window.addEventListener('load',()=>{loadState();renderAll();postSize();});
 if('ResizeObserver' in window) new ResizeObserver(postSize).observe(document.body);
 </script>
+<footer class="section-note">최근 수정 2026. 11. 10.</footer>
 <script src="update-check.js?v=20261102"></script></body>
 </html>
