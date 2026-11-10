@@ -455,6 +455,12 @@ h1{font-size:25px}
   .quest-check,.quest-reward .quest-amount{min-height:42px}
   .quest-reward .quest-amount{font-size:16px}
 }
+.wiki-quest-rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.wiki-quest{display:flex;align-items:center;gap:8px;min-width:0;padding:8px;border:1px solid var(--outline);border-radius:7px;background:var(--soft-2);cursor:pointer}
+.wiki-quest input{width:18px;height:18px;min-width:18px;margin:0;accent-color:var(--primary)}
+.wiki-quest strong,.wiki-quest small{display:block}
+.wiki-quest small{margin-top:3px;color:var(--muted);line-height:1.5}
+@media(max-width:620px){.wiki-quest-rewards{grid-template-columns:1fr}.wiki-quest{min-height:44px}}
 </style>
 </head>
 <body>
@@ -536,7 +542,11 @@ h1{font-size:25px}
       <button id="productDetailOpen" type="button" aria-label="상품 건물 상세 설정" class="detail-open-btn">건물 상세 설정</button>
     </div>
   </div>
-  <div id="productQuestRewards" class="quest-rewards" role="group" aria-label="상품 퀘스트 보상"></div>
+  <div id="wikiQuestRewards" class="wiki-quest-rewards" role="group" aria-label="위키 상품 퀘스트 보상"></div>
+  <details id="manualQuestRewards" class="section-guide"><summary>직접 입력한 보상</summary>
+    <p>위 퀘스트 보상에 포함되지 않은 수량만 입력하세요.</p>
+    <div id="productQuestRewards" class="quest-rewards" role="group" aria-label="직접 입력한 상품 퀘스트 보상"></div>
+  </details>
   <div class="table-wrap">
     <table id="t2">
       <thead><tr>
@@ -901,9 +911,16 @@ function renderSleepReserve(){
 
 function cumulative(lv,product){ return DATA.wonderCosts[String(lv)]?.[product]||0; }
 function wonderNeed(product){ return Math.max(0,cumulative(wLvSet.tgt,product)-cumulative(wLvSet.cur,product)); }
+// Heroes of History Wiki, Allied Cultures → Quests, all three Maya events.
+const wikiQuestRewards={
+  sacred:{name:'Path to Sacred Power',products:{'마스크':5000,'달력돌':4000,'단검':3000}},
+  final:{name:'The Final Stretch',products:{'마스크':10000,'달력돌':8000,'단검':10000,'머리장식':3500}}
+};
 function plannedProductStock(product){
   const item=state.products[product],reward=item.questReward;
-  return item.stock+(reward?.enabled?reward.amount:0);
+  const wikiBonus=Object.entries(wikiQuestRewards).reduce((total,[id,phase])=>
+    total+(settings.questPhases?.[id]===true?(phase.products[product]||0):0),0);
+  return item.stock+wikiBonus+(reward?.enabled?reward.amount:0);
 }
 function wonderTime(product){
   const shortfall=Math.max(0,wonderNeed(product)-plannedProductStock(product));
@@ -1151,6 +1168,13 @@ function normalizedQuestReward(value){
   return {amount:Number.isSafeInteger(amount)&&amount>0?amount:0,enabled:value?.enabled===true};
 }
 function renderQuestRewards(){
+  if(productOrder.some(name=>state.products[name].questReward.enabled&&state.products[name].questReward.amount>0)){
+    document.getElementById('manualQuestRewards').open=true;
+  }
+  document.getElementById('wikiQuestRewards').innerHTML=Object.entries(wikiQuestRewards).map(([id,phase])=>
+    '<label class="wiki-quest"><input type="checkbox" data-wiki-quest="'+id+'"'+(settings.questPhases[id]?' checked':'')+'>'+
+    '<span><strong>'+phase.name+'</strong><small>'+Object.entries(phase.products).map(([name,count])=>name+' +'+fmtQty(count)).join(' · ')+'</small></span></label>'
+  ).join('');
   document.getElementById('productQuestRewards').innerHTML=productOrder.map(name=>{
     const reward=state.products[name].questReward;
     return '<div class="quest-reward" data-quest-product="'+name+'">'+
@@ -1160,6 +1184,7 @@ function renderQuestRewards(){
   }).join('');
 }
 function normalizeState(){
+  settings.questPhases=Object.fromEntries(Object.keys(wikiQuestRewards).map(id=>[id,settings.questPhases?.[id]===true]));
   resourceOrder.forEach(name=>{
     const s=state.resources[name];
     s.lv=clamp(parseInt(s.lv)||1,1,6);
@@ -1213,8 +1238,8 @@ function loadState(){
   normalizeState(); syncUIFromState(); syncWonderView(); renderQuestRewards(); saveState();
 }
 function productionSnapshot(){
-  const {wonder,wLv,baseH}=settings;
-  return {state,settings:{wonder,wLv,baseH},productDetails,resourceDetails};
+  const {wonder,wLv,baseH,questPhases}=settings;
+  return {state,settings:{wonder,wLv,baseH,questPhases},productDetails,resourceDetails};
 }
 function reportProductionStatus(message){
   const status=document.getElementById('resetStatus');
@@ -1229,7 +1254,7 @@ function restoreProduction(snapshot,message){
       details[name]={enabled:false,rows:[],...(snapshot[group==='resources'?'resourceDetails':'productDetails']?.[name]||{})};
     }
   }
-  for(const key of ['wonder','wLv','baseH']) settings[key]=snapshot.settings?.[key]??INIT.settings[key];
+  for(const key of ['wonder','wLv','baseH','questPhases']) settings[key]=snapshot.settings?.[key]??INIT.settings[key];
   normalizeState();syncUIFromState();renderQuestRewards();renderAll();saveState();reportProductionStatus(message);
 }
 
@@ -1584,6 +1609,12 @@ for(const id of ['sleepCycle','sleepCount','productRawCycle']){
   });
 }
 
+document.getElementById('wikiQuestRewards').addEventListener('change',event=>{
+  const id=event.target.dataset.wikiQuest;
+  if(!Object.hasOwn(wikiQuestRewards,id)) return;
+  settings.questPhases[id]=event.target.checked;
+  renderWonder();renderAdjustment();saveState();postSize();
+});
 document.getElementById('productQuestRewards').addEventListener('change',event=>{
   const input=event.target,group=input.closest('[data-quest-product]');
   if(!group) return;
