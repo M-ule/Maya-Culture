@@ -1176,7 +1176,7 @@ function renderQuestRewards(){
   }
   document.getElementById('wikiQuestRewards').innerHTML=Object.entries(wikiQuestRewards).map(([id,phase])=>
     '<label class="wiki-quest"><input type="checkbox" data-wiki-quest="'+id+'"'+(settings.questPhases[id]?' checked':'')+'>'+
-    '<span><strong>'+phase.name+'</strong><small>'+Object.entries(phase.products).map(([name,count])=>name+' +'+fmtQty(count)).join(' · ')+'</small></span></label>'
+    '<span>'+Object.entries(phase.products).map(([name,count])=>name+' +'+fmtQty(count)).join(' · ')+'</span></label>'
   ).join('');
   document.getElementById('productQuestRewards').innerHTML=productOrder.map(name=>{
     const reward=state.products[name].questReward;
