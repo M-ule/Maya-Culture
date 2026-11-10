@@ -66,11 +66,6 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
 .stock-input::-webkit-inner-spin-button,.stock-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0} .stock-input{-moz-appearance:textfield}
 .settings .step-wrap{width:92px} .settings .step-wrap input{width:72px;min-width:0}
 
-/* 모든 계산기 표 열 너비 100px 통일 */
-#t1, #t2, #tw, #ta { table-layout:fixed; }
-#t1 { width:1100px !important; min-width:1100px !important; }
-#t2 { width:1100px !important; min-width:1100px !important; }
-#tw { width:700px !important; min-width:700px !important; }
 .w-mode { width:100% !important; max-width:100%; }
 .input-cell input, .input-cell select { max-width:100%; }
 #tw th, #ta th { white-space:nowrap; height:28px; line-height:1.2; }
@@ -100,41 +95,6 @@ input[type=number]{text-align:center} select{cursor:pointer;text-align:center;te
   .convert-panel{width:100%;max-width:100%}
 }
 @media(max-width:720px){body{padding:10px}h1{font-size:18px}.settings{gap:8px}.settings .spacer{display:none}.step2-title-actions,.step-title-row{align-items:flex-start;gap:6px}.step2-title-actions h2,.step-title-row h2{flex:1 1 100%;}.product-detail-actions,.section-title-actions{width:100%;}.detail-open-btn,.convert-toggle{min-height:44px;font-size:13px}.detail-summary{align-self:center}}
-
-/* ===== 공통 표 셀 규격 =====
-   모든 표는 1칸당 실제 100px, 헤더/데이터 행 높이 동일 */
-#t1,#t2,#tw,#ts,#ta,#tc{
-  table-layout:fixed !important;
-  border-spacing:0 !important;
-}
-#t1{width:1100px !important;min-width:1100px !important;}
-#t2{width:1100px !important;min-width:1100px !important;}
-#tw{width:700px !important;min-width:700px !important;}
-#ts{width:700px !important;min-width:700px !important;}
-#ta{width:500px !important;min-width:500px !important;}
-#tc{width:700px !important;min-width:700px !important;margin-bottom:0;}
-
-#t1 th,#t1 td,
-#t2 th,#t2 td,
-#tw th,#tw td,
-#ts th,#ts td,
-#ta th,#ta td,
-#tc th,#tc td{
-  box-sizing:border-box !important;
-  width:100px !important;
-  min-width:100px !important;
-  max-width:100px !important;
-  height:30px !important;
-  min-height:30px !important;
-  padding:4px 6px !important;
-  line-height:20px !important;
-  vertical-align:middle !important;
-}
-
-#t1 th,#t2 th,#tw th,#ts th,#ta th,#tc th{
-  white-space:nowrap;
-}
-
 
 /* ===== 상품 건물 상세 설정 ===== */
 .step2-title-actions,.step-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;margin-bottom:8px}
@@ -274,31 +234,16 @@ h1{font-size:25px}
 #tc th:first-child{z-index:4}
 #tc th:nth-child(2){width:95px!important}
 @media(max-width:1100px){
-  #t1,#t2,#tw,#ts,#ta,#t1 tbody,#t2 tbody,#tw tbody,#ts tbody,#ta tbody{display:block}
-  .card table:not(#tc) thead{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
-  .card table:not(#tc) tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px;margin:0 0 8px;border:1px solid #c0d4b9;border-radius:8px;background:var(--soft-2)}
-  .card table:not(#tc) tbody td{display:flex;position:static;min-height:54px;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;border-radius:5px;padding:5px}
-  .card table:not(#tc) tbody td.name{grid-column:1/-1;min-height:32px;flex-direction:row}
-  .card table:not(#tc) tbody td:not(.name)::before{content:attr(data-label);position:static;width:auto;background:transparent;font-size:11px;font-weight:600;line-height:1.25}
-  .card table:not(#tc) tbody td.secondary-column{display:none}
-  .show-details .card table:not(#tc) tbody td.secondary-column{display:flex}
-  .card table:not(#tc) tbody td .step-wrap,.card table:not(#tc) tbody td .happiness-combo{max-width:145px}
-}
-@media(max-width:620px){
-  body{padding:10px}
-  h1{font-size:21px}
-  .tabs .tab{flex:1}
-  .card{padding:10px}
-  .card h2{font-size:16px}
-  .settings{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-  .settings select{width:100%;min-width:0}
-  .settings .step-wrap{width:100%}
-  .step2-title-actions{align-items:center}
-  .step2-title-actions h2{flex:0 0 auto}
-  .card table:not(#tc) tbody tr{grid-template-columns:repeat(2,minmax(0,1fr))}
-  #tc{min-width:530px!important}
-  #tc th:first-child,#tc td:first-child{width:85px!important}
-  #tc th:nth-child(2){width:74px!important}
+  #panel-prod .table-wrap{overflow:visible}
+  #t1,#t2,#t1 tbody,#t2 tbody{display:block}
+  #panel-prod table thead{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
+  #panel-prod tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px;margin:0 0 8px;border:1px solid #c0d4b9;border-radius:8px;background:var(--soft-2)}
+  #panel-prod tbody td{display:flex;position:static;min-width:0;min-height:50px;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;border-radius:5px;padding:6px}
+  #panel-prod tbody td.name{grid-column:1/-1;min-height:32px;flex-direction:row}
+  #panel-prod tbody td:not(.name)::before{content:attr(data-label);position:static;width:auto;background:transparent;font-size:12px;font-weight:600;line-height:1.25}
+  #panel-prod:not(.show-details) tbody .secondary-column{display:none}
+  #panel-prod tbody :is(input,select,.step-wrap,.happiness-combo){width:100%;max-width:168px}
+  #panel-prod tbody .stock-input{text-align:center}
 }
 /* Match the shared calculator layout while keeping the Maya palette. */
 :root{--muted:#456353;--outline:#c0d4b9}
@@ -335,25 +280,70 @@ h1{font-size:25px}
 #t1 th:first-child,#t2 th:first-child{width:12%!important}
 #t2 th:nth-child(3){width:13%!important}
 @media(max-width:720px){
-  .card{padding:12px}
-  .settings{display:grid;grid-template-columns:1fr;gap:8px;padding:10px}
-  .control-field{display:grid;grid-template-columns:minmax(0,1fr) minmax(98px,45%);gap:8px}
-  .control-field>select,.control-field>.step-wrap{width:100%;min-width:0}
+  body{padding:10px}
+  h1{font-size:21px;margin:0 0 8px}
+  .tabs .tab{flex:1}
+  .section-links{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:5px}
+  .section-links a{justify-content:center;text-align:center;padding:5px 3px;min-height:36px;font-size:12px;line-height:1.3}
+  .card{padding:10px;margin:10px 0}
+  .card h2{font-size:16px;padding:6px 8px}
+  .card-title,.step2-title-actions{gap:6px;margin:0 0 10px}
+  .step2-title-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start}
+  .production-section-title{display:grid;gap:3px;justify-items:start}
+  .detail-summary{overflow-wrap:anywhere}
+  .product-detail-actions{width:auto;margin:0}
+  .settings{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:9px;width:100%}
+  .control-field{display:grid;grid-template-columns:minmax(0,1fr) minmax(108px,49%);gap:8px}
+  .control-field>select,.settings .control-field>.step-wrap,.settings .control-field input{width:100%;min-width:0}
   .control-field>select,.control-field input,.detail-row :is(input,select){font-size:16px;min-height:44px}
-  .step-controls{width:28px;flex-basis:28px}
-  .production-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) auto}
+  .step-controls,.detail-row .detail-level-step .step-controls,.sleep-settings .sleep-time-wrap .step-controls{width:34px;flex-basis:34px}
+  .step-btn{font-size:10px;min-height:22px}
+  .production-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) auto;gap:5px}
   .production-actions button{padding:6px;white-space:normal;min-height:44px}
   .production-actions .reset-status{grid-column:1/-1}
   .summary-grid{gap:6px}
   .bonus-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
   .bonus-summary .summary-metric:first-child{grid-column:1/-1}
-  .summary-metric{padding:9px}
-  .summary-metric strong{font-size:17px}
-  .card table:not(#tc) tbody tr{gap:6px;padding:8px}
-  .card table:not(#tc) tbody td:not(.name)::before{font-size:12px}
-  #t1 input,#t2 input,#t2 select{font-size:16px;min-height:42px}
-  .card table:not(#tc) .result-cell{font-weight:700}
+  .summary-metric{padding:8px}
+  .summary-metric strong{font-size:16px}
+  #panel-prod tbody tr{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:7px}
+  #panel-prod tbody td{padding:5px;min-height:0}
+  #panel-prod tbody td.name{grid-row:1;grid-column:1;justify-content:flex-start;padding-left:8px}
+  #panel-prod tbody td.result-cell{grid-row:1;grid-column:2;min-height:38px;font-weight:700}
+  #panel-prod tbody .input-cell{justify-content:flex-start}
+  #t1 input,#t2 input,#t2 select{font-size:16px;min-height:44px}
+  #t1 .stock-input,#t2 .stock-input{max-width:168px}
+  #panel-wonder table:not(#tc) th,#panel-wonder table:not(#tc) td{padding:6px 3px;font-size:12px;line-height:1.35;overflow-wrap:anywhere;word-break:keep-all}
+  #panel-wonder table:not(#tc) td:first-child,#panel-wonder table:not(#tc) th:first-child{position:static}
+  #panel-wonder.show-details table:not(#tc){display:block}
+  #panel-wonder.show-details table:not(#tc) thead{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
+  #panel-wonder.show-details table:not(#tc) tbody{display:block}
+  #panel-wonder.show-details table:not(#tc) tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:7px;margin-bottom:6px;background:var(--soft-2);border:1px solid var(--outline);border-radius:8px}
+  #panel-wonder.show-details table:not(#tc) td{display:flex;flex-direction:column;justify-content:center;gap:3px;border:0;border-radius:4px}
+  #panel-wonder.show-details #ta tr.adjust-product-start td:not(.name){border-top:0!important}
+  #panel-wonder.show-details table:not(#tc) td.name{grid-column:1/-1;font-weight:700;text-align:left;padding-left:7px}
+  #panel-wonder.show-details table:not(#tc) td:not(.name)::before{content:attr(data-label);font-size:11px;font-weight:600}
   .conversion-hint{display:block}
+  .conversion-scroll{max-width:100%;overscroll-behavior-x:contain}
+  #tc{min-width:526px!important}
+  #tc th:first-child,#tc td:first-child{width:84px!important;box-shadow:2px 0 3px #17352a24}
+  #tc th:nth-child(2){width:70px!important}
+  #tc th,#tc td{padding:7px 4px;font-size:12px;white-space:normal}
+  .detail-sheet{display:flex;flex-direction:column;max-height:92vh;max-height:92dvh;overflow:hidden;padding:10px 10px 0}
+  .detail-head,.detail-tabs,.detail-footer{flex:none}
+  .detail-content{min-height:0;overflow-y:auto;overscroll-behavior-y:contain;padding:1px 2px 8px}
+  .detail-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+  .resource-detail-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .detail-tab{padding:4px 2px;font-size:12px;word-break:keep-all}
+  .detail-toolbar{padding:4px 6px}
+  .detail-toolbar>.detail-field>label{display:none}
+  .detail-toggle-wrap input{min-height:0}
+  .detail-result,.detail-help{font-size:12px}
+  #productDetailRows .detail-row,#resourceDetailRows .detail-row{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;gap:7px}
+  .detail-row-number{grid-row:1;grid-column:1;align-self:center}
+  .detail-remove{grid-row:1;grid-column:2}
+  .detail-footer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);position:static;margin:0;padding:7px 0 max(8px,env(safe-area-inset-bottom))}
+  .detail-footer button{width:100%;min-height:44px}
 }
 </style>
 </head>
@@ -392,7 +382,7 @@ h1{font-size:25px}
   <div class="step2-title-actions">
     <div class="production-section-title"><h2>기초 자원</h2><span id="resourceDetailSummary" class="detail-summary">기본 설정 사용</span></div>
     <div class="product-detail-actions">
-      <button id="resourceDetailOpen" type="button" class="detail-open-btn">자원 건물 상세 설정</button>
+      <button id="resourceDetailOpen" type="button" aria-label="기초 자원 건물 상세 설정" class="detail-open-btn">건물 상세 설정</button>
     </div>
   </div>
   <p id="resourceOverview" class="section-note" role="status"></p>
@@ -413,6 +403,7 @@ h1{font-size:25px}
         <button type="button" class="detail-close" data-resource-detail-close aria-label="닫기">×</button>
       </div>
       <div id="resourceDetailTabs" class="detail-tabs resource-detail-tabs"></div>
+      <div class="detail-content">
       <div class="detail-toolbar">
         <div class="detail-field">
           <label>상세 설정</label>
@@ -422,6 +413,7 @@ h1{font-size:25px}
       <div class="detail-help">건물 구성마다 레벨·건물 수·행복도·운영 시간을 입력합니다. 운영 시간을 비우면 생산 표의 해당 항목 시간을 따릅니다.</div>
       <div id="resourceDetailResult" class="detail-result"></div>
       <div id="resourceDetailRows" class="detail-rows"></div>
+      </div>
       <div class="detail-footer"><button id="resourceDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button><button type="button" class="detail-done" data-resource-detail-close>완료</button></div>
     </section>
   </div>
@@ -430,7 +422,7 @@ h1{font-size:25px}
   <div class="step2-title-actions">
     <div class="production-section-title"><h2>상품</h2><span id="productDetailSummary" class="detail-summary">기본 설정 사용</span></div>
     <div class="product-detail-actions">
-      <button id="productDetailOpen" type="button" class="detail-open-btn">상품 건물 상세 설정</button>
+      <button id="productDetailOpen" type="button" aria-label="상품 건물 상세 설정" class="detail-open-btn">건물 상세 설정</button>
     </div>
   </div>
   <div class="table-wrap">
@@ -450,6 +442,7 @@ h1{font-size:25px}
         <button type="button" class="detail-close" data-detail-close aria-label="닫기">×</button>
       </div>
       <div id="productDetailTabs" class="detail-tabs"></div>
+      <div class="detail-content">
       <div class="detail-toolbar">
         <div class="detail-field">
           <label>상세 설정</label>
@@ -459,6 +452,7 @@ h1{font-size:25px}
       <div class="detail-help">건물 구성마다 생산 주기와 운영 시간을 지정할 수 있습니다. 운영 시간을 비우면 해당 상품의 운영 시간을 따릅니다. 행복도는 생산량에만 반영됩니다.</div>
       <div id="productDetailResult" class="detail-result"></div>
       <div id="productDetailRows" class="detail-rows"></div>
+      </div>
       <div class="detail-footer"><button id="productDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button><button type="button" class="detail-done" data-detail-close>완료</button></div>
     </section>
   </div>
@@ -571,7 +565,7 @@ function parseStock(value){
 function stockInput(value){
   return '<input type="text" class="stock-input" inputmode="decimal" data-k="stock" value="'+fmtQty(value)+'" data-exact="'+value+'"><small class="stock-error" role="status" hidden></small>';
 }
-function fmtHours(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=requiredQty(n*100)/100; return r.toLocaleString('ko-KR',{maximumFractionDigits:2}); }
+function fmtHours(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=requiredQty(n*100)/100; return (r||0).toLocaleString('ko-KR',{maximumFractionDigits:2}); }
 function fmtPct(n){ return (Math.round(n*1000)/10).toLocaleString('ko-KR',{maximumFractionDigits:1})+'%'; }
 function fmtBldg(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*100)/100); return r.toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:2}); }
 function fmtPower(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*10)/10); return r.toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:1}); }
