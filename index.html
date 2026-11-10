@@ -242,6 +242,16 @@ h1{font-size:25px}
 .card-title,.production-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .card-title h2,.step2-title-actions h2{margin:0}
 .step2-title-actions{margin:0 0 12px}
+.stock-error{color:var(--bad);font-size:11px;line-height:1.35}
+.section-links{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 10px}
+.section-links a{color:var(--primary);text-decoration:none;border:1px solid var(--border);border-radius:999px;padding:6px 11px;background:var(--panel);font-size:13px;font-weight:700}
+#productDetailRows .detail-row{grid-template-columns:repeat(5,minmax(0,1fr)) auto}
+#resourceDetailRows .detail-row{grid-template-columns:repeat(4,minmax(0,1fr)) auto}
+.detail-row select{min-width:0;min-height:38px}
+@media(max-width:720px){
+  #productDetailRows .detail-row,#resourceDetailRows .detail-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .detail-footer{position:sticky;bottom:-1px;background:var(--panel);padding:8px 0}
+}
 .production-section-title{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .production-actions{justify-content:flex-start}
 .production-actions button,.detail-open-btn,.convert-toggle{min-height:40px;font-size:13px}
@@ -305,6 +315,7 @@ h1{font-size:25px}
 </nav>
 
 <div id="panel-prod" class="panel active">
+  <nav class="section-links" aria-label="생산 계산기 바로가기"><a href="#productionSettings">생산 설정</a><a href="#resourcesCard">기초 자원</a><a href="#productsCard">상품</a></nav>
   <section class="card" id="productionSettings">
   <div class="card-title"><h2>생산 설정</h2><button id="productionView" class="convert-toggle" type="button" aria-expanded="false" aria-controls="t1 t2">상세 보기</button></div>
   <div class="settings">
@@ -332,6 +343,7 @@ h1{font-size:25px}
       <button id="resourceDetailOpen" type="button" class="detail-open-btn">자원 건물 상세 설정</button>
     </div>
   </div>
+  <p id="resourceOverview" class="section-note" role="status"></p>
   <div class="table-wrap">
     <table id="t1">
       <thead><tr>
@@ -354,15 +366,11 @@ h1{font-size:25px}
           <label>상세 설정</label>
           <div class="detail-toggle-wrap"><input type="checkbox" id="resourceDetailEnabled"><label for="resourceDetailEnabled">이 자원에 상세 설정 적용</label></div>
         </div>
-        <div class="detail-field">
-          <label>생산 방식</label>
-          <select id="resourceDetailMode" disabled><option>연속</option></select>
-        </div>
       </div>
-      <div class="detail-help">건물 구성에 맞게 <b>레벨</b>, <b>건물 수</b>, <b>행복도</b>를 입력하세요. 상세 설정을 사용하면 <b>기본 표</b>의 레벨·건물 수·행복도는 상세 구성에 따라 자동 표시됩니다.</div>
+      <div class="detail-help">건물 구성마다 레벨·건물 수·행복도·운영 시간을 입력합니다. 운영 시간을 비우면 생산 표의 해당 항목 시간을 따릅니다.</div>
       <div id="resourceDetailResult" class="detail-result"></div>
       <div id="resourceDetailRows" class="detail-rows"></div>
-      <div class="detail-footer"><button id="resourceDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button></div>
+      <div class="detail-footer"><button id="resourceDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button><button type="button" class="detail-add" data-resource-detail-close>완료</button></div>
     </section>
   </div>
 
@@ -395,15 +403,11 @@ h1{font-size:25px}
           <label>상세 설정</label>
           <div class="detail-toggle-wrap"><input type="checkbox" id="productDetailEnabled"><label for="productDetailEnabled">이 상품에 상세 설정 적용</label></div>
         </div>
-        <div class="detail-field">
-          <label for="productDetailMode">생산 방식</label>
-          <select id="productDetailMode"></select>
-        </div>
       </div>
-      <div class="detail-help">건물 구성에 맞게 <b>레벨</b>, <b>건물 수</b>, <b>행복도</b>를 입력하세요. 행복도는 <b>상품 생산량에만</b> 반영되고, 옥·흑요석·깃털 사용량은 행복도와 관계없이 <b>각 레벨의 건물 수</b>를 기준으로 계산합니다. 상세 설정을 사용하면 <b>기본 표</b>의 레벨·건물 수·행복도는 상세 구성에 따라 자동 표시됩니다.</div>
+      <div class="detail-help">건물 구성마다 생산 주기와 운영 시간을 지정할 수 있습니다. 운영 시간을 비우면 해당 상품의 운영 시간을 따릅니다. 행복도는 생산량에만 반영됩니다.</div>
       <div id="productDetailResult" class="detail-result"></div>
       <div id="productDetailRows" class="detail-rows"></div>
-      <div class="detail-footer"><button id="productDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button></div>
+      <div class="detail-footer"><button id="productDetailAdd" type="button" class="detail-add">+ 건물 구성 추가</button><button type="button" class="detail-add" data-detail-close>완료</button></div>
     </section>
   </div>
 
@@ -411,8 +415,9 @@ h1{font-size:25px}
 </div>
 
 <div id="panel-wonder" class="panel">
+  <nav class="section-links" aria-label="불가사의 목표 바로가기"><a href="#mayaGoal">달성 현황</a><a href="#mayaSleep">수면 대비</a><a href="#mayaPower">생산력 비교</a><a href="#mayaConversion">환산표</a></nav>
   <section class="card">
-  <div class="card-title"><h2>불가사의 목표</h2><button id="wonderView" class="convert-toggle" type="button" aria-expanded="false" aria-controls="tw ts">상세 보기</button></div>
+  <div class="card-title"><h2>불가사의 목표</h2><button id="wonderView" class="convert-toggle" type="button" aria-expanded="false" aria-controls="tw ts ta">상세 보기</button></div>
   <div class="settings">
     <label for="curLv">현재 레벨</label>
     <div class="step-wrap settings-step"><input type="number" id="curLv" class="step-one" min="0" max="50" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
@@ -424,8 +429,9 @@ h1{font-size:25px}
   <p id="wonderContext" class="section-note"></p>
   <div id="goalSummary" class="bonus-box" role="status"></div>
   </section>
-  <section class="card">
+  <section class="card" id="mayaGoal">
   <h2>목표 달성 현황</h2>
+  <p class="section-note">소요 시간은 현재 보유량에서 시작해 목표 수량을 처음 채우는 데 걸리는 시간입니다. 설정한 운영 시간을 넘어도 표시하며, 상세 구성에서 운영 시간을 0으로 지정한 건물은 제외합니다.</p>
   <div class="table-wrap">
     <table id="tw">
       <thead><tr>
@@ -435,7 +441,7 @@ h1{font-size:25px}
   </div>
 
   </section>
-  <section class="card">
+  <section class="card" id="mayaSleep">
   <h2>수면 대비 자원 확보</h2>
   <div class="settings sleep-settings">
     <label for="sleepPrepH">수면까지 남은 시간(h)</label>
@@ -454,15 +460,15 @@ h1{font-size:25px}
   </div>
 
   </section>
-  <section class="card">
+  <section class="card" id="mayaPower">
     <h2>목표 레벨 생산력 비교</h2>
-    <p class="section-note">목표량을 채우는 데 필요한 상품 생산분의 원료 소모만을 계산합니다.</p>
+    <p class="section-note">목표량을 채우는 데 필요한 상품 생산분의 원료 소모만을 계산합니다. 원료 필요량은 6레벨 건물을 기준으로 환산하고, 상세 설정 시 생산 주기·행복도·운영 시간이 다른 건물 구성을 함께 반영합니다.</p>
     <div class="settings"><label for="productRawCycle">필요량 환산 기준 주기</label>
       <select id="productRawCycle"><option>생산 계산기값</option><option>30분</option><option>1시간</option><option>2시간</option></select>
     </div>
-    <div class="table-wrap"><table id="ta"><thead><tr><th>생산 항목</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th></tr></thead><tbody></tbody></table></div>
+    <div class="table-wrap"><table id="ta"><thead><tr><th>생산 항목</th><th>생산력 차이</th><th>현재 생산력</th><th>필요 생산력</th><th>운영 시간(h)</th><th>추가 필요량</th></tr></thead><tbody></tbody></table></div>
   </section>
-  <section class="card">
+  <section class="card" id="mayaConversion">
     <h2>생산력 환산표</h2>
     <p class="section-note">행복도 100%인 6레벨 건물 1채의 기준 생산력을 100으로 둡니다. 기초 자원은 연속 생산, 상품은 30분 주기 기준입니다.</p>
     <div class="table-wrap"><table id="tc"><thead><tr><th>생산 항목</th><th>생산 방식</th><th>Lv1</th><th>Lv2</th><th>Lv3</th><th>Lv4</th><th>Lv5</th><th>Lv6</th></tr></thead><tbody></tbody></table></div>
@@ -513,39 +519,15 @@ function parseStock(value){
   return Number.isSafeInteger(Math.round(qty))?Math.round(qty):null;
 }
 function stockInput(value){
-  return '<input type="text" class="stock-input" inputmode="decimal" data-k="stock" value="'+fmtQty(value)+'" data-exact="'+value+'">';
+  return '<input type="text" class="stock-input" inputmode="decimal" data-k="stock" value="'+fmtQty(value)+'" data-exact="'+value+'"><small class="stock-error" role="status" hidden></small>';
 }
 function fmtHours(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=requiredQty(n*100)/100; return r.toLocaleString('ko-KR',{maximumFractionDigits:2}); }
 function fmtPct(n){ return (Math.round(n*1000)/10).toLocaleString('ko-KR',{maximumFractionDigits:1})+'%'; }
 function fmtBldg(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*100)/100); return r.toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:2}); }
-function fmtRatio(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*100)/100); return r.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function fmtPower(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=displayZero(Math.round(n*10)/10); return r.toLocaleString('ko-KR',{minimumFractionDigits:0,maximumFractionDigits:1}); }
-function ceil2(n){ return Math.ceil((n-1e-12)*100)/100; }
-function floor2(n){ return Math.floor((n+1e-12)*100)/100; }
 function effectiveHours(group,name){ const h=state[group][name].hours; return h===''||h===null||!Number.isFinite(parseFloat(h)) ? num(settings.baseH,0) : num(h,0); }
 
-function happinessFactor(h){ return (1+clamp(num(h,100),0,100)/100)/2; }
-function allProductModes(name){
-  const order=['1분','5분','30분','1시간','2시간'];
-  const found=new Set();
-  for(let lv=1;lv<=6;lv++) (DATA.modes[name+'|'+lv]||[]).forEach(m=>found.add(m));
-  return order.filter(m=>found.has(m));
-}
-function compatibleLevels(name,mode){
-  const levels=[];
-  for(let lv=1;lv<=6;lv++) if((DATA.modes[name+'|'+lv]||[]).includes(mode)) levels.push(lv);
-  return levels;
-}
-function closestCompatibleLevel(name,mode,lv){
-  const levels=compatibleLevels(name,mode);
-  if(!levels.length) return clamp(parseInt(lv)||1,1,6);
-  const n=clamp(parseInt(lv)||levels[0],1,6);
-  return levels.reduce((best,x)=>Math.abs(x-n)<Math.abs(best-n)?x:best,levels[0]);
-}
-/* 구버전 normalizeDetailProduct 제거: 아래 통합 구현 사용 */
-/* 구버전 normalizeProductDetails 제거: 아래 통합 구현 사용 */
 function detailEnabled(name){ return !!(productDetails[name]?.enabled&&productDetails[name]?.rows?.length); }
-/* 구버전 seedDetailFromLegacy 제거: 아래 통합 구현 사용 */
 function productActualBuildings(name){
   if(!detailEnabled(name)) return state.products[name].bldgs;
   return productDetails[name].rows.reduce((sum,row)=>sum+Math.max(0,num(row.count,0)),0);
@@ -556,16 +538,8 @@ function productDetailLevelText(name){
   if(!levels.length) return '—';
   return levels.length===1?String(levels[0]):levels.join('·');
 }
-function detailProductInfo(name,row){ return DATA.products[name+'|'+row.lv+'|'+state.products[name].mode]||null; }
-function detailProductCycles(name,row){
-  const p=detailProductInfo(name,row);
-  if(!p) return 0;
-  return Math.floor((effectiveHours('products',name)*60)/p.min+1e-10);
-}
-/* 구버전 productPerCycleOutput 제거: 아래 통합 구현 사용 */
-/* 구버전 productCycleMinutes 제거: 아래 통합 구현 사용 */
+function detailProductInfo(name,row){ return DATA.products[name+'|'+row.lv+'|'+row.mode]||null; }
 
-/* 구버전 normalizeState 제거: 아래 통합 구현 사용 */
 function syncUIFromState(){
   document.getElementById('wonder').value=settings.wonder;
   document.getElementById('wLv').value=settings.wLv;
@@ -576,46 +550,10 @@ function syncUIFromState(){
   document.getElementById('curLv').value=wLvSet.cur;
   document.getElementById('tgtLv').value=wLvSet.tgt;
 }
-/* 구버전 saveState 제거: 아래 통합 구현 사용 */
-/* 구버전 loadState 제거: 아래 통합 구현 사용 */
-/* 구버전 resetState 제거: 아래 통합 구현 사용 */
 
-function resourceInfo(name){ const s=state.resources[name]; return DATA.resources[name]?.[String(s.lv)]||null; }
-function productInfo(name){ const s=state.products[name]; return DATA.products[name+'|'+s.lv+'|'+s.mode]||null; }
 function bonusRates(){ return DATA.bonus[settings.wonder+'|'+settings.wLv]||{}; }
 function staffInfo(){ return DATA.staff[settings.wonder+'|'+settings.wLv]||{worker:0,priest:0,nextWorker:0,nextPriest:0}; }
 
-/* 구버전 resourceOutput 제거: 아래 통합 구현 사용 */
-/* 구버전 productCycles 제거: 아래 통합 구현 사용 */
-/* 구버전 productOutput 제거: 아래 통합 구현 사용 */
-/* 구버전 productUse 제거: 아래 통합 구현 사용 */
-function productPerBuildingOutput(name){
-  const p=productInfo(name);
-  return p ? productCycles(name)*p.out : 0;
-}
-function productPerBuildingUse(name,key){
-  const p=productInfo(name);
-  return p ? productCycles(name)*(p[key]||0) : 0;
-}
-function resourcePerBuildingOutput(name){
-  const p=resourceInfo(name);
-  if(!p) return 0;
-  const h=effectiveHours('resources',name);
-  const bonus=bonusRates()[name]||0;
-  return (p.out/p.hours)*h*(1+bonus);
-}
-function productLv6Info(name){
-  const mode=state.products[name].mode;
-  return DATA.products[name+'|6|'+mode]||null;
-}
-/* 구버전 productLv6PerBuildingOutput 제거: 아래 통합 구현 사용 */
-/* 구버전 productLv6PerBuildingUse 제거: 아래 통합 구현 사용 */
-/* 구버전 resourceLv6PerBuildingOutput 제거: 아래 통합 구현 사용 */
-/* 구버전 productCurrentLv6Equivalent 제거: 아래 통합 구현 사용 */
-/* 구버전 resourceCurrentLv6Equivalent 제거: 아래 통합 구현 사용 */
-/* 구버전 resourceConsumption 제거: 아래 통합 구현 사용 */
-/* 구버전 resourceRequiredHours 제거: 아래 통합 구현 사용 */
-function verdict(v){ return v>=0?'<span class="badge badge-ok">잔여</span>':'<span class="badge badge-bad">부족</span>'; }
 function remainClass(v){ return v>=0?'remain-ok':'remain-bad'; }
 function modeOptions(name,lv,cur){ const modes=DATA.modes[name+'|'+lv]||[]; return modes.map(m=>'<option value="'+m+'"'+(m===cur?' selected':'')+'>'+m+'</option>').join(''); }
 function stepper(k,value,placeholder=''){ return '<div class="step-wrap"><input type="number" class="step-one" data-k="'+k+'" value="'+value+'" step="any" min="0"'+(placeholder?' placeholder="'+placeholder+'"':'')+'><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>'; }
@@ -635,14 +573,13 @@ function renderBonus(){
     '<div class="bonus-item"><span>다음 사제 증가</span><b>'+np+'</b></div>';
 }
 
-/* 구버전 resourceRow 제거: 아래 통합 구현 사용 */
-/* 구버전 productRow 제거: 아래 통합 구현 사용 */
 function bindProductionRows(){
   document.querySelectorAll('#panel-prod tbody tr').forEach(tr=>{
     const group=tr.dataset.group,name=tr.dataset.name;
     tr.querySelectorAll('[data-k]').forEach(el=>{
       if(el.dataset.k==='stock'){
         el.addEventListener('focus',()=>{el.value=el.dataset.exact;el.select();});
+        el.addEventListener('input',()=>{el.dataset.edited='true';el.removeAttribute('aria-invalid');el.nextElementSibling.hidden=true;});
         el.addEventListener('blur',()=>{if(el.value===el.dataset.exact) el.value=fmtQty(state[group][name].stock);});
       }
       const commit=()=>commitRow(el,group,name);
@@ -651,7 +588,6 @@ function bindProductionRows(){
     });
   });
 }
-/* 구버전 commitRow 제거: 아래 통합 구현 사용 */
 function renderTables(keepControls){
   for(const [id,html] of [['t1',resourceOrder.map(resourceRow).join('')],['t2',productOrder.map(productRow).join('')]]){
     const body=document.querySelector('#'+id+' tbody');
@@ -670,11 +606,14 @@ function renderTables(keepControls){
     labelTable(id);
   }
   if(!keepControls) bindProductionRows();
+  const shortage=resourceOrder.flatMap(name=>{
+    const remain=state.resources[name].stock+resourceOutput(name)-resourceConsumption(name);
+    return remain<0?[name+' '+fmtQty(-remain)]:[];
+  });
+  document.getElementById('resourceOverview').textContent=shortage.length?'부족 자원 · '+shortage.join(' / '):'현재 계획에서 부족한 자원이 없습니다.';
 }
 
 
-/* 구버전 resourceOutputForHours 제거: 아래 통합 구현 사용 */
-/* 구버전 productUseForHours 제거: 아래 통합 구현 사용 */
 function referenceRecipe(name,lv,mode){
   const modes=DATA.modes[name+'|'+lv]||[];
   const recipes=modes.map(mode=>({mode,p:DATA.products[name+'|'+lv+'|'+mode]}));
@@ -682,15 +621,31 @@ function referenceRecipe(name,lv,mode){
   const minutes={'1분':1,'5분':5,'30분':30,'1시간':60,'2시간':120}[mode];
   return recipes.reduce((best,r)=>!best||Math.abs(r.p.min-minutes)<Math.abs(best.p.min-minutes)?r:best,null);
 }
-function productConfigs(name){
-  const s=state.products[name];
-  return detailEnabled(name)?productDetails[name].rows:[{lv:s.lv,count:s.bldgs,happiness:s.happiness}];
+function productionConfigs(group,name){
+  const s=state[group][name];
+  if(group==='products'&&detailEnabled(name)) return productDetails[name].rows;
+  if(group==='resources'&&resourceDetailEnabled(name)) return resourceDetails[name].rows;
+  return [{lv:s.lv,count:s.bldgs,mode:s.mode,happiness:s.happiness,hours:''}];
+}
+function configHours(group,name,row){
+  return row.hours===''?effectiveHours(group,name):row.hours;
+}
+function productionWindow(group,name){
+  const active=productionConfigs(group,name).filter(row=>row.count>0);
+  return active.length?Math.max(...active.map(row=>configHours(group,name,row))):effectiveHours(group,name);
+}
+function normalizedHours(value){
+  return value===''||value==null?'':Math.max(0,num(value,0));
+}
+function supportedMode(name,lv,mode){
+  const modes=DATA.modes[name+'|'+lv]||[];
+  return modes.includes(mode)?mode:referenceRecipe(name,lv,mode)?.mode;
 }
 function sleepPrepHours(){ return settings.sleepPrepH===''?settings.baseH:settings.sleepPrepH; }
 function sleepRequirement(resource){
   const key=resourceKeys[resource];
   return productOrder.reduce((sum,name)=>{
-    const use=productConfigs(name).reduce((total,row)=>{
+    const use=productionConfigs('products',name).reduce((total,row)=>{
       const recipe=referenceRecipe(name,row.lv,settings.sleepCycle);
       return total+(recipe?.p[key]||0)*row.count*settings.sleepCount;
     },0);
@@ -702,7 +657,7 @@ function renderSleepReserve(){
   if(tbody) tbody.innerHTML=resourceOrder.map(sleepReserveRow).join('');
   labelTable('ts');
   const reservations=productOrder.flatMap(name=>{
-    const modes=new Set(productConfigs(name).filter(row=>row.count>0).map(row=>referenceRecipe(name,row.lv,settings.sleepCycle)?.mode).filter(Boolean));
+    const modes=new Set(productionConfigs('products',name).filter(row=>row.count>0).map(row=>referenceRecipe(name,row.lv,settings.sleepCycle)?.mode).filter(Boolean));
     return modes.size?[name+' '+[...modes].join('·')]:[];
   });
   document.getElementById('sleepModes').textContent=settings.sleepCount&&reservations.length?'실제 예약 주기 · '+reservations.join(' / '):'예약 생산 없음';
@@ -711,13 +666,28 @@ function renderSleepReserve(){
 function cumulative(lv,product){ return DATA.wonderCosts[String(lv)]?.[product]||0; }
 function wonderNeed(product){ return Math.max(0,cumulative(wLvSet.tgt,product)-cumulative(wLvSet.cur,product)); }
 function wonderTime(product){
-  const shortfall=Math.max(0,wonderNeed(product)-(state.products[product].stock||0));
+  const shortfall=Math.max(0,wonderNeed(product)-state.products[product].stock);
   if(shortfall===0) return 0;
-  const perCycle=productPerCycleOutput(product);
-  const cycleMin=productCycleMinutes(product);
-  if(perCycle<=0||!cycleMin) return null;
-  const cycles=Math.ceil(shortfall/perCycle-1e-12);
-  return cycles*(cycleMin/60);
+  const batches=productionConfigs('products',product).flatMap(row=>{
+    if(row.hours===0) return [];
+    const p=detailProductInfo(product,row);
+    const out=happyCycleOutput(product,row.lv,p,row.happiness)*row.count;
+    return out>0?[{minutes:p.min,out}]:[];
+  });
+  if(!batches.length) return null;
+  const outputAt=minutes=>availableQty(batches.reduce((sum,b)=>sum+Math.floor(minutes/b.minutes)*b.out,0));
+  // A single active configuration gives an upper bound, even beyond the plan.
+  let low=0,high=Math.min(...batches.map(b=>Math.ceil(shortfall/b.out)*b.minutes));
+  if(!Number.isSafeInteger(high)) return null;
+  const step=Math.min(...batches.map(b=>b.minutes));
+  if(outputAt(high)<shortfall) high+=step;
+  if(!Number.isSafeInteger(high)||outputAt(high)<shortfall) return null;
+  while(high-low>1){
+    const mid=low+Math.floor((high-low)/2);
+    if(outputAt(mid)>=shortfall) high=mid;
+    else low=mid;
+  }
+  return high/60;
 }
 function wonderRow(product){
   const need=wonderNeed(product),prod=productOutput(product),stock=state.products[product].stock||0,expected=stock+prod,remain=expected-need,time=wonderTime(product);
@@ -753,12 +723,20 @@ function productBenchmark(name){
 function targetUseRatio(name,key){
   const mode=settings.productRawCycle;
   const s=state.products[name];
-  const recipe=referenceRecipe(name,6,mode==='생산 계산기값'?s.mode:mode);
-  if(!recipe) return 0;
-  const rows=productConfigs(name);
-  const count=rows.reduce((sum,row)=>sum+row.count,0);
-  const output=count>0?rows.reduce((sum,row)=>sum+row.count*happyCycleOutput(name,6,recipe.p,row.happiness),0)/count:happyCycleOutput(name,6,recipe.p,s.happiness);
-  return output>0?(recipe.p[key]||0)/output:0;
+  const rows=productionConfigs('products',name);
+  const active=rows.filter(row=>row.count>0);
+  const configs=active.length?active:[{...s,count:1,hours:''}];
+  const hasTime=configs.some(row=>configHours('products',name,row)>0);
+  let output=0,use=0;
+  for(const row of configs){
+    const reference=referenceRecipe(name,6,mode===rawCycles[0]?row.mode:mode);
+    if(!reference) continue;
+    const hours=hasTime?configHours('products',name,row):1;
+    const weight=row.count*hours/reference.p.min;
+    output+=happyCycleOutput(name,6,reference.p,row.happiness)*weight;
+    use+=(reference.p[key]||0)*weight;
+  }
+  return output>0?use/output:0;
 }
 function targetResourceNeed(name,target){
   const key=resourceKeys[name];
@@ -769,7 +747,7 @@ function renderAdjustment(){
   const target=Object.fromEntries(productOrder.map(name=>[name,Math.max(0,wonderNeed(name)-state.products[name].stock)]));
   const rows=[...resourceOrder,...productOrder].map(name=>{
     const resource=name in resourceKeys;
-    const hours=effectiveHours(resource?'resources':'products',name);
+    const hours=productionWindow(resource?'resources':'products',name);
     const benchmark=resource?resourceLv6PerBuildingOutputForHours(name,1):productBenchmark(name);
     const reference=benchmark*hours;
     const output=resource?resourceOutput(name):productOutput(name);
@@ -780,7 +758,7 @@ function renderAdjustment(){
     const cls=diff===null?'':remainClass(diff);
     return '<tr'+(name===productOrder[0]?' class="adjust-product-start"':'')+'><td class="name">'+name+'</td>'+
       '<td class="num calc '+cls+'">'+fmtSignedPower(diff)+'</td><td class="num calc">'+fmtPower(current)+
-      '</td><td class="num calc">'+(required===null?'운영 시간 확인':fmtPower(required))+'</td></tr>';
+      '</td><td class="num calc">'+(required===null?'운영 시간 확인':fmtPower(required))+'</td><td class="num calc">'+fmtHours(hours)+'</td><td class="num calc">'+fmtQty(needed)+'</td></tr>';
   });
   document.querySelector('#ta tbody').innerHTML=rows.join('');
   labelTable('ta');
@@ -791,31 +769,32 @@ function renderDetailLauncher(){
   const active=productOrder.filter(detailEnabled);
   el.textContent=active.length?'상세 설정 적용: '+active.join(' · '):'기본 설정 사용';
 }
-function detailModeOptions(name){
-  return allProductModes(name).map(m=>'<option value="'+m+'"'+(m===state.products[name].mode?' selected':'')+'>'+m+'</option>').join('');
+function labelDetailFields(rows,enabled){
+  for(const control of rows.querySelectorAll('input,select,button')) control.disabled=!enabled;
+  [...rows.querySelectorAll('.detail-row')].forEach((row,index)=>{
+    for(const field of row.querySelectorAll('.detail-field')){
+      const input=field.querySelector('input,select');
+      input?.setAttribute('aria-label',(index+1)+'번 구성 '+field.querySelector('label').textContent);
+    }
+  });
 }
-function detailLevelStepper(name,value){
-  const levels=compatibleLevels(name,state.products[name].mode);
-  const minLv=levels.length?levels[0]:1, maxLv=levels.length?levels[levels.length-1]:6;
-  const safe=closestCompatibleLevel(name,state.products[name].mode,value);
-  return '<div class="step-wrap detail-level-step"><input type="number" class="step-one" data-detail-k="lv" value="'+safe+'" step="1" min="'+minLv+'" max="'+maxLv+'" inputmode="numeric"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="레벨 올리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="레벨 내리기">▼</button></div></div>';
+function detailHoursStepper(attr,hours){
+  return stepper('hours',hours,'항목 시간').replace('data-k=',attr+'=');
 }
-/* 구버전 detailRowHtml 제거: 아래 통합 구현 사용 */
-/* 구버전 renderDetailResult 제거: 아래 통합 구현 사용 */
 function renderDetailModal(){
   const modal=document.getElementById('productDetailModal');
   if(!modal) return;
   const d=productDetails[detailProduct];
   document.getElementById('productDetailTabs').innerHTML=productOrder.map(name=>
-    '<button type="button" class="detail-tab'+(name===detailProduct?' active':'')+'" data-detail-product="'+name+'">'+name+(detailEnabled(name)?'<span class="dot"></span>':'')+'</button>'
+    '<button type="button" class="detail-tab'+(name===detailProduct?' active':'')+'" aria-pressed="'+(name===detailProduct)+'" data-detail-product="'+name+'">'+name+(detailEnabled(name)?'<span class="dot"></span>':'')+'</button>'
   ).join('');
   const enabled=document.getElementById('productDetailEnabled');
   enabled.checked=!!d.enabled;
-  document.getElementById('productDetailMode').innerHTML=detailModeOptions(detailProduct);
   const rowsEl=document.getElementById('productDetailRows');
   rowsEl.classList.toggle('detail-disabled',!d.enabled);
   rowsEl.innerHTML=d.rows.length?d.rows.map((row,i)=>detailRowHtml(detailProduct,row,i)).join(''):'<div class="detail-help">등록된 건물 구성이 없습니다. 상세 설정을 켜거나 “건물 구성 추가”를 눌러 입력하세요.</div>';
-  document.getElementById('productDetailAdd').disabled=!d.enabled;
+  labelDetailFields(rowsEl,d.enabled);
+  document.getElementById('productDetailAdd').disabled=!d.enabled||d.rows.length>=20;
   renderDetailResult(detailProduct);
   postSize();
 }
@@ -826,6 +805,7 @@ function openDetailModal(name){
   modal.setAttribute('aria-hidden','false');
   document.body.classList.add('detail-modal-open');
   renderDetailModal();
+  document.getElementById('productDetailEnabled').focus();
 }
 function closeDetailModal(){
   const modal=document.getElementById('productDetailModal');
@@ -836,7 +816,6 @@ function closeDetailModal(){
   document.getElementById('productDetailOpen')?.focus();
   postSize();
 }
-/* 구버전 renderAll 제거: 아래 통합 구현 사용 */
 
 
 /* ===== 2026-09-09 행복도 공식·자원 상세 설정 통합 ===== */
@@ -866,21 +845,21 @@ function detailCountStepper(attr,value){
 
 function normalizeDetailProduct(name){
   const d=productDetails[name]||(productDetails[name]={enabled:false,rows:[]});
-  d.enabled=!!d.enabled;
-  if(!Array.isArray(d.rows)) d.rows=[];
-  const mode=state.products[name].mode;
-  d.rows=d.rows.slice(0,20).map(row=>({
-    lv:closestCompatibleLevel(name,mode,row?.lv),
-    count:Math.max(0,num(row?.count,0)),
-    happiness:normalizedHappiness(row?.happiness,state.products[name].happiness)
-  }));
+  const s=state.products[name];
+  const rows=Array.isArray(d.rows)?d.rows:[];
+  d.rows=rows.slice(0,20).map(row=>{
+    const lv=clamp(parseInt(row?.lv)||1,1,6);
+    return {lv,mode:supportedMode(name,lv,row?.mode||s.mode),hours:normalizedHours(row?.hours),
+      count:Math.max(0,num(row?.count,0)),happiness:normalizedHappiness(row?.happiness,s.happiness)};
+  });
+  d.enabled=d.enabled===true&&d.rows.length>0;
 }
 function normalizeProductDetails(){ productOrder.forEach(normalizeDetailProduct); }
 function seedDetailFromLegacy(name){
   const d=productDetails[name];
   if(d.rows.length) return;
   const s=state.products[name];
-  d.rows=[{lv:closestCompatibleLevel(name,s.mode,s.lv),count:Math.max(0,num(s.bldgs,0)),happiness:normalizedHappiness(s.happiness,100)}];
+  d.rows=[{lv:s.lv,mode:s.mode,hours:'',count:s.bldgs,happiness:s.happiness}];
 }
 
 function normalizeResourceDetail(name){
@@ -889,9 +868,11 @@ function normalizeResourceDetail(name){
   if(!Array.isArray(d.rows)) d.rows=[];
   d.rows=d.rows.slice(0,20).map(row=>({
     lv:clamp(parseInt(row?.lv)||1,1,6),
+    hours:normalizedHours(row?.hours),
     count:Math.max(0,num(row?.count,0)),
     happiness:normalizedHappiness(row?.happiness,state.resources[name].happiness)
   }));
+  d.enabled=d.enabled&&d.rows.length>0;
 }
 function normalizeResourceDetails(){ resourceOrder.forEach(normalizeResourceDetail); }
 function resourceDetailEnabled(name){ return !!(resourceDetails[name]?.enabled&&resourceDetails[name]?.rows?.length); }
@@ -899,7 +880,7 @@ function seedResourceDetailFromLegacy(name){
   const d=resourceDetails[name];
   if(d.rows.length) return;
   const s=state.resources[name];
-  d.rows=[{lv:s.lv,count:Math.max(0,num(s.bldgs,0)),happiness:normalizedHappiness(s.happiness,100)}];
+  d.rows=[{lv:s.lv,hours:'',count:s.bldgs,happiness:s.happiness}];
 }
 function resourceActualBuildings(name){
   return resourceDetailEnabled(name)?resourceDetails[name].rows.reduce((sum,row)=>sum+Math.max(0,num(row.count,0)),0):state.resources[name].bldgs;
@@ -984,76 +965,29 @@ function restoreProduction(snapshot,message){
   normalizeState();syncUIFromState();renderAll();saveState();reportProductionStatus(message);
 }
 
-function resourceOutputForHours(name,hours){
-  const h=Math.max(0,num(hours,0));
-  const wonderBonus=1+(bonusRates()[name]||0);
-  if(resourceDetailEnabled(name)){
-    const totalPerHour=resourceDetails[name].rows.reduce((sum,row)=>{
-      const p=DATA.resources[name]?.[String(row.lv)];
-      if(!p) return sum;
-      const basePerHour=p.out/p.hours;
-      const happyPerHour=happinessBonusPerHour(name,row.lv,row.happiness);
-      return sum+(basePerHour+happyPerHour)*Math.max(0,num(row.count,0));
-    },0);
-    return totalPerHour*h*wonderBonus;
-  }
-  const s=state.resources[name],p=resourceInfo(name);
+function resourceRate(name,row){
+  const p=DATA.resources[name]?.[String(row.lv)];
   if(!p) return 0;
-  return ((p.out/p.hours)+happinessBonusPerHour(name,s.lv,s.happiness))*h*s.bldgs*wonderBonus;
+  return (p.out/p.hours+happinessBonusPerHour(name,row.lv,row.happiness))*row.count*(1+(bonusRates()[name]||0));
 }
-function resourceOutput(name){ return availableQty(resourceOutputForHours(name,effectiveHours('resources',name))); }
+function resourceOutputForHours(name,limit=Infinity){
+  return productionConfigs('resources',name).reduce((sum,row)=>
+    sum+resourceRate(name,row)*Math.min(limit,configHours('resources',name,row)),0);
+}
+function resourceOutput(name){ return availableQty(resourceOutputForHours(name)); }
 
-function productOutputForHours(name,hours){
-  const h=Math.max(0,num(hours,0));
-  if(detailEnabled(name)){
-    return productDetails[name].rows.reduce((sum,row)=>{
-      const p=detailProductInfo(name,row);
-      if(!p) return sum;
-      const cycles=Math.floor((h*60)/p.min+1e-10);
-      return sum+cycles*happyCycleOutput(name,row.lv,p,row.happiness)*Math.max(0,num(row.count,0));
-    },0);
-  }
-  const s=state.products[name],p=productInfo(name);
-  if(!p) return 0;
-  const cycles=Math.floor((h*60)/p.min+1e-10);
-  return cycles*happyCycleOutput(name,s.lv,p,s.happiness)*s.bldgs;
+function productAmount(name,key,limit=Infinity){
+  return productionConfigs('products',name).reduce((sum,row)=>{
+    const p=detailProductInfo(name,row);
+    if(!p) return sum;
+    const hours=Math.min(limit,configHours('products',name,row));
+    const cycles=Math.floor(hours*60/p.min+1e-10);
+    const quantity=key?(p[key]||0):happyCycleOutput(name,row.lv,p,row.happiness);
+    return sum+cycles*quantity*row.count;
+  },0);
 }
-function productOutput(name){ return availableQty(productOutputForHours(name,effectiveHours('products',name))); }
-
-function productUseForHours(name,key,hours){
-  const h=Math.max(0,num(hours,0));
-  if(detailEnabled(name)){
-    return productDetails[name].rows.reduce((sum,row)=>{
-      const p=detailProductInfo(name,row);
-      if(!p) return sum;
-      const cycles=Math.floor((h*60)/p.min+1e-10);
-      return sum+cycles*(p[key]||0)*Math.max(0,num(row.count,0));
-    },0);
-  }
-  const s=state.products[name],p=productInfo(name);
-  if(!p) return 0;
-  const cycles=Math.floor((h*60)/p.min+1e-10);
-  return cycles*(p[key]||0)*s.bldgs;
-}
-function productUse(name,key){ return requiredQty(productUseForHours(name,key,effectiveHours('products',name))); }
-function productCycles(name){
-  const p=productInfo(name); if(!p) return 0;
-  return Math.floor((effectiveHours('products',name)*60)/p.min+1e-10);
-}
-function productPerCycleOutput(name){
-  if(detailEnabled(name)){
-    return productDetails[name].rows.reduce((sum,row)=>{
-      const p=detailProductInfo(name,row);
-      return sum+(p?happyCycleOutput(name,row.lv,p,row.happiness)*Math.max(0,num(row.count,0)):0);
-    },0);
-  }
-  const s=state.products[name],p=productInfo(name);
-  return p?happyCycleOutput(name,s.lv,p,s.happiness)*s.bldgs:0;
-}
-function productCycleMinutes(name){
-  if(detailEnabled(name)){ for(const row of productDetails[name].rows){ const p=detailProductInfo(name,row); if(p) return p.min; } }
-  return productInfo(name)?.min||null;
-}
+function productOutput(name){ return availableQty(productAmount(name)); }
+function productUse(name,key){ return requiredQty(productAmount(name,key)); }
 
 function resourceConsumption(resource){
   const key=resourceKeys[resource];
@@ -1062,7 +996,7 @@ function resourceConsumption(resource){
 function resourceRequiredHours(name,consumption){
   const shortfall=Math.max(0,consumption-(state.resources[name].stock||0));
   if(shortfall===0) return 0;
-  const perHour=resourceOutputForHours(name,1);
+  const perHour=productionConfigs('resources',name).reduce((sum,row)=>sum+(row.hours===0?0:resourceRate(name,row)),0);
   return perHour>0?shortfall/perHour:null;
 }
 
@@ -1086,10 +1020,11 @@ function productRow(name){
   const levelCell=detail?'<td class="calc detail-active-cell">'+productDetailLevelText(name)+'</td>':'<td class="input-cell">'+levelStepper(s.lv)+'</td>';
   const bldgCell=detail?'<td class="num calc detail-active-cell">'+fmtBldg(productActualBuildings(name))+'</td>':'<td class="input-cell">'+stepper('bldgs',s.bldgs)+'</td>';
   const happinessCell=detail?'<td class="calc detail-active-cell">상세</td>':'<td class="input-cell">'+happinessInput('happiness',s.happiness)+'</td>';
-  const modeHtml=(detail?allProductModes(name):(DATA.modes[name+'|'+s.lv]||[])).map(m=>'<option value="'+m+'"'+(m===s.mode?' selected':'')+'>'+m+'</option>').join('');
+  const modeHtml=(DATA.modes[name+'|'+s.lv]||[]).map(m=>'<option value="'+m+'"'+(m===s.mode?' selected':'')+'>'+m+'</option>').join('');
+  const modeCell=detail?'<td class="calc detail-active-cell">'+productModes(name).join(' · ')+'</td>':'<td class="input-cell"><select data-k="mode">'+modeHtml+'</select></td>';
   return '<tr data-group="products" data-name="'+name+'">'+
     '<td class="name">'+name+(detail?'<span class="detail-badge">상세</span>':'')+'</td>'+
-    levelCell+'<td class="input-cell"><select data-k="mode">'+modeHtml+'</select></td>'+bldgCell+happinessCell+
+    levelCell+modeCell+bldgCell+happinessCell+
     '<td class="input-cell">'+stepper('hours',s.hours,'일괄')+'</td>'+
     '<td class="input-cell">'+stockInput(s.stock)+'</td>'+
     '<td class="num calc">'+fmtQty(out)+'</td>'+
@@ -1112,13 +1047,19 @@ function commitRow(el,group,name){
   }else if(k==='bldgs') s.bldgs=Math.max(0,num(v,0));
   else if(k==='happiness') s.happiness=normalizedHappiness(v,100);
   else if(k==='stock'){
-    const stock=v===fmtQty(s.stock)?s.stock:parseStock(v);
+    const stock=el.dataset.edited!=='true'&&v===fmtQty(s.stock)?s.stock:parseStock(v);
+    delete el.dataset.edited;
     if(stock===null&&v.trim()!==''){
       el.value=fmtQty(s.stock);
-      reportProductionStatus('보유량은 숫자 또는 K·M 단위로 입력하세요.');
+      el.setAttribute('aria-invalid','true');
+      const message=el.nextElementSibling;
+      message.textContent='숫자 또는 K·M 단위로 입력하세요.';
+      message.hidden=false;
       return;
     }
     s.stock=stock??0;
+    el.removeAttribute('aria-invalid');
+    el.nextElementSibling.hidden=true;
   }
   else if(k==='hours'){ const hours=num(v,0); s.hours=v===''||hours<0?'':hours; }
   const keepControls=k!=='lv'&&k!=='mode';
@@ -1139,9 +1080,9 @@ function sleepResourcePower(resource){
   const key=resourceKeys[resource];
   const h=sleepPrepHours();
   const required=sleepRequirement(resource);
-  const used=productOrder.reduce((sum,name)=>sum+requiredQty(productUseForHours(name,key,Math.min(h,effectiveHours('products',name)))),0);
+  const used=productOrder.reduce((sum,name)=>sum+requiredQty(productAmount(name,key,h)),0);
   const stock=state.resources[resource].stock||0;
-  const produced=availableQty(resourceOutputForHours(resource,Math.min(h,effectiveHours('resources',resource))));
+  const produced=availableQty(resourceOutputForHours(resource,h));
   const projected=stock+produced-used;
   const remain=projected-required;
   const ref=resourceLv6PerBuildingOutputForHours(resource,h);
@@ -1167,35 +1108,38 @@ function sleepReserveRow(resource){
     '<td class="num calc '+remainClass(a.remain)+'">'+fmtQty(a.remain)+'</td></tr>';
 }
 
-function productConversionRatio(name,lv){
-  const mode=state.products[name].mode,p=DATA.products[name+'|'+lv+'|'+mode];
-  const base=productBenchmark(name);
+function productModes(name){
+  const modes=productionConfigs('products',name).filter(row=>row.count>0).map(row=>row.mode);
+  return modes.length?[...new Set(modes)]:[state.products[name].mode];
+}
+function productConversionRatio(name,lv,mode){
+  const p=DATA.products[name+'|'+lv+'|'+mode],base=productBenchmark(name);
   return p&&base>0?happyCycleOutput(name,lv,p,100)*60/p.min/base:null;
 }
-function resourceConversionRatio(name,lv){
-  const cur=DATA.resources[name]?.[String(lv)],base=DATA.resources[name]?.['6'];
-  if(!cur||!base) return null;
-  const a=(cur.out/cur.hours)+happinessBonusPerHour(name,lv,100);
-  const b=(base.out/base.hours)+happinessBonusPerHour(name,6,100);
-  return b>0?a/b:null;
-}
-function conversionRow(kind,name){
-  const isProduct=kind==='상품',mode=isProduct?state.products[name].mode:'연속';
-  const ratios=[1,2,3,4,5,6].map(lv=>isProduct?productConversionRatio(name,lv):resourceConversionRatio(name,lv));
-  const rowCls=kind==='상품'&&name===productOrder[0]?' class="convert-product-start"':'';
-  return '<tr'+rowCls+'><td class="name">'+name+'</td><td class="calc">'+mode+'</td>'+
+function conversionRow(kind,name,mode){
+  const isProduct=kind==='상품';
+  const ratios=[1,2,3,4,5,6].map(lv=>{
+    if(isProduct) return productConversionRatio(name,lv,mode);
+    const base=resourceLv6PerBuildingOutputForHours(name,1);
+    return base>0?resourceRate(name,{lv,count:1,happiness:100})/base:null;
+  });
+  return '<tr><td class="name">'+name+'</td><td class="calc">'+mode+'</td>'+
     ratios.map(r=>'<td class="num calc convert-ratio">'+fmtPower(r===null?null:r*100)+'</td>').join('')+'</tr>';
 }
 function renderConversion(){
-  const tbody=document.querySelector('#tc tbody');
-  if(tbody) tbody.innerHTML=[...resourceOrder.map(name=>conversionRow('자원',name)),...productOrder.map(name=>conversionRow('상품',name))].join('');
+  document.querySelector('#tc tbody').innerHTML=[
+    ...resourceOrder.map(name=>conversionRow('자원',name,'연속')),
+    ...productOrder.flatMap(name=>productModes(name).map(mode=>conversionRow('상품',name,mode)))
+  ].join('');
 }
 
 function detailRowHtml(name,row,index){
   return '<div class="detail-row" data-detail-index="'+index+'">'+
-    '<div class="detail-field"><label>레벨</label>'+detailLevelStepper(name,row.lv)+'</div>'+
+    '<div class="detail-field"><label>레벨</label>'+levelStepper(row.lv).replace('data-k=','data-detail-k=')+'</div>'+
+    '<div class="detail-field"><label>생산 주기</label><select data-detail-k="mode">'+modeOptions(name,row.lv,row.mode)+'</select></div>'+
     '<div class="detail-field"><label>건물 수</label>'+detailCountStepper('data-detail-k',row.count)+'</div>'+
     '<div class="detail-field"><label>행복도(%)</label>'+happinessInput('happiness',row.happiness,'data-detail-k')+'</div>'+
+    '<div class="detail-field"><label>운영 시간(h)</label>'+detailHoursStepper('data-detail-k',row.hours)+'</div>'+
     '<button type="button" class="detail-remove" data-detail-remove="'+index+'" aria-label="구성 삭제">−</button></div>';
 }
 function renderDetailResult(name){
@@ -1223,6 +1167,7 @@ function resourceDetailRowHtml(name,row,index){
     '<div class="detail-field"><label>레벨</label>'+resourceDetailLevelStepper(name,row.lv)+'</div>'+
     '<div class="detail-field"><label>건물 수</label>'+detailCountStepper('data-resource-detail-k',row.count)+'</div>'+
     '<div class="detail-field"><label>행복도(%)</label>'+happinessInput('happiness',row.happiness,'data-resource-detail-k')+'</div>'+
+    '<div class="detail-field"><label>운영 시간(h)</label>'+detailHoursStepper('data-resource-detail-k',row.hours)+'</div>'+
     '<button type="button" class="detail-remove" data-resource-detail-remove="'+index+'" aria-label="구성 삭제">−</button></div>';
 }
 function renderResourceDetailResult(name){
@@ -1237,13 +1182,14 @@ function renderResourceDetailModal(){
   const modal=document.getElementById('resourceDetailModal'); if(!modal) return;
   const d=resourceDetails[detailResource];
   document.getElementById('resourceDetailTabs').innerHTML=resourceOrder.map(name=>
-    '<button type="button" class="detail-tab'+(name===detailResource?' active':'')+'" data-resource-detail-name="'+name+'">'+name+(resourceDetailEnabled(name)?'<span class="dot"></span>':'')+'</button>'
+    '<button type="button" class="detail-tab'+(name===detailResource?' active':'')+'" aria-pressed="'+(name===detailResource)+'" data-resource-detail-name="'+name+'">'+name+(resourceDetailEnabled(name)?'<span class="dot"></span>':'')+'</button>'
   ).join('');
   document.getElementById('resourceDetailEnabled').checked=!!d.enabled;
   const rows=document.getElementById('resourceDetailRows');
   rows.classList.toggle('detail-disabled',!d.enabled);
   rows.innerHTML=d.rows.length?d.rows.map((row,i)=>resourceDetailRowHtml(detailResource,row,i)).join(''):'<div class="detail-help">등록된 건물 구성이 없습니다. 상세 설정을 켜거나 “건물 구성 추가”를 눌러 입력하세요.</div>';
-  document.getElementById('resourceDetailAdd').disabled=!d.enabled;
+  labelDetailFields(rows,d.enabled);
+  document.getElementById('resourceDetailAdd').disabled=!d.enabled||d.rows.length>=20;
   renderResourceDetailResult(detailResource); postSize();
 }
 function openResourceDetailModal(name){
@@ -1251,6 +1197,7 @@ function openResourceDetailModal(name){
   const modal=document.getElementById('resourceDetailModal'); if(!modal) return;
   modal.removeAttribute('hidden'); modal.setAttribute('aria-hidden','false'); document.body.classList.add('detail-modal-open');
   renderResourceDetailModal();
+  document.getElementById('resourceDetailEnabled').focus();
 }
 function closeResourceDetailModal(){
   const modal=document.getElementById('resourceDetailModal'); if(!modal) return;
@@ -1267,7 +1214,7 @@ document.getElementById('resourceDetailOpen')?.addEventListener('click',()=>open
 document.getElementById('resourceDetailModal')?.addEventListener('click',e=>{
   if(e.target.closest('[data-resource-detail-close]')){ closeResourceDetailModal(); return; }
   const tab=e.target.closest('[data-resource-detail-name]');
-  if(tab){ detailResource=tab.dataset.resourceDetailName; renderResourceDetailModal(); return; }
+  if(tab){ detailResource=tab.dataset.resourceDetailName; renderResourceDetailModal(); document.querySelector('[data-resource-detail-name][aria-pressed=true]')?.focus(); return; }
   const remove=e.target.closest('[data-resource-detail-remove]');
   if(remove){
     const idx=parseInt(remove.dataset.resourceDetailRemove);
@@ -1282,8 +1229,8 @@ document.getElementById('resourceDetailEnabled')?.addEventListener('change',e=>{
   normalizeResourceDetail(detailResource); renderAll(); renderResourceDetailModal(); saveState();
 });
 document.getElementById('resourceDetailAdd')?.addEventListener('click',()=>{
-  const d=resourceDetails[detailResource]; if(!d.enabled) return;
-  d.rows.push({lv:state.resources[detailResource].lv,count:1,happiness:100});
+  const d=resourceDetails[detailResource]; if(!d.enabled||d.rows.length>=20) return;
+  d.rows.push({lv:state.resources[detailResource].lv,count:1,happiness:100,hours:''});
   normalizeResourceDetail(detailResource); renderAll(); renderResourceDetailModal(); saveState();
 });
 document.getElementById('resourceDetailRows')?.addEventListener('change',e=>{
@@ -1294,15 +1241,16 @@ document.getElementById('resourceDetailRows')?.addEventListener('change',e=>{
   if(k==='lv') row.lv=clamp(parseInt(el.value)||1,1,6);
   if(k==='count') row.count=Math.max(0,num(el.value,0));
   if(k==='happiness') row.happiness=normalizedHappiness(el.value,100);
-  normalizeResourceDetail(detailResource); renderAll(); renderResourceDetailResult(detailResource); saveState();
+  if(k==='hours') row.hours=normalizedHours(el.value);
+  normalizeResourceDetail(detailResource); renderAll(); renderResourceDetailResult(detailResource); el.value=resourceDetails[detailResource].rows[idx][k]; saveState();
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('resourceDetailModal')?.hasAttribute('hidden')) closeResourceDetailModal(); });
+
 /* ===== 통합 끝 ===== */
 
 
 function incrementStepInput(input,delta){
   let cur=num(input.value,0),next=Math.round((cur+delta)*1000000)/1000000;
-  if(input.dataset?.k==='hours'&&next<0){
+  if((input.dataset.k||input.dataset.detailK||input.dataset.resourceDetailK)==='hours'&&next<0){
     input.value='';
     input.dispatchEvent(new Event('change',{bubbles:true}));
     return;
@@ -1367,7 +1315,7 @@ document.getElementById('productDetailOpen')?.addEventListener('click',()=>openD
 document.getElementById('productDetailModal')?.addEventListener('click',e=>{
   if(e.target.closest('[data-detail-close]')){ closeDetailModal(); return; }
   const tab=e.target.closest('[data-detail-product]');
-  if(tab){ detailProduct=tab.dataset.detailProduct; renderDetailModal(); return; }
+  if(tab){ detailProduct=tab.dataset.detailProduct; renderDetailModal(); document.querySelector('[data-detail-product][aria-pressed=true]')?.focus(); return; }
   const remove=e.target.closest('[data-detail-remove]');
   if(remove){
     const idx=parseInt(remove.dataset.detailRemove);
@@ -1382,16 +1330,10 @@ document.getElementById('productDetailEnabled')?.addEventListener('change',e=>{
   if(d.enabled) seedDetailFromLegacy(detailProduct);
   normalizeDetailProduct(detailProduct); renderAll(); renderDetailModal(); saveState();
 });
-document.getElementById('productDetailMode')?.addEventListener('change',e=>{
-  state.products[detailProduct].mode=e.target.value;
-  normalizeDetailProduct(detailProduct); renderAll(); renderDetailModal(); saveState();
-});
-document.getElementById('productDetailAdd')?.addEventListener('click',()=>{
-  const d=productDetails[detailProduct];
-  if(!d.enabled) return;
-  const levels=compatibleLevels(detailProduct,state.products[detailProduct].mode);
-  const lv=levels.includes(state.products[detailProduct].lv)?state.products[detailProduct].lv:(levels[levels.length-1]||1);
-  d.rows.push({lv,count:1,happiness:100});
+document.getElementById('productDetailAdd').addEventListener('click',()=>{
+  const d=productDetails[detailProduct],s=state.products[detailProduct];
+  if(!d.enabled||d.rows.length>=20) return;
+  d.rows.push({lv:s.lv,mode:s.mode,count:1,happiness:s.happiness,hours:''});
   normalizeDetailProduct(detailProduct); renderAll(); renderDetailModal(); saveState();
 });
 document.getElementById('productDetailRows')?.addEventListener('change',e=>{
@@ -1399,29 +1341,35 @@ document.getElementById('productDetailRows')?.addEventListener('change',e=>{
   const rowEl=el.closest('[data-detail-index]'); if(!rowEl) return;
   const idx=parseInt(rowEl.dataset.detailIndex),row=productDetails[detailProduct].rows[idx]; if(!row) return;
   const k=el.dataset.detailK;
-  if(k==='lv') row.lv=closestCompatibleLevel(detailProduct,state.products[detailProduct].mode,parseInt(el.value)||1);
+  if(k==='lv') row.lv=clamp(parseInt(el.value)||1,1,6);
+  if(k==='mode') row.mode=el.value;
   if(k==='count') row.count=Math.max(0,num(el.value,0));
-  if(k==='happiness') row.happiness=clamp(num(el.value,100),0,100);
+  if(k==='happiness') row.happiness=normalizedHappiness(el.value,100);
+  if(k==='hours') row.hours=normalizedHours(el.value);
   normalizeDetailProduct(detailProduct);
+  const normalized=productDetails[detailProduct].rows[idx];
+  el.value=normalized[k];
+  if(k==='lv') rowEl.querySelector('[data-detail-k="mode"]').innerHTML=modeOptions(detailProduct,normalized.lv,normalized.mode);
   renderAll();
   renderDetailResult(detailProduct);
-  const normalized=productDetails[detailProduct].rows[idx];
-  if(normalized){
-    if(k==='lv') el.value=String(normalized.lv);
-    if(k==='count') el.value=String(normalized.count);
-    if(k==='happiness') el.value=String(normalized.happiness);
-    const note=rowEl.querySelector('.detail-row-note');
-    if(note){
-      const factor=happinessFactor(normalized.happiness);
-      const fractional=Math.abs(num(normalized.count,0)-Math.round(num(normalized.count,0)))>1e-9;
-      note.textContent='생산량 보정 ×'+fmtRatio(factor)+(fractional?' · 건물 수는 정수 입력 권장':'')+' · 자원 소비는 행복도 보정 없음';
-    }
-  }
   saveState();
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('productDetailModal')?.hasAttribute('hidden')) closeDetailModal(); });
+document.addEventListener('keydown',e=>{
+  const modal=document.querySelector('.detail-modal:not([hidden])');
+  if(!modal||e.defaultPrevented) return;
+  if(e.key==='Escape'){
+    if(document.getElementById('happinessFloatingMenu')?.classList.contains('open')) return;
+    (modal.id==='productDetailModal'?closeDetailModal:closeResourceDetailModal)();
+    return;
+  }
+  if(e.key!=='Tab') return;
+  const focusable=[...modal.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled)')];
+  const first=focusable[0],last=focusable.at(-1);
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}
+  if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
+});
 
-const secondaryColumns={t1:[3,9,10,11],t2:[9,10,11],tw:[4,5,6,7],ts:[5,6]};
+const secondaryColumns={t1:[3,9,10,11],t2:[9,10,11],tw:[4,5,6,7],ts:[5,6],ta:[5,6]};
 function labelTable(id){
   const table=document.getElementById(id);
   const columns=secondaryColumns[id]||[];
