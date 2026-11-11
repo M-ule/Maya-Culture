@@ -484,7 +484,19 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 }
 @media(max-width:379px){.city-stage-list{grid-template-columns:1fr}}
 </style>
-</head>
+<style>
+/* Quest rewards share China's product-heading placement. */
+#productsCard .product-title-meta{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;min-width:0;max-width:100%}
+#wikiQuestRewards{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin:0;max-width:100%;min-width:0}
+#wikiQuestRewards .wiki-quest{display:inline-flex;align-items:center;gap:4px;border:0;border-radius:0;background:transparent;padding:0;width:auto;max-width:100%;min-height:28px;font-size:16px;line-height:1.5;color:var(--text);cursor:pointer}
+#wikiQuestRewards .wiki-quest input{width:18px;height:18px;min-width:18px;min-height:18px;margin:0;flex:none;accent-color:var(--primary)}
+#wikiQuestRewards .wiki-quest span{min-width:0;overflow-wrap:anywhere}
+@media(max-width:720px){
+ #productsCard .product-title-meta{margin-left:12px;font-size:12px}
+ #productsCard .product-title-meta .detail-summary{margin-left:0}
+ #wikiQuestRewards .wiki-quest{min-height:36px;font-size:14px}
+}
+</style></head>
 <body><main>
 <h1>마야 문명 시뮬레이터</h1>
 <div class="legend">
@@ -502,14 +514,12 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <button class="convert-toggle" id="saveProduction" type="button">생산 입력값 저장</button>
 <button class="convert-toggle" disabled="" id="restoreProduction" type="button">저장값 불러오기</button>
 <button class="reset-btn" id="resetBtn" type="button">초기화</button>
-
 <button aria-controls="t1 t2" aria-expanded="false" class="convert-toggle" id="productionView" type="button">상세 보기 ▼</button></div></div>
 <div class="settings">
 <div class="control-field"><label for="wonder">불가사의</label><select aria-label="불가사의" id="wonder"><option>티칼</option><option>치첸이트사</option><option>사일 궁전</option></select></div>
 <div class="control-field"><label for="wLv">보너스 적용 레벨<button aria-label="보너스 적용 레벨 설명" class="info-tip" data-help-label="보너스 적용 레벨" data-tip="현재 적용받는 불가사의 보너스 레벨입니다." type="button">i</button></label><div class="step-wrap settings-step"><input aria-label="보너스 적용 레벨" class="step-one" id="wLv" max="50" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="보너스 적용 레벨 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="보너스 적용 레벨 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 <div class="control-field"><label for="baseH">기본 운영 시간(h)<button aria-label="기본 운영 시간(h) 설명" class="info-tip" data-help-label="기본 운영 시간(h)" data-tip="항목별 운영 시간을 비워 두면 이 시간을 사용합니다. 0은 생산하지 않습니다." type="button">i</button></label><div class="step-wrap"><input aria-label="기본 운영 시간(h)" class="step-one" id="baseH" min="0" step="any" type="number"/><div class="step-controls"><button aria-label="기본 운영 시간(h) 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="기본 운영 시간(h) 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 </div><span aria-live="polite" class="reset-status" id="resetStatus" role="status"></span>
-
 <div class="summary bonus-summary production-summary" id="bonusBox"></div>
 </section>
 <section class="card" id="resourcesCard">
@@ -552,16 +562,13 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </div>
 <section class="card" id="productsCard">
 <div class="section-title-row">
-<div class="production-section-title"><h2>상품<button aria-label="상품 설명" class="info-tip" data-help-label="상품" data-tip="완료한 생산 주기만 생산량과 원료 소비에 반영합니다. 퀘스트 보상은 선택한 상품 보유량에 합산합니다." type="button">i</button></h2><span class="detail-summary" id="productDetailSummary">기본 설정 사용</span><span class="quest-caption"><strong>퀘스트 보상</strong> · 체크 시 보유량에 합산</span></div>
+<div class="production-section-title"><h2>상품<button aria-label="상품 설명" class="info-tip" data-help-label="상품" data-tip="완료한 생산 주기만 생산량과 원료 소비에 반영합니다. 퀘스트 보상은 선택한 상품 보유량에 합산합니다." type="button">i</button></h2><div class="product-title-meta"><span class="detail-summary" id="productDetailSummary">기본 설정 사용</span><span class="quest-reward-note"><strong>퀘스트 보상</strong> · 체크 시 보유량에 합산</span><div aria-label="상품 퀘스트 보상" class="quest-reward-options maya-quest-options" id="wikiQuestRewards" role="group"></div></div></div>
 <div class="detail-actions">
 <button aria-label="상품 건물 상세 설정" class="detail-open-btn" id="productDetailOpen" type="button">상세 설정</button>
 </div>
 </div>
-<div aria-label="위키 상품 퀘스트 보상" class="wiki-quest-rewards" id="wikiQuestRewards" role="group"></div>
-<details class="section-guide" id="manualQuestRewards"><summary>직접 입력한 보상</summary>
-<p>위 퀘스트 보상에 포함되지 않은 수량만 입력하세요.</p>
-<div aria-label="직접 입력한 상품 퀘스트 보상" class="quest-rewards" id="productQuestRewards" role="group"></div>
-</details>
+
+
 <div class="table-wrap">
 <table class="responsive-table" id="t2">
 <thead><tr>
@@ -673,7 +680,6 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </section>
 <section class="card" id="cityBuildings">
 <div class="section-title-row"><h2>주택·건물 구성<button aria-label="주택·건물 구성 설명" class="info-tip" data-help-label="주택·건물 구성" data-tip="생산 건물 수는 생산 계산기에서 가져옵니다. 도시 건물 수를 따로 입력하면 이 탭에만 적용되며, 입력칸을 비우면 다시 연동됩니다." type="button">i</button></h2><button aria-controls="cityBuildingTable" aria-expanded="false" id="cityBuildingView" type="button">생산 건물 보기 ▼</button></div>
-
 <div id="cityBuildingGroups"></div>
 </section>
 <section class="card" id="cityCocoa">
@@ -686,11 +692,9 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <p class="section-note city-field-error" hidden="" id="cityCocoaError" role="status"></p>
 <div aria-live="polite" class="summary city-metrics" id="cityBudgetMetrics"></div><div class="budget-breakdown" id="cityBudgetRows"></div>
 <details class="section-guide"><summary>카카오·보석 계산 내역</summary><p id="cityBudgetBreakdown"></p></details>
-
 </section>
 <section class="card" id="cityConstruction">
 <div class="section-title-row"><h2>건물 건설 비용<button aria-label="건물 건설 비용 설명" class="info-tip" data-help-label="건물 건설 비용" data-tip="미건설(0)부터 새로 짓거나 현재 레벨에서 업그레이드할 비용을 계산합니다. 건설 계획은 건물 구성에 자동 추가되지 않습니다." type="button">i</button></h2><button class="convert-toggle" id="cityAddBuild" type="button">+ 건설 계획 추가</button></div>
-
 <p aria-live="polite" class="city-total" id="cityBuildTotal"></p>
 <div class="city-build-rows" id="cityBuildRows"></div>
 </section>
@@ -717,7 +721,6 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <button aria-pressed="false" class="convert-toggle" data-research-filter="needed" type="button">목표에 필요</button>
 </div>
 <div id="cityResearchList"></div>
-
 <dialog aria-labelledby="cityResearchActionTitle" id="cityResearchAction"><div class="modalhead"><h2 id="cityResearchActionTitle"></h2><button data-city-action-close="" type="button">닫기</button></div><p id="cityResearchActionCost"></p><div class="bar"><button id="cityResearchComplete" type="button"></button><button id="cityResearchTargetAction" type="button"></button></div></dialog></section>
 <p class="section-note city-field-error" id="cityStatus" role="status"></p>
 <p class="section-note">도시 계획은 불가사의별로 이 브라우저에 저장됩니다. <a href="https://github.com/M-ule/HoH-coredata/blob/1a84394/coreData.json">코어데이터</a> <span id="cityDataVersion"></span></p>
@@ -920,10 +923,10 @@ const wikiQuestRewards={
   final:{name:'The Final Stretch',products:{'마스크':10000,'달력돌':8000,'단검':10000,'머리장식':3500}}
 };
 function plannedProductStock(product){
-  const item=state.products[product],reward=item.questReward;
+  const item=state.products[product];
   const wikiBonus=Object.entries(wikiQuestRewards).reduce((total,[id,phase])=>
     total+(settings.questPhases?.[id]===true?(phase.products[product]||0):0),0);
-  return item.stock+wikiBonus+(reward?.enabled?reward.amount:0);
+  return item.stock+wikiBonus;
 }
 function wonderTime(product){
   const shortfall=Math.max(0,wonderNeed(product)-plannedProductStock(product));
@@ -1166,25 +1169,11 @@ function resourceDetailLevelText(name){
   return levels.length===1?String(levels[0]):levels.join('·');
 }
 
-function normalizedQuestReward(value){
-  const amount=Number(value?.amount);
-  return {amount:Number.isSafeInteger(amount)&&amount>0?amount:0,enabled:value?.enabled===true};
-}
 function renderQuestRewards(){
-  if(productOrder.some(name=>state.products[name].questReward.enabled&&state.products[name].questReward.amount>0)){
-    document.getElementById('manualQuestRewards').open=true;
-  }
   document.getElementById('wikiQuestRewards').innerHTML=Object.entries(wikiQuestRewards).map(([id,phase])=>
     '<label class="wiki-quest"><input type="checkbox" data-wiki-quest="'+id+'"'+(settings.questPhases[id]?' checked':'')+'>'+
     '<span>'+Object.entries(phase.products).map(([name,count])=>name+' +'+fmtQty(count)).join(' · ')+'</span></label>'
   ).join('');
-  document.getElementById('productQuestRewards').innerHTML=productOrder.map(name=>{
-    const reward=state.products[name].questReward;
-    return '<div class="quest-reward" data-quest-product="'+name+'">'+
-      '<label class="quest-check"><input type="checkbox" data-quest-enable aria-label="'+name+' 퀘스트 보상 합산"'+(reward.enabled?' checked':'')+'>'+name+'</label>'+
-      '<input class="quest-amount" type="text" inputmode="decimal" data-quest-amount aria-label="'+name+' 퀘스트 보상량" placeholder="보상량" value="'+(reward.amount||'')+'">'+
-      '<small class="quest-error" role="status" hidden></small></div>';
-  }).join('');
 }
 function normalizeState(){
   settings.questPhases=Object.fromEntries(Object.keys(wikiQuestRewards).map(id=>[id,settings.questPhases?.[id]===true]));
@@ -1203,7 +1192,7 @@ function normalizeState(){
     s.bldgs=Math.max(0,num(s.bldgs,0));
     s.happiness=normalizedHappiness(s.happiness,100);
     s.stock=Math.round(num(s.stock,0));
-    s.questReward=normalizedQuestReward(s.questReward);
+    delete s.questReward; // Discard retired manual rewards from saved inputs.
     s.hours=s.hours===''||s.hours===null||s.hours===undefined?'':Math.max(0,num(s.hours,0));
     const modes=DATA.modes[name+'|'+s.lv]||[];
     if(!modes.includes(s.mode)) s.mode=modes[0]||'1분';
@@ -1618,33 +1607,6 @@ document.getElementById('wikiQuestRewards').addEventListener('change',event=>{
   settings.questPhases[id]=event.target.checked;
   renderWonder();renderAdjustment();saveState();postSize();
 });
-document.getElementById('productQuestRewards').addEventListener('change',event=>{
-  const input=event.target,group=input.closest('[data-quest-product]');
-  if(!group) return;
-  const reward=state.products[group.dataset.questProduct].questReward;
-  if(input.hasAttribute('data-quest-enable')) reward.enabled=input.checked;
-  if(input.hasAttribute('data-quest-amount')){
-    const raw=input.value.trim(),amount=raw===''?0:parseStock(raw);
-    const error=group.querySelector('.quest-error');
-    if(amount===null||amount<0){
-      input.setAttribute('aria-invalid','true');
-      error.textContent='0 이상의 숫자 또는 K·M 단위를 입력하세요.';
-      error.hidden=false;
-      return;
-    }
-    reward.amount=amount;
-    input.value=amount||'';
-    input.removeAttribute('aria-invalid');
-    error.hidden=true;
-  }
-  renderWonder();renderAdjustment();saveState();postSize();
-});
-document.getElementById('productQuestRewards').addEventListener('keydown',event=>{
-  if(event.key==='Enter'&&event.target.hasAttribute('data-quest-amount')){
-    event.preventDefault();event.target.blur();
-  }
-});
-
 document.getElementById('productDetailOpen')?.addEventListener('click',()=>openDetailModal());
 document.getElementById('productDetailModal')?.addEventListener('click',e=>{
   if(e.target.closest('[data-detail-close]')){ closeDetailModal(); return; }
