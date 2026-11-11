@@ -588,6 +588,19 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
   font-weight:600;
 }
 
+
+/* 2026-11-12: targeted responsive production actions and quest labels. */
+.setting-inline-note{font-size:13px;line-height:1.6;color:var(--muted);margin:2px 0 12px;word-break:keep-all}
+#productionSaveGuide{margin:4px 0 14px}
+.quest-bonus-badge{display:block;width:max-content;max-width:100%;margin:5px auto 0;font-size:11px;font-weight:700;white-space:normal;line-height:1.4}
+@media(max-width:720px){
+ #productionSettings .section-title-row h2{grid-column:1/-1;grid-row:1}
+ #productionSettings #photoImportBtn{grid-column:1;grid-row:2}
+ #productionSettings #saveProduction{grid-column:2;grid-row:2}
+ #productionSettings #restoreProduction{grid-column:1;grid-row:3}
+ #productionSettings #resetBtn{grid-column:2;grid-row:3}
+ #productionSettings #productionView{grid-column:1/-1;grid-row:4}
+}
 </style></head>
 <body><main>
 <h1>마야 문명 시뮬레이터</h1>
@@ -604,8 +617,8 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <section class="card" id="productionSettings">
 <div class="section-title-row"><h2>생산 설정 <button aria-label="생산 설정 설명" class="info-tip" data-help-label="생산 설정" data-tip="건물 구성과 운영 시간으로 생산량을 계산합니다. 원료·일꾼 부족에 따른 생산 중단은 자동 반영하지 않습니다." type="button">i</button></h2><div class="title-actions">
 <button class="convert-toggle" id="photoImportBtn" type="button">사진으로 입력</button>
-<button class="convert-toggle" id="saveProduction" type="button">생산 입력값 저장</button>
-<button class="convert-toggle" disabled="" id="restoreProduction" type="button">저장값 불러오기</button>
+<button class="convert-toggle" id="saveProduction" type="button" title="자동 저장과 별도로 복원할 기준값을 보관합니다.">기준값 저장</button>
+<button class="convert-toggle" disabled="" id="restoreProduction" type="button" title="별도로 저장해 둔 생산 기준값을 복원합니다.">기준값 불러오기</button>
 <button class="reset-btn" id="resetBtn" type="button">초기화</button>
 <button aria-controls="t1 t2" aria-expanded="false" class="convert-toggle" id="productionView" type="button">상세 보기 ▼</button></div></div>
 <div class="settings">
@@ -613,6 +626,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <div class="control-field"><label for="wLv">보너스 적용 레벨 <button aria-label="보너스 적용 레벨 설명" class="info-tip" data-help-label="보너스 적용 레벨" data-tip="현재 적용받는 불가사의 보너스 레벨입니다." type="button">i</button></label><div class="step-wrap settings-step"><input aria-label="보너스 적용 레벨" class="step-one" id="wLv" max="50" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="보너스 적용 레벨 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="보너스 적용 레벨 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 <div class="control-field"><label for="baseH">기본 운영 시간(h) <button aria-label="기본 운영 시간(h) 설명" class="info-tip" data-help-label="기본 운영 시간(h)" data-tip="항목별 운영 시간이 빈칸이면 이 시간을 사용합니다. 0은 생산하지 않습니다." type="button">i</button></label><div class="step-wrap"><input aria-label="기본 운영 시간(h)" class="step-one" id="baseH" min="0" step="any" type="number"/><div class="step-controls"><button aria-label="기본 운영 시간(h) 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="기본 운영 시간(h) 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 </div><span aria-live="polite" class="reset-status" id="resetStatus" role="status"></span>
+<p class="setting-inline-note" id="productionSaveGuide">입력값은 자동 저장됩니다. ‘기준값 저장’은 별도로 복원할 설정을 보관합니다.</p>
 <div class="summary bonus-summary production-summary" id="bonusBox"></div>
 </section>
 <section class="card" id="resourcesCard">
@@ -655,7 +669,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </div>
 <section class="card" id="productsCard">
 <div class="section-title-row">
-<div class="production-section-title"><h2>상품 <button aria-label="상품 설명" class="info-tip" data-help-label="상품" data-tip="완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다." type="button">i</button></h2><div class="product-title-meta"><span class="detail-summary" id="productDetailSummary">기본 설정 사용</span><span class="quest-reward-note"><strong>퀘스트 보상</strong> · 체크 시 보유량에 합산</span><div aria-label="상품 퀘스트 예정 보상" class="quest-reward-options" id="wikiQuestRewards" role="group"></div></div></div>
+<div class="production-section-title"><h2>상품 <button aria-label="상품 설명" class="info-tip" data-help-label="상품" data-tip="완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다." type="button">i</button></h2><div class="product-title-meta"><span class="detail-summary" id="productDetailSummary">기본 설정 사용</span><span class="quest-reward-note"><strong>퀘스트 보상</strong> · 체크 시 불가사의 계산에 합산 (상품 입력값은 유지)</span><div aria-label="상품 퀘스트 예정 보상" class="quest-reward-options" id="wikiQuestRewards" role="group"></div></div></div>
 <div class="detail-actions">
 <button aria-label="상품 건물 상세 설정" class="detail-open-btn" id="productDetailOpen" type="button">상세 설정</button>
 </div>
@@ -1003,9 +1017,11 @@ const wikiQuestRewards={
   sacred:{name:'Path to Sacred Power',products:{'마스크':5000,'달력돌':4000,'단검':3000}},
   final:{name:'The Final Stretch',products:{'마스크':10000,'달력돌':8000,'단검':10000,'머리장식':3500}}
 };
+function selectedQuestBonus(product){
+  return questRewardChoices().reduce((total,choice)=>total+(choice.product===product&&settings.questRewards?.[choice.key]===true?choice.amount:0),0);
+}
 function plannedProductStock(product){
-  const bonus=questRewardChoices().reduce((total,choice)=>total+(choice.product===product&&settings.questRewards?.[choice.key]===true?choice.amount:0),0);
-  return state.products[product].stock+bonus;
+  return state.products[product].stock+selectedQuestBonus(product);
 }
 function wonderTime(product){
   const shortfall=Math.max(0,wonderNeed(product)-plannedProductStock(product));
@@ -1448,8 +1464,9 @@ function productRow(name){
   const happinessCell=detail?'<td class="calc detail-active-cell">상세</td>':'<td class="input-cell">'+happinessInput('happiness',s.happiness)+'</td>';
   const modeHtml=(DATA.modes[name+'|'+s.lv]||[]).map(m=>'<option value="'+m+'"'+(m===s.mode?' selected':'')+'>'+m+'</option>').join('');
   const modeCell=detail?'<td class="calc detail-active-cell">'+productModes(name).join(' · ')+'</td>':'<td class="input-cell"><select data-k="mode">'+modeHtml+'</select></td>';
+  const questBonus=selectedQuestBonus(name);
   return '<tr data-group="products" data-name="'+name+'">'+
-    '<td class="name">'+name+(detail?'<span class="detail-badge">상세</span>':'')+'</td>'+
+    '<td class="name">'+name+(detail?'<span class="detail-badge">상세</span>':'')+(questBonus>0?'<span class="detail-badge quest-bonus-badge">퀘스트 +'+fmtQty(questBonus)+'</span>':'')+'</td>'+
     levelCell+modeCell+bldgCell+happinessCell+
     '<td class="input-cell">'+stepper('hours',s.hours,'기본 '+fmtHours(settings.baseH))+'</td>'+
     '<td class="input-cell">'+stockInput(s.stock)+'</td>'+
@@ -1715,13 +1732,13 @@ document.getElementById('saveProduction').addEventListener('click',()=>{
   try{
     localStorage.setItem(DEFAULT_STORAGE_KEY,JSON.stringify(productionSnapshot()));
     document.getElementById('restoreProduction').disabled=false;
-    reportProductionStatus('생산 입력값 저장 완료');
+    reportProductionStatus('기준값 저장 완료');
   }catch(e){ reportProductionStatus('저장 실패'); }
 });
 document.getElementById('restoreProduction').addEventListener('click',()=>{
   try{
     const saved=JSON.parse(localStorage.getItem(DEFAULT_STORAGE_KEY)||'null');
-    if(saved) restoreProduction(saved,'저장값 불러오기 완료');
+    if(saved) restoreProduction(saved,'기준값 불러오기 완료');
   }catch(e){ reportProductionStatus('불러오기 실패'); }
 });
 document.getElementById('resetBtn').addEventListener('click',openResetChoiceModal);
@@ -1735,7 +1752,7 @@ document.getElementById('wikiQuestRewards').addEventListener('change',event=>{
   const phase=event.target.dataset.questPhase;
   if(!Object.hasOwn(wikiQuestRewards,phase))return;
   for(const choice of questRewardChoices().filter(choice=>choice.phase===phase))settings.questRewards[choice.key]=event.target.checked;
-  renderWonder();renderAdjustment();saveState();postSize();
+  renderTables(true);renderWonder();renderAdjustment();saveState();postSize();
 });
 
 document.getElementById('productDetailOpen')?.addEventListener('click',()=>openDetailModal());
