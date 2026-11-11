@@ -581,6 +581,26 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
  .happiness-combo{grid-template-columns:minmax(0,1fr) 32px}
  .happiness-combo .happiness-toggle{width:32px}
 }
+
+/* 불가사의 목표: 중국 문명의 입력 레이블과 단계 입력 규격. */
+#mayaWonderSettings .wonder-settings > label{
+  font:400 16px/1.5 Arial,'Malgun Gothic',sans-serif;
+  flex:0 0 auto;
+}
+#mayaWonderSettings .wonder-settings > .settings-step{
+  flex:0 1 272px;
+  width:272px;
+  max-width:100%;
+  height:40px;
+  min-height:40px;
+}
+#mayaWonderSettings .wonder-settings > .settings-step > input{
+  font:400 16px Arial,'Malgun Gothic',sans-serif;
+}
+@media(max-width:720px){
+  #mayaWonderSettings .wonder-settings > .settings-step{height:44px;min-height:44px}
+}
+
 </style></head>
 <body><main>
 <h1>마야 문명 시뮬레이터</h1>
@@ -713,7 +733,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <section class="card" id="mayaSleep">
 <div class="section-title-row"><h2>수면 대비 자원 확보 <button aria-label="수면 대비 자원 확보 설명" class="info-tip" data-help-label="수면 대비 자원 확보" data-tip="취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 현재 보유량과 취침 전 생산·소비를 반영합니다." data-wonder-help="수면 대비 자원 확보" type="button">i</button></h2></div>
 <div class="settings sleep-settings wonder-sleep-settings">
-<div class="control-field"><label for="sleepPrepH">수면까지 남은 시간(h) <button aria-label="수면까지 남은 시간(h) 설명" class="info-tip" data-help-label="수면까지 남은 시간(h)" data-tip="건물별 운영 시간 설정을 적용하며, 취침 전까지의 생산·소비만 계산합니다. 이 칸을 비우면 기본 운영 시간을 사용합니다." type="button">i</button></label><div class="step-wrap sleep-time-wrap"><input aria-label="수면까지 남은 시간(h)" class="step-one" id="sleepPrepH" min="0" placeholder="기본" step="any" type="number"/><div class="step-controls"><button aria-label="수면까지 남은 시간(h) 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="수면까지 남은 시간(h) 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
+<div class="control-field"><label for="sleepPrepH">수면까지 남은 시간(h) <button aria-label="수면까지 남은 시간(h) 설명" class="info-tip" data-help-label="수면까지 남은 시간(h)" data-tip="기본값은 기본 운영 시간과 같습니다. 값을 변경하면 수면 준비 시간으로 따로 적용하며, 입력값을 지우면 다시 기본 운영 시간을 따릅니다. 취침 전 생산·소비만 계산합니다." type="button">i</button></label><div class="step-wrap sleep-time-wrap"><input aria-label="수면까지 남은 시간(h)" class="step-one" id="sleepPrepH" min="0" placeholder="기본" step="any" type="number"/><div class="step-controls"><button aria-label="수면까지 남은 시간(h) 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="수면까지 남은 시간(h) 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 <div class="control-field"><label for="sleepCycle">예약 생산 주기 <button aria-label="예약 생산 주기 설명" class="info-tip" data-help-label="예약 생산 주기" data-tip="취침 전에 예약할 생산 주기입니다. 해당 레벨에 없는 주기는 선택 가능한 주기 중 가까운 주기를 사용합니다." type="button">i</button></label><select aria-label="예약 생산 주기" id="sleepCycle"><option value="최장">레벨별 최장</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
 <div class="control-field"><label for="sleepCount">예약 횟수 <button aria-label="예약 횟수 설명" class="info-tip" data-help-label="예약 횟수" data-tip="건물 1채당 예약할 생산 횟수입니다. 모든 예약에 필요한 원료를 취침 전까지 확보해야 합니다." type="button">i</button></label><div class="step-wrap"><input aria-label="예약 횟수" class="step-one" id="sleepCount" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="예약 횟수 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="예약 횟수 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 </div>
@@ -751,11 +771,11 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <p class="section-note" hidden="" id="cityContext"></p>
 <div aria-live="polite" class="summary city-metrics" id="cityMetrics"></div>
 <details class="calculation-details"><summary>일꾼·사제 계산 내역</summary><p id="cityStaffBreakdown"></p></details>
-<h3 class="city-subheading">영토 현황 <button aria-label="영토 현황 설명" class="info-tip" data-help-label="영토 현황" data-tip="1칸은 16면적입니다. 시작 영토와 일반·보석 해금 영토를 합산합니다. 추가 보석 해금 계획은 계획 후 면적과 보석 비용으로 따로 계산합니다." type="button">i</button></h3>
+<h3 class="city-subheading">영토 현황 <button aria-label="영토 현황 설명" class="info-tip" data-help-label="영토 현황" data-tip="1칸은 16면적입니다. 시작 영토와 이미 일반·보석으로 해금한 영토를 합산해 사용 가능 면적을 계산합니다." type="button">i</button></h3>
 <div class="settings city-settings">
 <div class="control-field"><label for="cityRegularPlots">일반 해금(칸)</label><input aria-label="일반 해금(칸)" data-city-field="regular" id="cityRegularPlots" inputmode="numeric" min="0" step="1" type="number"/></div>
 <div class="control-field"><label for="cityPremiumPlots">보석 해금(칸)</label><input aria-label="보석 해금(칸)" data-city-field="premium" id="cityPremiumPlots" inputmode="numeric" min="0" step="1" type="number"/></div>
-<div class="control-field"><label for="cityFuturePlots">추가 보석 해금(칸)</label><input aria-label="추가 보석 해금(칸)" data-city-field="futurePremium" id="cityFuturePlots" inputmode="numeric" min="0" step="1" type="number"/></div>
+
 </div>
 <progress aria-label="영토 면적 사용량" id="cityAreaUsage" max="1" value="0"></progress><p class="section-note" id="cityTerritoryBreakdown"></p>
 </section>
@@ -868,7 +888,7 @@ function syncUIFromState(){
   document.getElementById('wonder').value=settings.wonder;
   document.getElementById('wLv').value=settings.wLv;
   document.getElementById('baseH').value=settings.baseH;
-  const sleepEl=document.getElementById('sleepPrepH'); if(sleepEl) sleepEl.value=settings.sleepPrepH;
+  const sleepEl=document.getElementById('sleepPrepH'); if(sleepEl) sleepEl.value=sleepPrepHours();
   for(const id of ['sleepCycle','sleepCount','productRawCycle']) document.getElementById(id).value=settings[id];
   try{document.getElementById('restoreProduction').disabled=!localStorage.getItem(DEFAULT_STORAGE_KEY);}catch(e){}
   document.getElementById('curLv').value=wLvSet.cur;
@@ -1694,8 +1714,8 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
 
 document.getElementById('wonder').addEventListener('change',e=>{settings.wonder=e.target.value;renderAll();saveState();});
 document.getElementById('wLv').addEventListener('change',e=>{settings.wLv=clamp(parseInt(e.target.value)||0,0,50);e.target.value=settings.wLv;renderAll();saveState();});
-document.getElementById('baseH').addEventListener('change',e=>{settings.baseH=Math.max(0,num(e.target.value,0));e.target.value=settings.baseH;renderAll();saveState();});
-document.getElementById('sleepPrepH')?.addEventListener('change',e=>{settings.sleepPrepH=e.target.value===''?'':Math.max(0,num(e.target.value,0));e.target.value=settings.sleepPrepH;renderSleepReserve();saveState();postSize();});
+document.getElementById('baseH').addEventListener('change',e=>{settings.baseH=Math.max(0,num(e.target.value,0));e.target.value=settings.baseH;if(settings.sleepPrepH==='') document.getElementById('sleepPrepH').value=settings.baseH;renderAll();saveState();});
+document.getElementById('sleepPrepH')?.addEventListener('change',e=>{settings.sleepPrepH=e.target.value===''?'':Math.max(0,num(e.target.value,0));e.target.value=sleepPrepHours();renderSleepReserve();saveState();postSize();});
 document.getElementById('curLv').addEventListener('change',e=>{
   wLvSet.cur=clamp(parseInt(e.target.value)||0,0,50);
   if(wLvSet.tgt<wLvSet.cur) wLvSet.tgt=wLvSet.cur;
@@ -2029,14 +2049,13 @@ const cityManagement = (() => {
     const occupied=plots.mapSize-plots.initial;
     const regular=whole(raw.regular,Math.min(plots.regular,occupied));
     const premium=whole(raw.premium,Math.min(plots.premium.length,occupied-regular));
-    const futurePremium=whole(raw.futurePremium,Math.min(plots.premium.length-premium,occupied-regular-premium));
     const configs={};
     for(const [id,b] of buildings){
       const entry=record(record(raw.configs)[id]);
       const count=entry.count===''||entry.count==null?(b.sync?'':0):number(entry.count);
       configs[id]={count,level:clamp(whole(entry.level,b.levels.length),1,b.levels.length)};
     }
-    return {regular,premium,futurePremium,configs,
+    return {regular,premium,configs,
       stock:whole(raw.stock,1e12),rate:raw.rate===''||raw.rate==null?'':number(raw.rate,1e12),
       hours:raw.hours===''||raw.hours==null?'':number(raw.hours,maxBudgetHours),
       rows:Array.isArray(raw.rows)?raw.rows.slice(0,50).map(row=>normalizeBuild(record(row))):[],
@@ -2091,11 +2110,10 @@ const cityManagement = (() => {
       builds.cocoa+=cost.cocoa; builds.premium+=cost.premium;
     }
     const plots=cityData.plots[activeWonder];
-    const expansion=plots.premium.slice(plan.premium,plan.premium+plan.futurePremium).reduce((sum,cost)=>sum+cost,0);
     const hours=plan.hours===''?Math.min(maxBudgetHours,settings.baseH):plan.hours;
     const rate=plan.rate===''?totals.cocoa:plan.rate;
     const production=Math.floor(rate*hours+1e-8);
-    return {builds,expansion,hours,rate,production,available:plan.stock+production,required:builds.cocoa+techs.cost,premium:builds.premium+expansion};
+    return {builds,hours,rate,production,available:plan.stock+production,required:builds.cocoa+techs.cost,premium:builds.premium};
   }
   const balance = (value,unit) => (value<-1e-9?'부족 ':'잔여 ')+fmtCount(Math.abs(value))+unit;
   function renderOverview(plan,totals,techs){
@@ -2115,10 +2133,10 @@ const cityManagement = (() => {
       ['계획 후 카카오',cityBalance,'','확보 '+fmtQty(cityBudget.available)+' · 필요 '+fmtQty(cityBudget.required)+'<br><a href="#cityCocoa">사용 계획 확인</a>']
     ].map(([label,value,unit,detail])=>summaryMetric(label,(unit===''?fmtQty(value):fmtCount(value))+unit,detail,value<-1e-9?'warning':'success')).join('');
     byId('cityStaffBreakdown').textContent='시청·주택에서 일꾼 '+fmtCount(totals.provided[0])+'명, 사제 '+fmtCount(totals.provided[1])+'명. 불가사의에서 일꾼 '+staff.worker+'명, 사제 '+staff.priest+'명을 추가합니다. 배치한 생산 건물을 모두 가동할 때 필요한 인력입니다.';
-    byId('cityTerritoryBreakdown').textContent='사용 '+fmtCount(totals.area)+' / 전체 '+fmtQty(area)+' 면적 · 총 영토 '+fmtQty(plotsNow)+'칸 (1칸 = '+unitArea+'면적)'+(plan.futurePremium?' · 계획 후 '+fmtQty(plotsNow+plan.futurePremium)+'칸 / '+fmtQty(area+plan.futurePremium*unitArea)+'면적':'');
+    byId('cityTerritoryBreakdown').textContent='사용 '+fmtCount(totals.area)+' / 전체 '+fmtQty(area)+' 면적 · 총 영토 '+fmtQty(plotsNow)+'칸 (1칸 = '+unitArea+'면적)';
     const b=budget(plan,totals,techs),left=b.available-b.required;
     byId('cityBudgetMetrics').innerHTML=summaryMetric('총 확보 카카오',fmtQty(b.available))+summaryMetric('총 필요 카카오',fmtQty(b.required))+summaryMetric('계획 후 잔여/부족',fmtQty(left),'',left<0?'warning':'success');
-    byId('cityBudgetBreakdown').textContent='시간당 '+fmtCount(b.rate)+' 카카오 × '+fmtCount(b.hours)+'시간. 건설 '+costText(b.builds)+' / 연구 '+fmtQty(techs.cost)+' 카카오 / 보석 영토 해금 '+fmtQty(b.expansion)+' 보석.';
+    byId('cityBudgetBreakdown').textContent='시간당 '+fmtCount(b.rate)+' 카카오 × '+fmtCount(b.hours)+'시간. 건설 '+costText(b.builds)+' / 연구 '+fmtQty(techs.cost)+' 카카오.';
     byId('cityBuildTotal').textContent=costText(b.builds);
     const meter=byId('cityAreaUsage');meter.max=Math.max(1,area);meter.value=Math.min(area,totals.area);meter.setAttribute('aria-valuetext',fmtCount(totals.area)+' / '+fmtCount(area)+' 면적');
     byId('cityBudgetRows').innerHTML='<div><span>현재 보유</span><b>'+fmtQty(plan.stock)+'</b></div><div><span>예상 생산 ('+fmtHours(b.hours)+'h)</span><b>'+(b.production?'+':'')+fmtQty(b.production)+'</b></div><div><span>건설 비용</span><a href="#cityConstruction">'+(b.builds.cocoa?'−':'')+fmtQty(b.builds.cocoa)+'</a></div><div><span>목표 연구 비용</span><a href="#cityResearch">'+(techs.cost?'−':'')+fmtQty(techs.cost)+'</a></div>';
@@ -2226,7 +2244,6 @@ const cityManagement = (() => {
     const plots=cityData.plots[activeWonder],remaining=plots.mapSize-plots.initial;
     byId('cityRegularPlots').max=Math.min(plots.regular,remaining-plan.premium);
     byId('cityPremiumPlots').max=Math.min(plots.premium.length,remaining-plan.regular);
-    byId('cityFuturePlots').max=Math.min(plots.premium.length-plan.premium,remaining-plan.regular-plan.premium);
     for(const input of panel.querySelectorAll('[data-city-field]:not([aria-invalid=true])')) input.value=plan[input.dataset.cityField];
     byId('cityCocoaHours').placeholder='기본 '+fmtHours(settings.baseH);
   }
@@ -2386,7 +2403,7 @@ const cityManagement = (() => {
   return {refresh};
 })();
 
-const SHARED_COPY={"sections": {"productionSettings": "건물 구성과 운영 시간으로 생산량을 계산합니다. 원료·일꾼 부족에 따른 생산 중단은 자동 반영하지 않습니다.", "resourcesCard": "보유량과 예상 생산량을 생산 계획에 필요한 원료량과 비교합니다.", "productsCard": "완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다.", "mayaWonderSettings": "현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다.", "mayaGoal": "설정한 운영 시간 기준으로 목표에 필요한 상품이 얼마나 남거나 부족한지 확인합니다.", "mayaSleep": "취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 현재 보유량과 취침 전 생산·소비를 반영합니다.", "mayaPower": "설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다. 원료는 목표량을 채우는 데 필요한 상품 생산분의 소모량만 계산합니다.", "mayaConversion": "Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다.", "cityOverview": "입력한 건물 구성의 일꾼·사제와 영토 사용량을 확인합니다. 실제 건물 배치 모양은 고려하지 않습니다.", "cityCocoa": "현재 보유량에 예상 생산량을 더하고, 사용 계획에 필요한 비용을 차감합니다.", "cityBuildings": "생산 건물 수는 생산 계산기와 연동됩니다. 직접 입력한 건물 수가 있으면 그 값을 우선 적용합니다.", "cityConstruction": "현재 레벨에서 목표 레벨까지의 건설·업그레이드 비용을 계산합니다. 계산한 건물은 도시 구성에 자동 추가되지 않습니다.", "cityResearch": "완료한 연구와 목표 연구를 선택하세요. 필요한 선행 연구를 포함하고, 이미 완료한 연구의 비용은 제외합니다."}, "columns": {"레벨": "생산 건물의 현재 레벨입니다.", "건물 수": "소수점도 입력할 수 있습니다. 0.5채는 생산량·소비량을 절반으로 계산합니다.", "운영 시간(h)": "빈칸은 기본 운영 시간을 사용합니다. 0은 생산하지 않습니다.", "현재 보유량": "음수를 포함한 정수 또는 K·M 단위로 입력하세요. 예: -12000 또는 -12K", "잔여/부족": "현재 보유량 + 예상 생산량 − 필요량입니다. 양수는 남는 양, 음수는 부족한 양입니다.", "소요 시간": "현재 보유량을 포함해 필요량을 확보할 때까지 걸리는 총 생산 시간입니다.", "예상 생산량": "현재 구성과 운영 시간에 따른 생산량입니다.", "생산력 차이": "현재 생산력 − 필요 생산력입니다. 음수이면 생산력이 부족합니다.", "필요 생산력": "보유량을 반영해, 목표 달성에 추가로 필요한 생산력입니다.", "현재 생산력": "설정한 시간 동안의 생산량을 기준 생산력으로 환산한 값입니다.", "구간 필요량": "현재 레벨 다음부터 목표 레벨까지 요구하는 상품량입니다.", "생산 방식": "연속 생산은 운영 시간만큼, 주기 생산은 완료한 횟수만 생산량·소비량에 반영합니다.", "필요량": "현재 생산 계획을 실행하는 데 필요한 원료량입니다.", "행복도(%)": "행복도는 생산량에만 반영하며 원료 소비량에는 반영하지 않습니다.", "예상 보유량": "현재 보유량 + 예상 생산량입니다. 선택한 퀘스트 보상도 현재 보유량에 포함합니다.", "옥 사용량": "현재 상품 생산 계획에 필요한 옥의 양입니다.", "흑요석 사용량": "현재 상품 생산 계획에 필요한 흑요석의 양입니다.", "깃털 사용량": "현재 상품 생산 계획에 필요한 깃털의 양입니다."}, "fields": {"wLv": "현재 적용받는 불가사의 보너스 레벨입니다.", "baseH": "항목별 운영 시간이 빈칸이면 이 시간을 사용합니다. 0은 생산하지 않습니다.", "sleepPrepH": "건물별 운영 시간 설정을 적용하며, 취침 전까지의 생산·소비만 계산합니다. 이 칸을 비우면 기본 운영 시간을 사용합니다.", "sleepCycle": "취침 전에 예약할 생산 주기입니다. 해당 레벨에 없는 주기는 선택 가능한 주기 중 가까운 주기를 사용합니다.", "sleepCount": "건물 1채당 예약할 생산 횟수입니다. 모든 예약에 필요한 원료를 취침 전까지 확보해야 합니다.", "productRawCycle": "필요한 원료량을 계산할 생산 주기입니다. 생산 계산기값은 각 항목의 설정 주기를 사용합니다."}};
+const SHARED_COPY={"sections": {"productionSettings": "건물 구성과 운영 시간으로 생산량을 계산합니다. 원료·일꾼 부족에 따른 생산 중단은 자동 반영하지 않습니다.", "resourcesCard": "보유량과 예상 생산량을 생산 계획에 필요한 원료량과 비교합니다.", "productsCard": "완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다.", "mayaWonderSettings": "현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다.", "mayaGoal": "설정한 운영 시간 기준으로 목표에 필요한 상품이 얼마나 남거나 부족한지 확인합니다.", "mayaSleep": "취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 현재 보유량과 취침 전 생산·소비를 반영합니다.", "mayaPower": "설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다. 원료는 목표량을 채우는 데 필요한 상품 생산분의 소모량만 계산합니다.", "mayaConversion": "Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다.", "cityOverview": "입력한 건물 구성의 일꾼·사제와 영토 사용량을 확인합니다. 실제 건물 배치 모양은 고려하지 않습니다.", "cityCocoa": "현재 보유량에 예상 생산량을 더하고, 사용 계획에 필요한 비용을 차감합니다.", "cityBuildings": "생산 건물 수는 생산 계산기와 연동됩니다. 직접 입력한 건물 수가 있으면 그 값을 우선 적용합니다.", "cityConstruction": "현재 레벨에서 목표 레벨까지의 건설·업그레이드 비용을 계산합니다. 계산한 건물은 도시 구성에 자동 추가되지 않습니다.", "cityResearch": "완료한 연구와 목표 연구를 선택하세요. 필요한 선행 연구를 포함하고, 이미 완료한 연구의 비용은 제외합니다."}, "columns": {"레벨": "생산 건물의 현재 레벨입니다.", "건물 수": "소수점도 입력할 수 있습니다. 0.5채는 생산량·소비량을 절반으로 계산합니다.", "운영 시간(h)": "빈칸은 기본 운영 시간을 사용합니다. 0은 생산하지 않습니다.", "현재 보유량": "음수를 포함한 정수 또는 K·M 단위로 입력하세요. 예: -12000 또는 -12K", "잔여/부족": "현재 보유량 + 예상 생산량 − 필요량입니다. 양수는 남는 양, 음수는 부족한 양입니다.", "소요 시간": "현재 보유량을 포함해 필요량을 확보할 때까지 걸리는 총 생산 시간입니다.", "예상 생산량": "현재 구성과 운영 시간에 따른 생산량입니다.", "생산력 차이": "현재 생산력 − 필요 생산력입니다. 음수이면 생산력이 부족합니다.", "필요 생산력": "보유량을 반영해, 목표 달성에 추가로 필요한 생산력입니다.", "현재 생산력": "설정한 시간 동안의 생산량을 기준 생산력으로 환산한 값입니다.", "구간 필요량": "현재 레벨 다음부터 목표 레벨까지 요구하는 상품량입니다.", "생산 방식": "연속 생산은 운영 시간만큼, 주기 생산은 완료한 횟수만 생산량·소비량에 반영합니다.", "필요량": "현재 생산 계획을 실행하는 데 필요한 원료량입니다.", "행복도(%)": "행복도는 생산량에만 반영하며 원료 소비량에는 반영하지 않습니다.", "예상 보유량": "현재 보유량 + 예상 생산량입니다. 선택한 퀘스트 보상도 현재 보유량에 포함합니다.", "옥 사용량": "현재 상품 생산 계획에 필요한 옥의 양입니다.", "흑요석 사용량": "현재 상품 생산 계획에 필요한 흑요석의 양입니다.", "깃털 사용량": "현재 상품 생산 계획에 필요한 깃털의 양입니다."}, "fields": {"wLv": "현재 적용받는 불가사의 보너스 레벨입니다.", "baseH": "항목별 운영 시간이 빈칸이면 이 시간을 사용합니다. 0은 생산하지 않습니다.", "sleepPrepH": "기본값은 기본 운영 시간과 같습니다. 별도 입력하면 그 시간이 적용되고, 값을 지우면 기본 운영 시간으로 돌아갑니다. 취침 전 생산·소비만 계산합니다.", "sleepCycle": "취침 전에 예약할 생산 주기입니다. 해당 레벨에 없는 주기는 선택 가능한 주기 중 가까운 주기를 사용합니다.", "sleepCount": "건물 1채당 예약할 생산 횟수입니다. 모든 예약에 필요한 원료를 취침 전까지 확보해야 합니다.", "productRawCycle": "필요한 원료량을 계산할 생산 주기입니다. 생산 계산기값은 각 항목의 설정 주기를 사용합니다."}};
 function uiHelpButton(label,tip){
   return '<button type="button" class="info-tip" data-tip="'+tip+'" data-help-label="'+label+'" aria-label="'+label+' 설명">i</button>';
 }
