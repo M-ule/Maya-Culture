@@ -582,23 +582,10 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
  .happiness-combo .happiness-toggle{width:32px}
 }
 
-/* 불가사의 목표: 중국 문명의 입력 레이블과 단계 입력 규격. */
-#mayaWonderSettings .wonder-settings > label{
-  font:400 16px/1.5 Arial,'Malgun Gothic',sans-serif;
-  flex:0 0 auto;
-}
-#mayaWonderSettings .wonder-settings > .settings-step{
-  flex:0 1 272px;
-  width:272px;
-  max-width:100%;
-  height:40px;
-  min-height:40px;
-}
+/* 중국 문명과 동일한 기본 너비·높이는 공통 step-wrap CSS에 맡기고, 글씨만 강조합니다. */
+#mayaWonderSettings .wonder-settings > label,
 #mayaWonderSettings .wonder-settings > .settings-step > input{
-  font:400 16px Arial,'Malgun Gothic',sans-serif;
-}
-@media(max-width:720px){
-  #mayaWonderSettings .wonder-settings > .settings-step{height:44px;min-height:44px}
+  font-weight:600;
 }
 
 </style></head>
