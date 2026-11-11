@@ -383,8 +383,6 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 .section-guide summary{cursor:pointer;color:var(--primary);font-weight:600;padding:8px 0}
 .section-guide p{margin:6px 0}
 .note{border:0;background:transparent;padding:0;margin:12px 0}
-.wonder-context{font-size:14px;font-weight:600}
-.wonder-context strong{color:var(--primary)}
 .stock-error,.quest-error{display:block;color:var(--bad);font-size:12px;margin-top:4px}
 .quest-caption{font-size:13px}
 .wiki-quest-rewards{display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:12px}
@@ -692,11 +690,11 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <section class="card" id="mayaWonderSettings">
 <div class="section-title-row"><h2>불가사의 목표 <button aria-label="불가사의 목표 설명" class="info-tip" data-help-label="불가사의 목표" data-tip="현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다." data-wonder-help="불가사의 목표" type="button">i</button></h2><div class="title-actions"><button aria-controls="tw ts ta" aria-expanded="false" class="convert-toggle" id="wonderView" type="button">상세 보기 ▼</button></div></div>
 <div class="settings wonder-settings">
-<div class="control-field"><label for="curLv">현재 레벨</label><div class="step-wrap settings-step"><input aria-label="현재 레벨" class="step-one" id="curLv" max="50" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="현재 레벨 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="현재 레벨 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
-<div class="control-field"><label for="tgtLv">목표 레벨</label><div class="step-wrap settings-step"><input aria-label="목표 레벨" class="step-one" id="tgtLv" max="50" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="목표 레벨 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="목표 레벨 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
-<div aria-live="polite" class="wonder-context" id="wonderContext">
-<span>불가사의</span><strong id="wonderContextName"></strong><span>보너스</span><strong id="wonderContextLevel"></strong>
-</div>
+<label for="curLv">현재 레벨</label><div class="step-wrap settings-step"><input aria-label="현재 레벨" class="step-one" id="curLv" max="50" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="현재 레벨 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="현재 레벨 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div>
+<label for="tgtLv">목표 레벨</label><div class="step-wrap settings-step"><input aria-label="목표 레벨" class="step-one" id="tgtLv" max="50" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="목표 레벨 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="목표 레벨 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div>
+<span aria-live="polite" class="wonder-context" id="wonderContext">
+<span>불가사의</span><span class="wonder-context-value" id="wonderContextName"></span><span>보너스</span><span class="wonder-context-value" id="wonderContextLevel"></span>
+</span>
 </div>
 <div class="summary" id="goalSummary" role="status">
 <div class="metric"><span>최대 도달(자원 기준) <button aria-label="최대 도달(자원 기준) 설명" class="info-tip" data-help-label="최대 도달(자원 기준)" data-tip="보유 상품·퀘스트 보상을 먼저 반영하고, 보유·예상 생산 옥·흑요석·깃털로 부족한 상품을 제작해 도달할 최대 레벨입니다. Lv6·행복도 100% 기준으로 2시간 주기를 우선 비교하고, 마지막에는 30분·1시간을 조합해 원료 소모를 최소화합니다. 상품 생산 시간과 기존 상품 생산 계획의 원료 소비는 계산에 포함하지 않습니다." data-wonder-help="최대 도달(자원 기준)" type="button">i</button></span><strong id="wonderMaxLevel"></strong></div>
