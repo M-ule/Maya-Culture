@@ -557,6 +557,33 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
  #wikiQuestRewards label{min-height:36px}
  #cityBuildingTable:not(.composition-expanded) tbody tr>td:nth-child(3){display:flex}
 }
+</style><style>
+/* Whole quest rewards, arranged on the shared product heading baseline. */
+#productsCard .product-title-meta{flex:1 1 0;min-width:0}
+#wikiQuestRewards{gap:4px 16px}
+#wikiQuestRewards label.quest-bundle{display:inline-flex;align-items:center;gap:6px;white-space:normal;font-size:15px;line-height:1.5;min-width:0;max-width:100%}
+#wikiQuestRewards .quest-bundle-amounts{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:3px;min-width:0}
+#wikiQuestRewards .quest-bundle-amounts>span:not(.quest-bundle-divider){white-space:nowrap}
+#wikiQuestRewards .quest-bundle-divider{font-weight:400}
+#productsCard .production-section-title{flex:1;flex-wrap:nowrap}
+/* Match the reference's cell rhythm and inline help spacing. */
+#t1 th:first-child,#t2 th:first-child{width:190px}
+#t1 th:nth-child(3),#t2 th:nth-child(3){width:185px}
+@media(min-width:721px){
+ .settings .control-field>.step-wrap{width:120px}
+ .settings .control-field>select{width:210px}
+}
+@media(max-width:720px){#productsCard .production-section-title{flex-wrap:wrap}}
+
+.detail-summary{line-height:1.5}
+@media(max-width:720px){
+ #productsCard .product-title-meta{flex:1 1 0;min-width:0}
+ #wikiQuestRewards label.quest-bundle{font-size:15px;align-items:flex-start}
+ #wikiQuestRewards label.quest-bundle input{margin-top:2px;flex:none}
+ .happiness-combo,.happiness-combo .happiness-input,.happiness-combo .happiness-toggle{height:48px;min-height:48px}
+ .happiness-combo{grid-template-columns:minmax(0,1fr) 32px}
+ .happiness-combo .happiness-toggle{width:32px}
+}
 </style></head>
 <body><main>
 <h1>마야 문명 시뮬레이터</h1>
@@ -571,7 +598,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <div aria-labelledby="tab-prod" class="panel active" id="panel-prod" role="tabpanel">
 <nav aria-label="영역 바로가기" class="mobile-section-nav"><a href="#resourcesCard">기초 자원</a><a href="#productsCard">상품</a></nav>
 <section class="card" id="productionSettings">
-<div class="section-title-row"><h2>생산 설정<button aria-label="생산 설정 설명" class="info-tip" data-help-label="생산 설정" data-tip="건물 구성과 운영 시간으로 생산량을 계산합니다. 원료·일꾼 부족에 따른 생산 중단은 자동 반영하지 않습니다." type="button">i</button></h2><div class="title-actions">
+<div class="section-title-row"><h2>생산 설정 <button aria-label="생산 설정 설명" class="info-tip" data-help-label="생산 설정" data-tip="건물 구성과 운영 시간으로 생산량을 계산합니다. 원료·일꾼 부족에 따른 생산 중단은 자동 반영하지 않습니다." type="button">i</button></h2><div class="title-actions">
 <button class="convert-toggle" id="saveProduction" type="button">생산 입력값 저장</button>
 <button class="convert-toggle" disabled="" id="restoreProduction" type="button">저장값 불러오기</button>
 <button class="reset-btn" id="resetBtn" type="button">초기화</button>
@@ -585,7 +612,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </section>
 <section class="card" id="resourcesCard">
 <div class="section-title-row">
-<div class="production-section-title"><h2>기초 자원<button aria-label="기초 자원 설명" class="info-tip" data-help-label="기초 자원" data-tip="보유량과 예상 생산량을 생산 계획에 필요한 원료량과 비교합니다." type="button">i</button></h2><span class="detail-summary" id="resourceDetailSummary">기본 설정 사용</span></div>
+<div class="production-section-title"><h2>기초 자원 <button aria-label="기초 자원 설명" class="info-tip" data-help-label="기초 자원" data-tip="보유량과 예상 생산량을 생산 계획에 필요한 원료량과 비교합니다." type="button">i</button></h2><span class="detail-summary" id="resourceDetailSummary">기본 설정 사용</span></div>
 <div class="detail-actions">
 <button aria-label="기초 자원 건물 상세 설정" class="detail-open-btn" id="resourceDetailOpen" type="button">상세 설정</button>
 </div>
@@ -623,7 +650,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </div>
 <section class="card" id="productsCard">
 <div class="section-title-row">
-<div class="production-section-title"><h2>상품<button aria-label="상품 설명" class="info-tip" data-help-label="상품" data-tip="완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다." type="button">i</button></h2><div class="product-title-meta"><span class="detail-summary" id="productDetailSummary">기본 설정 사용</span><span class="quest-reward-note"><strong>퀘스트 보상</strong> · 체크 시 보유량에 합산</span><div aria-label="상품 퀘스트 예정 보상" class="quest-reward-options" id="wikiQuestRewards" role="group"></div></div></div>
+<div class="production-section-title"><h2>상품 <button aria-label="상품 설명" class="info-tip" data-help-label="상품" data-tip="완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다." type="button">i</button></h2><div class="product-title-meta"><span class="detail-summary" id="productDetailSummary">기본 설정 사용</span><span class="quest-reward-note"><strong>퀘스트 보상</strong> · 체크 시 보유량에 합산</span><div aria-label="상품 퀘스트 예정 보상" class="quest-reward-options" id="wikiQuestRewards" role="group"></div></div></div>
 <div class="detail-actions">
 <button aria-label="상품 건물 상세 설정" class="detail-open-btn" id="productDetailOpen" type="button">상세 설정</button>
 </div>
@@ -662,8 +689,8 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <div aria-labelledby="tab-wonder" class="panel" id="panel-wonder" role="tabpanel">
 <nav aria-label="영역 바로가기" class="mobile-section-nav"><a href="#mayaGoal">목표 현황</a><a href="#mayaSleep">수면</a><a href="#mayaPower">생산력</a><a href="#mayaConversion">환산표</a></nav>
 <section class="card" id="mayaWonderSettings">
-<div class="section-title-row"><h2>불가사의 목표<button aria-label="불가사의 목표 설명" class="info-tip" data-help-label="불가사의 목표" data-tip="현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다." data-wonder-help="불가사의 목표" type="button">i</button></h2><div class="title-actions"><button aria-controls="tw ts ta" aria-expanded="false" class="convert-toggle" id="wonderView" type="button">상세 보기 ▼</button></div></div>
-<div class="settings">
+<div class="section-title-row"><h2>불가사의 목표 <button aria-label="불가사의 목표 설명" class="info-tip" data-help-label="불가사의 목표" data-tip="현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다." data-wonder-help="불가사의 목표" type="button">i</button></h2><div class="title-actions"><button aria-controls="tw ts ta" aria-expanded="false" class="convert-toggle" id="wonderView" type="button">상세 보기 ▼</button></div></div>
+<div class="settings wonder-settings">
 <div class="control-field"><label for="curLv">현재 레벨</label><div class="step-wrap settings-step"><input aria-label="현재 레벨" class="step-one" id="curLv" max="50" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="현재 레벨 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="현재 레벨 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 <div class="control-field"><label for="tgtLv">목표 레벨</label><div class="step-wrap settings-step"><input aria-label="목표 레벨" class="step-one" id="tgtLv" max="50" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="목표 레벨 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="목표 레벨 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 <div aria-live="polite" class="wonder-context" id="wonderContext">
@@ -676,7 +703,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </div>
 </section>
 <section class="card" id="mayaGoal">
-<div class="section-title-row"><h2>목표 달성 현황<button aria-label="목표 달성 현황 설명" class="info-tip" data-help-label="목표 달성 현황" data-tip="설정한 운영 시간 기준으로 목표에 필요한 상품이 얼마나 남거나 부족한지 확인합니다." data-wonder-help="목표 달성 현황" type="button">i</button></h2></div>
+<div class="section-title-row"><h2>목표 달성 현황 <button aria-label="목표 달성 현황 설명" class="info-tip" data-help-label="목표 달성 현황" data-tip="설정한 운영 시간 기준으로 목표에 필요한 상품이 얼마나 남거나 부족한지 확인합니다." data-wonder-help="목표 달성 현황" type="button">i</button></h2></div>
 <div class="table-wrap">
 <table class="responsive-table" id="tw">
 <thead><tr>
@@ -686,13 +713,13 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </div>
 </section>
 <section class="card" id="mayaSleep">
-<div class="section-title-row"><h2>수면 대비 자원 확보<button aria-label="수면 대비 자원 확보 설명" class="info-tip" data-help-label="수면 대비 자원 확보" data-tip="취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 현재 보유량과 취침 전 생산·소비를 반영합니다." data-wonder-help="수면 대비 자원 확보" type="button">i</button></h2></div>
+<div class="section-title-row"><h2>수면 대비 자원 확보 <button aria-label="수면 대비 자원 확보 설명" class="info-tip" data-help-label="수면 대비 자원 확보" data-tip="취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 현재 보유량과 취침 전 생산·소비를 반영합니다." data-wonder-help="수면 대비 자원 확보" type="button">i</button></h2></div>
 <div class="settings sleep-settings wonder-sleep-settings">
 <div class="control-field"><label for="sleepPrepH">수면까지 남은 시간(h) <button aria-label="수면까지 남은 시간(h) 설명" class="info-tip" data-help-label="수면까지 남은 시간(h)" data-tip="건물별 운영 시간 설정을 적용하며, 취침 전까지의 생산·소비만 계산합니다. 이 칸을 비우면 기본 운영 시간을 사용합니다." type="button">i</button></label><div class="step-wrap sleep-time-wrap"><input aria-label="수면까지 남은 시간(h)" class="step-one" id="sleepPrepH" min="0" placeholder="기본" step="any" type="number"/><div class="step-controls"><button aria-label="수면까지 남은 시간(h) 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="수면까지 남은 시간(h) 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 <div class="control-field"><label for="sleepCycle">예약 생산 주기 <button aria-label="예약 생산 주기 설명" class="info-tip" data-help-label="예약 생산 주기" data-tip="취침 전에 예약할 생산 주기입니다. 해당 레벨에 없는 주기는 선택 가능한 주기 중 가까운 주기를 사용합니다." type="button">i</button></label><select aria-label="예약 생산 주기" id="sleepCycle"><option value="최장">레벨별 최장</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
 <div class="control-field"><label for="sleepCount">예약 횟수 <button aria-label="예약 횟수 설명" class="info-tip" data-help-label="예약 횟수" data-tip="건물 1채당 예약할 생산 횟수입니다. 모든 예약에 필요한 원료를 취침 전까지 확보해야 합니다." type="button">i</button></label><div class="step-wrap"><input aria-label="예약 횟수" class="step-one" id="sleepCount" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="예약 횟수 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="예약 횟수 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 </div>
-<p class="section-note" id="sleepModes"></p>
+
 <div class="table-wrap">
 <table class="responsive-table" id="ts">
 <thead><tr>
@@ -700,15 +727,15 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </tr></thead><tbody></tbody>
 </table>
 </div>
-</section>
+<details class="calculation-details"><summary>예약 생산 주기 내역</summary><p class="note" id="sleepModes"></p></details></section>
 <section class="card" id="mayaPower">
-<div class="section-title-row"><h2>목표 레벨 생산력 비교<button aria-label="목표 레벨 생산력 비교 설명" class="info-tip" data-help-label="목표 레벨 생산력 비교" data-tip="설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다. 원료는 목표량을 채우는 데 필요한 상품 생산분의 소모량만 계산합니다." data-wonder-help="목표 레벨 생산력 비교" type="button">i</button></h2></div>
-<div class="settings"><div class="control-field"><label for="productRawCycle">필요량 환산 기준 주기 <button aria-label="필요량 환산 기준 주기 설명" class="info-tip" data-help-label="필요량 환산 기준 주기" data-tip="필요한 원료량을 계산할 생산 주기입니다. 생산 계산기값은 각 항목의 설정 주기를 사용합니다." type="button">i</button></label><select aria-label="필요량 환산 기준 주기" id="productRawCycle"><option>생산 계산기값</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
+<div class="section-title-row"><h2>목표 레벨 생산력 비교 <button aria-label="목표 레벨 생산력 비교 설명" class="info-tip" data-help-label="목표 레벨 생산력 비교" data-tip="설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다. 원료는 목표량을 채우는 데 필요한 상품 생산분의 소모량만 계산합니다." data-wonder-help="목표 레벨 생산력 비교" type="button">i</button></h2></div>
+<div class="settings power-settings"><div class="control-field"><label for="productRawCycle">필요량 환산 기준 주기 <button aria-label="필요량 환산 기준 주기 설명" class="info-tip" data-help-label="필요량 환산 기준 주기" data-tip="필요한 원료량을 계산할 생산 주기입니다. 생산 계산기값은 각 항목의 설정 주기를 사용합니다." type="button">i</button></label><select aria-label="필요량 환산 기준 주기" id="productRawCycle"><option>생산 계산기값</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
 </div>
 <div class="table-wrap"><table class="responsive-table" id="ta"><thead><tr><th data-label="생산 항목">생산 항목</th><th data-label="생산력 차이">생산력 차이 <button aria-label="생산력 차이 설명" class="info-tip" data-help-label="생산력 차이" data-tip="현재 생산력 − 필요 생산력입니다. 음수이면 생산력이 부족합니다." type="button">i</button></th><th data-label="현재 생산력">현재 생산력 <button aria-label="현재 생산력 설명" class="info-tip" data-help-label="현재 생산력" data-tip="설정한 시간 동안의 생산량을 기준 생산력으로 환산한 값입니다." type="button">i</button></th><th data-label="필요 생산력">필요 생산력 <button aria-label="필요 생산력 설명" class="info-tip" data-help-label="필요 생산력" data-tip="보유량을 반영해, 목표 달성에 추가로 필요한 생산력입니다." type="button">i</button></th></tr></thead><tbody></tbody></table></div>
 </section>
 <section class="card" id="mayaConversion">
-<div class="section-title-row"><h2>생산력 환산표<button aria-label="생산력 환산표 설명" class="info-tip" data-help-label="생산력 환산표" data-tip="Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다." data-wonder-help="생산력 환산표" type="button">i</button></h2></div>
+<div class="section-title-row"><h2>생산력 환산표 <button aria-label="생산력 환산표 설명" class="info-tip" data-help-label="생산력 환산표" data-tip="Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다." data-wonder-help="생산력 환산표" type="button">i</button></h2></div>
 <div aria-label="레벨별 생산력 환산표" class="table-wrap conversion-scroll" role="region" tabindex="0"><table id="tc"><colgroup><col class="conversion-name"/><col class="conversion-mode"/><col span="6"/></colgroup><thead><tr><th data-label="생산 항목">생산 항목</th><th data-label="생산 방식">생산 방식</th><th data-label="Lv1">Lv1</th><th data-label="Lv2">Lv2</th><th data-label="Lv3">Lv3</th><th data-label="Lv4">Lv4</th><th data-label="Lv5">Lv5</th><th data-label="Lv6">Lv6</th></tr></thead><tbody></tbody></table></div>
 </section>
 </div>
@@ -722,7 +749,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <a href="#cityConstruction">건설 비용</a><a href="#cityResearch">연구</a>
 </nav>
 <section class="card" id="cityOverview">
-<div class="section-title-row"><h2>도시 현황<button aria-label="도시 현황 설명" class="info-tip" data-help-label="도시 현황" data-tip="입력한 건물 구성의 일꾼·사제와 영토 사용량을 확인합니다. 실제 건물 배치 모양은 고려하지 않습니다." type="button">i</button></h2></div>
+<div class="section-title-row"><h2>도시 현황 <button aria-label="도시 현황 설명" class="info-tip" data-help-label="도시 현황" data-tip="입력한 건물 구성의 일꾼·사제와 영토 사용량을 확인합니다. 실제 건물 배치 모양은 고려하지 않습니다." type="button">i</button></h2></div>
 <p class="section-note" hidden="" id="cityContext"></p>
 <div aria-live="polite" class="summary city-metrics" id="cityMetrics"></div>
 <details class="calculation-details"><summary>일꾼·사제 계산 내역</summary><p id="cityStaffBreakdown"></p></details>
@@ -735,11 +762,11 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <progress aria-label="영토 면적 사용량" id="cityAreaUsage" max="1" value="0"></progress><p class="section-note" id="cityTerritoryBreakdown"></p>
 </section>
 <section class="card" id="cityBuildings">
-<div class="section-title-row"><h2>주택·건물 구성<button aria-label="주택·건물 구성 설명" class="info-tip" data-help-label="주택·건물 구성" data-tip="생산 건물 수는 생산 계산기와 연동됩니다. 직접 입력한 건물 수가 있으면 그 값을 우선 적용합니다." type="button">i</button></h2><button aria-controls="cityBuildingTable" aria-expanded="false" id="cityBuildingView" type="button">생산 건물 보기 ▼</button></div><p class="city-section-note">주택 수를 입력하세요. 생산 건물은 생산 계산기와 연동됩니다.</p><div class="composition-actions" hidden="" id="cityCompositionActions"><button class="reset-btn" id="cityBuildingReset" title="생산 건물의 직접 입력값을 기본값으로 되돌립니다. 주택 입력값은 유지됩니다." type="button">건물 수 기본값 복원</button><span class="reset-status" id="cityBuildingResetStatus" role="status"></span></div>
+<div class="section-title-row"><h2>주택·건물 구성 <button aria-label="주택·건물 구성 설명" class="info-tip" data-help-label="주택·건물 구성" data-tip="생산 건물 수는 생산 계산기와 연동됩니다. 직접 입력한 건물 수가 있으면 그 값을 우선 적용합니다." type="button">i</button></h2><button aria-controls="cityBuildingTable" aria-expanded="false" id="cityBuildingView" type="button">생산 건물 보기 ▼</button></div><p class="city-section-note">주택 수를 입력하세요. 생산 건물은 생산 계산기와 연동됩니다.</p><div class="composition-actions" hidden="" id="cityCompositionActions"><button class="reset-btn" id="cityBuildingReset" title="생산 건물의 직접 입력값을 기본값으로 되돌립니다. 주택 입력값은 유지됩니다." type="button">건물 수 기본값 복원</button><span class="reset-status" id="cityBuildingResetStatus" role="status"></span></div>
 <div id="cityBuildingGroups"></div>
 </section>
 <section class="card" id="cityCocoa">
-<div class="section-title-row"><h2>카카오 현황·사용 계획<button aria-label="카카오 현황·사용 계획 설명" class="info-tip" data-help-label="카카오 현황·사용 계획" data-tip="현재 보유량에 예상 생산량을 더하고, 사용 계획에 필요한 비용을 차감합니다." type="button">i</button></h2></div>
+<div class="section-title-row"><h2>카카오 현황·사용 계획 <button aria-label="카카오 현황·사용 계획 설명" class="info-tip" data-help-label="카카오 현황·사용 계획" data-tip="현재 보유량에 예상 생산량을 더하고, 사용 계획에 필요한 비용을 차감합니다." type="button">i</button></h2></div>
 <div class="settings city-settings">
 <div class="control-field"><label for="cityCocoaStock">현재 보유량</label><input aria-describedby="cityCocoaError" aria-label="현재 보유량" data-city-field="stock" id="cityCocoaStock" inputmode="decimal" placeholder="0" type="text"/></div>
 <div class="control-field"><label for="cityCocoaRate">시간당 생산량 <button aria-label="시간당 생산량 설명" class="info-tip" data-help-label="시간당 생산량" data-tip="게임에 표시된 실제 시간당 생산량을 입력하세요. 빈칸이면 시청·주택의 기본 생산량을 사용합니다." type="button">i</button></label><input aria-describedby="cityCocoaError" aria-label="시간당 생산량" data-city-field="rate" id="cityCocoaRate" inputmode="decimal" placeholder="시청·주택 기준" type="text"/></div>
@@ -750,11 +777,11 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <details class="calculation-details" hidden=""><summary>카카오·보석 계산 내역</summary><p id="cityBudgetBreakdown"></p></details>
 <p class="costbox" hidden="" id="cityPremiumCost"></p></section>
 <section class="card" id="cityConstruction">
-<div class="section-title-row"><h2>건물 건설 비용<button aria-label="건물 건설 비용 설명" class="info-tip" data-help-label="건물 건설 비용" data-tip="현재 레벨에서 목표 레벨까지의 건설·업그레이드 비용을 계산합니다. 계산한 건물은 도시 구성에 자동 추가되지 않습니다." type="button">i</button></h2><button class="convert-toggle" id="cityAddBuild" type="button">항목 추가</button></div>
+<div class="section-title-row"><h2>건물 건설 비용 <button aria-label="건물 건설 비용 설명" class="info-tip" data-help-label="건물 건설 비용" data-tip="현재 레벨에서 목표 레벨까지의 건설·업그레이드 비용을 계산합니다. 계산한 건물은 도시 구성에 자동 추가되지 않습니다." type="button">i</button></h2><button class="convert-toggle" id="cityAddBuild" type="button">항목 추가</button></div>
 <div class="city-build-rows" id="cityBuildRows"></div><p class="costbox">누적 비용 <b aria-live="polite" id="cityBuildTotal"></b></p>
 </section>
 <section class="card" id="cityResearch">
-<div class="section-title-row"><h2>연구<button aria-label="연구 설명" class="info-tip" data-help-label="연구" data-tip="완료한 연구와 목표 연구를 선택하세요. 필요한 선행 연구를 포함하고, 이미 완료한 연구의 비용은 제외합니다." type="button">i</button></h2><button class="reset-btn" id="cityResetResearch" type="button">연구 초기화</button><div class="costbox research-budget">필요 카카오 <b id="cityResearchCost"></b></div></div><p aria-live="polite" class="research-summary city-section-note" id="cityResearchMetrics"></p><details class="calculation-details" id="cityResearchSelection"><summary>완료한 연구·목표 연구</summary><div class="research-selection"><div class="research-selection-group"><span class="label">완료한 연구</span><span class="value" id="cityCompletedResearchNames"></span></div><div class="research-selection-group"><span class="label">목표 연구</span><span class="value" id="cityTargetResearchName"></span></div></div></details><details class="calculation-details" id="cityResearchSearchOptions"><summary>연구 검색·단계 필터</summary><div class="settings city-settings"><div class="control-field"><label for="cityResearchStage">단계 필터</label><select aria-label="단계 필터" id="cityResearchStage"></select></div><div class="control-field"><label for="cityResearchSearch">연구 검색</label><input aria-label="연구 검색" id="cityResearchSearch" placeholder="연구 이름" type="search"/></div></div></details><p class="city-section-note">연구를 눌러 완료 상태나 목표를 지정하세요. 선행 연구 비용도 함께 계산합니다.</p><div aria-label="연구 표시" class="research-filter city-filter" role="group">
+<div class="section-title-row"><h2>연구 <button aria-label="연구 설명" class="info-tip" data-help-label="연구" data-tip="완료한 연구와 목표 연구를 선택하세요. 필요한 선행 연구를 포함하고, 이미 완료한 연구의 비용은 제외합니다." type="button">i</button></h2><button class="reset-btn" id="cityResetResearch" type="button">연구 초기화</button><div class="costbox research-budget">필요 카카오 <b id="cityResearchCost"></b></div></div><p aria-live="polite" class="research-summary city-section-note" id="cityResearchMetrics"></p><details class="calculation-details" id="cityResearchSelection"><summary>완료한 연구·목표 연구</summary><div class="research-selection"><div class="research-selection-group"><span class="label">완료한 연구</span><span class="value" id="cityCompletedResearchNames"></span></div><div class="research-selection-group"><span class="label">목표 연구</span><span class="value" id="cityTargetResearchName"></span></div></div></details><details class="calculation-details" id="cityResearchSearchOptions"><summary>연구 검색·단계 필터</summary><div class="settings city-settings"><div class="control-field"><label for="cityResearchStage">단계 필터</label><select aria-label="단계 필터" id="cityResearchStage"></select></div><div class="control-field"><label for="cityResearchSearch">연구 검색</label><input aria-label="연구 검색" id="cityResearchSearch" placeholder="연구 이름" type="search"/></div></div></details><p class="city-section-note">연구를 눌러 완료 상태나 목표를 지정하세요. 선행 연구 비용도 함께 계산합니다.</p><div aria-label="연구 표시" class="research-filter city-filter" role="group">
 <button aria-pressed="true" class="convert-toggle" data-research-filter="all" type="button">전체</button>
 <button aria-pressed="false" class="convert-toggle" data-research-filter="done" type="button">완료</button>
 <button aria-pressed="false" class="convert-toggle" data-research-filter="needed" type="button">목표까지 필요</button>
@@ -1217,12 +1244,11 @@ function resourceDetailLevelText(name){
 }
 
 function renderQuestRewards(){
-  document.getElementById('wikiQuestRewards').innerHTML=productOrder.map(product=>{
-    const choices=questRewardChoices().filter(choice=>choice.product===product);
-    return '<span class="quest-rewards" role="group" aria-label="'+product+' 퀘스트 예정 보상"><span class="quest-reward-product">'+product+'</span>'+choices.map(choice=>{
-      const label='+'+fmtQty(choice.amount);
-      return '<label title="'+product+' 퀘스트 예정 보상 '+label+'"><input type="checkbox" data-quest-reward="'+choice.key+'" aria-label="'+product+' 퀘스트 예정 보상 '+label+'"'+(settings.questRewards?.[choice.key]===true?' checked':'')+'>'+label+'</label>';
-    }).join('')+'</span>';
+  document.getElementById('wikiQuestRewards').innerHTML=Object.entries(wikiQuestRewards).map(([phase,reward])=>{
+    const choices=questRewardChoices().filter(choice=>choice.phase===phase);
+    const checked=choices.every(choice=>settings.questRewards?.[choice.key]===true);
+    const summary=Object.entries(reward.products).map(([product,amount])=>product+' +'+fmtQty(amount));
+    return '<label class="quest-bundle"><input type="checkbox" data-quest-phase="'+phase+'" aria-label="'+summary.join(', ')+'"'+(checked?' checked':'')+'><span class="quest-bundle-amounts">'+summary.map((text,index)=>'<span>'+text+(index<summary.length-1?' ·':'')+'</span>').join('')+'</span></label>';
   }).join('');
 }
 function normalizeState(){
@@ -1647,9 +1673,9 @@ for(const id of ['sleepCycle','sleepCount','productRawCycle']){
 }
 
 document.getElementById('wikiQuestRewards').addEventListener('change',event=>{
-  const key=event.target.dataset.questReward;
-  if(!questRewardChoices().some(choice=>choice.key===key))return;
-  settings.questRewards[key]=event.target.checked;
+  const phase=event.target.dataset.questPhase;
+  if(!Object.hasOwn(wikiQuestRewards,phase))return;
+  for(const choice of questRewardChoices().filter(choice=>choice.phase===phase))settings.questRewards[choice.key]=event.target.checked;
   renderWonder();renderAdjustment();saveState();postSize();
 });
 
@@ -1721,6 +1747,7 @@ function labelTable(id){
   for(const row of [table.tHead.rows[0],...table.tBodies[0].rows]){
     [...row.cells].forEach((cell,index)=>{
       cell.classList.toggle('secondary-column',columns.includes(index+1));
+      cell.classList.toggle('column-secondary',columns.includes(index+1));
       if(cell.tagName==='TH') cell.scope='col';
       if(cell.tagName==='TD'){
         cell.dataset.label=headers[index].dataset.label||headers[index].textContent;
@@ -2371,7 +2398,14 @@ function questRewardChoices(){
 }
 function normalizedQuestSelections(source){
   const saved=source.questRewards&&typeof source.questRewards==='object'?source.questRewards:{};
-  return Object.fromEntries(questRewardChoices().map(choice=>[choice.key,Object.hasOwn(saved,choice.key)?saved[choice.key]===true:source.questPhases?.[choice.phase]===true]));
+  const result={};
+  for(const phase of Object.keys(wikiQuestRewards)){
+    const choices=questRewardChoices().filter(choice=>choice.phase===phase);
+    const hasSaved=choices.some(choice=>Object.hasOwn(saved,choice.key));
+    const checked=hasSaved?choices.every(choice=>saved[choice.key]===true):source.questPhases?.[phase]===true;
+    for(const choice of choices)result[choice.key]=checked;
+  }
+  return result;
 }
 function syncProductionView(){
   const open=settings.prodDetailsVisible===true,button=document.getElementById('productionView');
@@ -2412,6 +2446,5 @@ function postSize(){ try{ parent.postMessage({type:'wrks:viz:resize',height:docu
 window.addEventListener('load',()=>{loadState();renderAll();restoreActiveTab();postSize();});
 if('ResizeObserver' in window) new ResizeObserver(postSize).observe(document.body);
 </script>
-
 <script src="update-check.js?v=20261102"></script></body>
 </html>
