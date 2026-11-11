@@ -61,6 +61,22 @@ function stockNumber(text){
  const match=String(text).trim().match(/^[·:：]?\s*([0-9Oo][0-9Oo,]*(?:\.[0-9Oo]+)?\s*[KM]?)$/i);
  return match?quantity(match[1]):null;
 }
+// Tesseract builds can expose lines directly or nested inside block structure.
+// Text-only fallback still allows whole-line matching and manual completion.
+function recognizedLines(data){
+ if(Array.isArray(data?.lines)&&data.lines.length)return data.lines;
+ const lines=[];
+ for(const block of Array.isArray(data?.blocks)?data.blocks:[]){
+  for(const para of Array.isArray(block.paragraphs)?block.paragraphs:[]){
+   for(const line of Array.isArray(para.lines)?para.lines:[]){
+    const text=String(line.text||((line.words||[]).map(w=>w.text).join(' '))).trim();
+    if(text)lines.push({text,bbox:line.bbox||null});
+   }
+  }
+ }
+ if(lines.length)return lines;
+ return String(data?.text||'').split(/\r?\n/).map(text=>({text:text.trim(),bbox:null})).filter(line=>line.text);
+}
 function parseStockLines(lines){
  const out=[];
  for(const line of lines){
@@ -178,7 +194,7 @@ async function readGameLayout(worker,canvas,kind){
    // Find the level lines first, then read the name and the badge on the same card.
    await worker.setParameters({tessedit_pageseg_mode:'11'});
    const panel=await read([90,90,260,490],155,true);
-   const levels=(panel.data.lines||[]).filter(line=>line.bbox&&/레벨\s*[1-6]\s*$/.test(line.text.trim()));
+   const levels=recognizedLines(panel.data).filter(line=>line.bbox&&/레벨\s*[1-6]\s*$/.test(line.text.trim()));
    for(const line of levels){
     const x=Math.round((line.bbox.x0-16)/4+90),y=Math.round((line.bbox.y0-16)/4+90);
     const lv=Number(line.text.trim().slice(-1));
@@ -207,6 +223,9 @@ async function readGameLayout(worker,canvas,kind){
    }
   }
   return rows;
+ }catch(e){
+  // A fixed-coordinate crop must never prevent full-image OCR on a changed layout.
+  return [];
  }finally{
   await worker.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
  }
@@ -232,7 +251,7 @@ async function scan(){
  if(kind==='stocks'?localRows.length===STOCKS.length:localRows.length&&localRows.every(f=>f.value!==null))continue;
  const collect=async input=>{
   const {data}=await w.recognize(input);
-  const lines=data.lines||[];
+  const lines=recognizedLines(data);
   const rows=kind==='buildings'?parseBuildingLines(lines):parseStockLines(lines);
   for(const f of rows){
    f.source=source;f.needsReview=true;
