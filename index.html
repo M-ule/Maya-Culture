@@ -749,7 +749,6 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <div class="control-field"><label for="sleepCycle">예약 생산 주기 <button aria-label="예약 생산 주기 설명" class="info-tip" data-help-label="예약 생산 주기" data-tip="취침 전에 예약할 생산 주기입니다. 해당 레벨에 없는 주기는 선택 가능한 주기 중 가까운 주기를 사용합니다." type="button">i</button></label><select aria-label="예약 생산 주기" id="sleepCycle"><option value="최장">레벨별 최장</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
 <div class="control-field"><label for="sleepCount">예약 횟수 <button aria-label="예약 횟수 설명" class="info-tip" data-help-label="예약 횟수" data-tip="건물 1채당 예약할 생산 횟수입니다. 모든 예약에 필요한 원료를 취침 전까지 확보해야 합니다." type="button">i</button></label><div class="step-wrap"><input aria-label="예약 횟수" class="step-one" id="sleepCount" min="0" step="1" type="number"/><div class="step-controls"><button aria-label="예약 횟수 늘리기" class="step-btn" data-delta="1" type="button">▲</button><button aria-label="예약 횟수 줄이기" class="step-btn" data-delta="-1" type="button">▼</button></div></div></div>
 </div>
-<p class="setting-inline-note" id="sleepTimeBasis" role="status"></p>
 <div class="table-wrap">
 <table class="responsive-table" id="ts">
 <thead><tr>
@@ -757,7 +756,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </tr></thead><tbody></tbody>
 </table>
 </div>
-<details class="calculation-details"><summary>예약 생산 주기 내역</summary><p class="note" id="sleepModes"></p></details></section>
+</section>
 <section class="card" id="mayaPower">
 <div class="section-title-row"><h2>목표 레벨 생산력 비교 <button aria-label="목표 레벨 생산력 비교 설명" class="info-tip" data-help-label="목표 레벨 생산력 비교" data-tip="설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다. 원료는 설정한 생산 방식에 대응하는 Lv6 기준으로 환산합니다." data-wonder-help="목표 레벨 생산력 비교" type="button">i</button></h2></div>
 <div class="table-wrap"><table class="responsive-table" id="ta"><thead><tr><th data-label="생산 항목">생산 항목</th><th data-label="생산력 차이">생산력 차이 <button aria-label="생산력 차이 설명" class="info-tip" data-help-label="생산력 차이" data-tip="현재 생산력 − 필요 생산력입니다. 음수이면 생산력이 부족합니다." type="button">i</button></th><th data-label="현재 생산력">현재 생산력 <button aria-label="현재 생산력 설명" class="info-tip" data-help-label="현재 생산력" data-tip="설정한 시간 동안의 생산량을 기준 생산력으로 환산한 값입니다." type="button">i</button></th><th data-label="필요 생산력">필요 생산력 <button aria-label="필요 생산력 설명" class="info-tip" data-help-label="필요 생산력" data-tip="보유량을 반영해, 목표 달성에 추가로 필요한 생산력입니다." type="button">i</button></th></tr></thead><tbody></tbody></table></div>
@@ -1011,14 +1010,7 @@ function renderSleepReserve(){
   const tbody=document.querySelector('#ts tbody');
   if(tbody) tbody.innerHTML=resourceOrder.map(sleepReserveRow).join('');
   labelTable('ts');
-  const reservations=productOrder.flatMap(name=>{
-    const modes=new Set(productionConfigs('products',name).filter(row=>row.count>0).map(row=>referenceRecipe(name,row.lv,settings.sleepCycle)?.mode).filter(Boolean));
-    return modes.size?[name+' '+[...modes].join('·')]:[];
-  });
   document.getElementById('sleepPrepH').placeholder='기본 '+fmtHours(settings.baseH);
-  const basis=document.getElementById('sleepTimeBasis');
-  if(basis) basis.textContent=settings.sleepPrepH===''?'기본 운영 시간 자동 적용 · '+fmtHours(settings.baseH)+'시간':'별도 취침 준비 시간 적용 · '+fmtHours(settings.sleepPrepH)+'시간 (입력값 삭제 시 기본 시간 사용)';
-  document.getElementById('sleepModes').textContent=settings.sleepCount&&reservations.length?'실제 예약 주기: '+reservations.join(' / '):'예약 생산 없음';
 }
 
 function cumulative(lv,product){ return DATA.wonderCosts[String(lv)]?.[product]||0; }
