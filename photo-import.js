@@ -6,15 +6,15 @@ const BUILDINGS=[
  {id:'옥',name:'옥 채석장',aliases:['옥채석장','옥광산','옥채굴장'],production:'옥',group:'resources'},
  {id:'흑요석',name:'흑요석 채석장',aliases:['흑요석채석장','흑요석광산','흑요석채굴장'],production:'흑요석',group:'resources'},
  {id:'깃털',name:'새장',aliases:['새장','새 사육장','깃털사육장'],production:'깃털',group:'resources'},
- {id:'마스크',name:'마스크 작업장',aliases:['마스크작업장','마스크공방'],production:'마스크',group:'products'},
- {id:'달력돌',name:'달력돌 작업장',aliases:['달력돌작업장','달력석작업장','달력돌공방'],production:'달력돌',group:'products'},
- {id:'단검',name:'단검 작업장',aliases:['단검작업장','단검공방'],production:'단검',group:'products'},
+ {id:'마스크',name:'마스크 작업장',aliases:['마스크작업장','마스크공방','마스크조각가'],production:'마스크',group:'products'},
+ {id:'달력돌',name:'달력돌 작업장',aliases:['달력돌작업장','달력석작업장','달력돌공방','연대기편자'],production:'달력돌',group:'products'},
+ {id:'단검',name:'단검 작업장',aliases:['단검작업장','단검공방','의식조각사'],production:'단검',group:'products'},
  {id:'머리장식',name:'머리장식 작업장',aliases:['머리장식작업장','머리장식공방'],production:'머리장식',group:'products'}
 ];
 const STOCKS=['옥','흑요석','깃털','마스크','달력돌','단검','머리장식']
  .map(name=>({name,target:name,group:resourceOrder.includes(name)?'resources':'products'}));
 let worker=null,busy=false,findings=[];
-const STOCK_ALIASES={'머리 장식':'머리장식','달력 돌':'달력돌','옥 원석':'옥'};
+const STOCK_ALIASES={'조상마스크':'마스크','의식단검':'단검','옥원석':'옥'};
 const clean=s=>String(s).replace(/\s|[·:：]/g,'');
 function status(s,bad=false){el('photoStatus').textContent=s;el('photoStatus').classList.toggle('bad',bad);}
 async function engine(){
@@ -181,43 +181,52 @@ async function readGameLayout(worker,canvas,kind){
    const paper=photoPixels(canvas,...centered([750,340,40,24]));
    if(colorRatio(paper,(r,g,b)=>r>215&&g>195&&r>g&&g>b+20)<.9)return [];
    await worker.setParameters({tessedit_pageseg_mode:'7'});
-   const title=await read(centered([303,122,47,25]),155,true);
+   const title=await read(centered([303,121,90,26]),155,true);
    if(!clean(title.data.text).includes('마야'))return [];
-   const positions=[[555,18,58,20],[662,18,58,20],[770,18,58,20],[375,186,75,23],[375,270,75,23],[688,186,75,23],[688,270,75,23]];
+   // The header shows cocoa, jade and obsidian. Feathers are not in this panel.
+   const positions=[
+    ['옥',[554,15,61,26],105,true],
+    ['흑요석',[662,15,64,26],105,true],
+    ['마스크',[374,184,68,28],128,false],
+    ['달력돌',[687,184,70,28],128,false],
+    ['단검',[998,184,83,28],128,false],
+    ['머리장식',[374,266,62,28],128,false]
+   ];
    await worker.setParameters({tessedit_char_whitelist:'0123456789.,KkMm'});
-   for(const [i,stock] of STOCKS.entries()){
-    const {data,preview}=await read(centered(positions[i]),i<3?115:125,i<3);
+   for(const [target,box,threshold,light] of positions){
+    const {data,preview}=await read(centered(box),threshold,light);
     const value=stockNumber(data.text);
-    if(value!==null)rows.push(entry('stock_'+stock.target,stock.name+' 보유량',value,{kind:'stock',target:stock.target,preview:preview()}));
+    if(value!==null)rows.push(entry('stock_'+target,target+' 보유량',value,{kind:'stock',target,preview:preview()}));
    }
   }else{
-   // Find the level lines first, then read the name and the badge on the same card.
-   await worker.setParameters({tessedit_pageseg_mode:'11'});
-   const panel=await read([90,90,260,490],155,true);
-   const levels=recognizedLines(panel.data).filter(line=>line.bbox&&/레벨\s*[1-6]\s*$/.test(line.text.trim()));
-   for(const line of levels){
-    const x=Math.round((line.bbox.x0-16)/4+90),y=Math.round((line.bbox.y0-16)/4+90);
-    const lv=Number(line.text.trim().slice(-1));
-    await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
-    const name=await read([x-3,y-33,104,25],155,true);
+   // Verify the move/storage panel before using its two-column card layout.
+   await worker.setParameters({tessedit_pageseg_mode:'7'});
+   const footer=await read([111,647,211,30],155,true);
+   if(!clean(footer.data.text).includes('보관'))return [];
+   for(const y of [97,228,360,491])for(const x of [91,223]){
+    await worker.setParameters({tessedit_char_whitelist:''});
+    const name=await read([x,y,127,26],155,true);
     const building=matchBuilding(name.data.text);
     if(!building)continue;
-    const badge=[x+100,y-62,24,23];
+    await worker.setParameters({tessedit_char_whitelist:'0123456789'});
+    const level=await read([x+32,y+29,22,25],155,true);
+    const lvMatch=level.data.text.trim().match(/^[1-6]$/);
+    const lv=lvMatch?Number(lvMatch[0]):null;
+    const badge=[x+94,y-37,37,37];
     const orange=colorRatio(photoPixels(canvas,...badge),(r,g,b)=>r>175&&g>98&&g<227&&b<140&&r>g+30&&g>b+20);
     let count=null,preview;
-    if(orange>.35){
+    if(orange>.25){
      await worker.setParameters({tessedit_char_whitelist:'0123456789xX'});
-     const result=await read(badge,125,false);
+     const result=await read([x+99,y-29,29,24],110,false);
      const match=result.data.text.trim().match(/^[xX]?\s*(\d{1,4})$/);
      if(match&&Number(match[1])>0)count=Number(match[1]);
      preview=result.preview();
     }else if(orange<.06){
-     // The game shows no badge for single-copy cards.
      count=1;
     }
-    const scale=canvas.height/709,anchor={x0:x*scale,y0:(y-27)*scale};
+    const scale=canvas.height/709,anchor={x0:x*scale,y0:y*scale};
     const group=building.id+'_'+x+'_'+y;
-    for(const [field,value,image] of [['lv',lv,name.preview()],['count',count,preview]]){
+    for(const [field,value,image] of [['lv',lv,level.preview()],['count',count,preview]]){
      rows.push(entry(group+'_'+field,building.name+(field==='lv'?' 레벨':' 수량'),value,{kind:'building',building:building.id,field,group,anchor,preview:image}));
     }
    }
@@ -248,7 +257,7 @@ async function scan(){
   if(f.group)f.group=source+'_'+f.group;
  }
  mergeFindings(localRows);
- if(kind==='stocks'?localRows.length===STOCKS.length:localRows.length&&localRows.every(f=>f.value!==null))continue;
+ if(kind==='stocks'?localRows.length===6:localRows.length&&localRows.every(f=>f.value!==null))continue;
  const collect=async input=>{
   const {data}=await w.recognize(input);
   const lines=recognizedLines(data);
