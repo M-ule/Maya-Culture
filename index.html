@@ -1878,9 +1878,28 @@ document.querySelector('.tabs').addEventListener('keydown',e=>{
   e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[next].click();tabs[next].focus();
 });
 function hideSharedHelp(){activeHelp?.removeAttribute('aria-describedby');document.getElementById('sharedTooltip')?.remove();activeHelp=null;}
+function sharedHelpPosition(rect,box,viewportWidth,viewportHeight){
+  const margin=12,gap=14;
+  const left=Math.max(margin,Math.min(rect.left+rect.width/2-box.width/2,viewportWidth-box.width-margin));
+  const above=rect.top-box.height-gap;
+  const below=rect.bottom+gap;
+  // Keep every help bubble above the hovered icon whenever there is room.
+  // Near the top edge, place it below instead of clipping it off-screen.
+  const top=above>=margin?above:below+box.height<=viewportHeight-margin?below:Math.max(margin,Math.min(above,viewportHeight-box.height-margin));
+  return {left,top};
+}
 function showSharedHelp(button){
-  hideSharedHelp();const tip=document.createElement('div');tip.id='sharedTooltip';tip.className='term-tooltip';tip.setAttribute('role','tooltip');tip.textContent=button.dataset.tip;(button.closest('dialog[open]')||document.body).append(tip);button.setAttribute('aria-describedby',tip.id);
-  const rect=button.getBoundingClientRect(),box=tip.getBoundingClientRect();tip.style.left=Math.max(12,Math.min(rect.left,innerWidth-box.width-12))+'px';tip.style.top=(rect.bottom+box.height+12<innerHeight?rect.bottom+8:Math.max(12,rect.top-box.height-8))+'px';activeHelp=button;
+  hideSharedHelp();
+  const tip=document.createElement('div');
+  tip.id='sharedTooltip';tip.className='term-tooltip';tip.setAttribute('role','tooltip');
+  tip.textContent=button.dataset.tip||'';
+  (button.closest('dialog[open]')||document.body).append(tip);
+  button.setAttribute('aria-describedby',tip.id);
+  const rect=button.getBoundingClientRect(),box=tip.getBoundingClientRect();
+  const position=sharedHelpPosition(rect,box,innerWidth,innerHeight);
+  tip.style.left=position.left+'px';
+  tip.style.top=position.top+'px';
+  activeHelp=button;
 }
 document.addEventListener('pointerover',e=>{const b=e.target.closest('.info-tip');if(b&&matchMedia('(hover:hover)').matches)showSharedHelp(b);});
 document.addEventListener('pointerout',e=>{if(e.target.closest('.info-tip'))hideSharedHelp();});
