@@ -111,7 +111,7 @@ button.info-tip.unavailable-value{border:0!important;border-radius:3px;backgroun
  #productionSettings #photoImportBtn{grid-column:2;grid-row:1;width:100%;height:auto;min-height:44px;white-space:normal}
  #productionSettings #saveProduction,#productionSettings #restoreProduction,#productionSettings #resetBtn,#productionSettings #productionView{width:100%;justify-self:stretch;min-width:0;white-space:normal;font-size:13px;height:auto;min-height:44px;padding:7px}
  #productionSettings #saveProduction{grid-column:1;grid-row:2}#productionSettings #restoreProduction{grid-column:2;grid-row:2}#productionSettings #resetBtn{grid-column:1;grid-row:3}#productionSettings #productionView{grid-column:2;grid-row:3}
- .control-field:has(#sleepCycle),.control-field:has(#productRawCycle){grid-template-columns:minmax(0,1fr)!important;gap:6px}
+ .control-field:has(#sleepCycle){grid-template-columns:minmax(0,1fr)!important;gap:6px}
  .settings{gap:10px;margin-bottom:12px}.control-field,#productionSettings .control-field{display:grid;grid-template-columns:minmax(0,1fr) minmax(100px,42%);gap:8px;width:100%;min-width:0;white-space:normal;font-size:14px}
  .control-field>label{min-width:0;white-space:normal;word-break:keep-all;line-height:1.5}
  .control-field>.step-wrap,.control-field>input,.control-field>select,#productionSettings .control-field>.step-wrap,#productionSettings #wonder{width:100%!important;max-width:none!important;min-width:0;height:48px;min-height:48px}
@@ -759,9 +759,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </div>
 <details class="calculation-details"><summary>예약 생산 주기 내역</summary><p class="note" id="sleepModes"></p></details></section>
 <section class="card" id="mayaPower">
-<div class="section-title-row"><h2>목표 레벨 생산력 비교 <button aria-label="목표 레벨 생산력 비교 설명" class="info-tip" data-help-label="목표 레벨 생산력 비교" data-tip="설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다. 원료는 목표량을 채우는 데 필요한 상품 생산분의 소모량만 계산합니다." data-wonder-help="목표 레벨 생산력 비교" type="button">i</button></h2></div>
-<div class="settings power-settings"><div class="control-field"><label for="productRawCycle">필요량 환산 기준 주기 <button aria-label="필요량 환산 기준 주기 설명" class="info-tip" data-help-label="필요량 환산 기준 주기" data-tip="필요한 원료량을 계산할 생산 주기입니다. 생산 계산기값은 각 항목의 설정 주기를 사용합니다." type="button">i</button></label><select aria-label="필요량 환산 기준 주기" id="productRawCycle"><option>생산 계산기값</option><option>30분</option><option>1시간</option><option>2시간</option></select></div>
-</div>
+<div class="section-title-row"><h2>목표 레벨 생산력 비교 <button aria-label="목표 레벨 생산력 비교 설명" class="info-tip" data-help-label="목표 레벨 생산력 비교" data-tip="설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고 초과 생산량은 제외합니다. 필요한 원료는 생산 계산기에 설정한 상품별 생산 방식으로 환산합니다." data-wonder-help="목표 레벨 생산력 비교" type="button">i</button></h2></div>
 <div class="table-wrap"><table class="responsive-table" id="ta"><thead><tr><th data-label="생산 항목">생산 항목</th><th data-label="생산력 차이">생산력 차이 <button aria-label="생산력 차이 설명" class="info-tip" data-help-label="생산력 차이" data-tip="현재 생산력 − 필요 생산력입니다. 음수이면 생산력이 부족합니다." type="button">i</button></th><th data-label="현재 생산력">현재 생산력 <button aria-label="현재 생산력 설명" class="info-tip" data-help-label="현재 생산력" data-tip="설정한 시간 동안의 생산량을 기준 생산력으로 환산한 값입니다." type="button">i</button></th><th data-label="필요 생산력">필요 생산력 <button aria-label="필요 생산력 설명" class="info-tip" data-help-label="필요 생산력" data-tip="보유량을 반영해, 목표 달성에 추가로 필요한 생산력입니다." type="button">i</button></th></tr></thead><tbody></tbody></table></div>
 </section>
 <section class="card" id="mayaConversion">
@@ -844,9 +842,8 @@ const state={
   resources: JSON.parse(JSON.stringify(INIT.resources)),
   products: JSON.parse(JSON.stringify(INIT.products))
 };
-const settings={...INIT.settings,sleepPrepH:'',sleepCycle:'최장',sleepCount:3,productRawCycle:'생산 계산기값'};
+const settings={...INIT.settings,sleepPrepH:'',sleepCycle:'최장',sleepCount:3};
 const resourceKeys={'옥':'jade','흑요석':'obs','깃털':'feather'};
-const rawCycles=['생산 계산기값','30분','1시간','2시간'];
 const wLvSet={...INIT.wLvSet};
 const productDetails=Object.fromEntries(productOrder.map(name=>[name,{enabled:false,rows:[]} ]));
 const resourceDetails=Object.fromEntries(resourceOrder.map(name=>[name,{enabled:false,rows:[]} ]));
@@ -902,7 +899,7 @@ function syncUIFromState(){
   document.getElementById('wLv').value=settings.wLv;
   document.getElementById('baseH').value=settings.baseH;
   const sleepEl=document.getElementById('sleepPrepH'); if(sleepEl) sleepEl.value=sleepPrepHours();
-  for(const id of ['sleepCycle','sleepCount','productRawCycle']) document.getElementById(id).value=settings[id];
+  for(const id of ['sleepCycle','sleepCount']) document.getElementById(id).value=settings[id];
   try{document.getElementById('restoreProduction').disabled=!localStorage.getItem(DEFAULT_STORAGE_KEY);}catch(e){}
   document.getElementById('curLv').value=wLvSet.cur;
   document.getElementById('tgtLv').value=wLvSet.tgt;
@@ -1153,7 +1150,6 @@ function productBenchmark(name){
   return recipe?happyCycleOutput(name,6,recipe.p,100)*60/recipe.p.min:0;
 }
 function targetUseRatio(name,key){
-  const mode=settings.productRawCycle;
   const s=state.products[name];
   const rows=productionConfigs('products',name);
   const active=rows.filter(row=>row.count>0);
@@ -1161,7 +1157,7 @@ function targetUseRatio(name,key){
   const hasTime=configs.some(row=>configHours('products',name,row)>0);
   let output=0,use=0;
   for(const row of configs){
-    const reference=referenceRecipe(name,6,mode===rawCycles[0]?row.mode:mode);
+    const reference=referenceRecipe(name,6,row.mode);
     if(!reference) continue;
     const hours=hasTime?configHours('products',name,row):1;
     const weight=row.count*hours/reference.p.min;
@@ -1368,9 +1364,9 @@ function normalizeState(){
   settings.wLv=clamp(parseInt(settings.wLv)||0,0,50);
   settings.baseH=Math.max(0,num(settings.baseH,0));
   settings.sleepPrepH=settings.sleepPrepH===''?'':Math.max(0,num(settings.sleepPrepH,0));
-  settings.sleepCycle=['최장',...rawCycles.slice(1)].includes(settings.sleepCycle)?settings.sleepCycle:'최장';
+  settings.sleepCycle=['최장','30분','1시간','2시간'].includes(settings.sleepCycle)?settings.sleepCycle:'최장';
   settings.sleepCount=Math.max(0,Math.floor(num(settings.sleepCount,3)));
-  settings.productRawCycle=rawCycles.includes(settings.productRawCycle)?settings.productRawCycle:rawCycles[0];
+  delete settings.productRawCycle; // Discard obsolete values from previously saved sessions.
   wLvSet.cur=clamp(parseInt(wLvSet.cur)||0,0,50);
   wLvSet.tgt=clamp(parseInt(wLvSet.tgt)||0,0,50);
   if(wLvSet.tgt<wLvSet.cur) wLvSet.tgt=wLvSet.cur;
@@ -1756,7 +1752,7 @@ document.getElementById('restoreProduction').addEventListener('click',()=>{
   }catch(e){ reportProductionStatus('불러오기 실패'); }
 });
 document.getElementById('resetBtn').addEventListener('click',openResetChoiceModal);
-for(const id of ['sleepCycle','sleepCount','productRawCycle']){
+for(const id of ['sleepCycle','sleepCount']){
   document.getElementById(id).addEventListener('change',e=>{
     settings[id]=e.target.value;normalizeState();syncUIFromState();renderAll();saveState();
   });
@@ -2440,7 +2436,7 @@ const cityManagement = (() => {
   return {refresh};
 })();
 
-const SHARED_COPY={"sections": {"productionSettings": "건물 구성과 운영 시간으로 생산량을 계산합니다. 원료·일꾼 부족에 따른 생산 중단은 자동 반영하지 않습니다.", "resourcesCard": "보유량과 예상 생산량을 생산 계획에 필요한 원료량과 비교합니다.", "productsCard": "완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다.", "mayaWonderSettings": "현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다.", "mayaGoal": "설정한 운영 시간 기준으로 목표에 필요한 상품이 얼마나 남거나 부족한지 확인합니다.", "mayaSleep": "취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 현재 보유량과 취침 전 생산·소비를 반영합니다.", "mayaPower": "설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다. 원료는 목표량을 채우는 데 필요한 상품 생산분의 소모량만 계산합니다.", "mayaConversion": "Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다.", "cityOverview": "입력한 건물 구성의 일꾼·사제와 영토 사용량을 확인합니다. 실제 건물 배치 모양은 고려하지 않습니다.", "cityCocoa": "현재 보유량에 예상 생산량을 더하고, 사용 계획에 필요한 비용을 차감합니다.", "cityBuildings": "생산 건물 수는 생산 계산기와 연동됩니다. 직접 입력한 건물 수가 있으면 그 값을 우선 적용합니다.", "cityConstruction": "현재 레벨에서 목표 레벨까지의 건설·업그레이드 비용을 계산합니다. 계산한 건물은 도시 구성에 자동 추가되지 않습니다.", "cityResearch": "완료한 연구와 목표 연구를 선택하세요. 필요한 선행 연구를 포함하고, 이미 완료한 연구의 비용은 제외합니다."}, "columns": {"레벨": "생산 건물의 현재 레벨입니다.", "건물 수": "소수점도 입력할 수 있습니다. 0.5채는 생산량·소비량을 절반으로 계산합니다.", "운영 시간(h)": "빈칸은 기본 운영 시간을 사용합니다. 0은 생산하지 않습니다.", "현재 보유량": "음수를 포함한 정수 또는 K·M 단위로 입력하세요. 예: -12000 또는 -12K", "잔여/부족": "현재 보유량 + 예상 생산량 − 필요량입니다. 양수는 남는 양, 음수는 부족한 양입니다.", "소요 시간": "현재 보유량을 포함해 필요량을 확보할 때까지 걸리는 총 생산 시간입니다.", "예상 생산량": "현재 구성과 운영 시간에 따른 생산량입니다.", "생산력 차이": "현재 생산력 − 필요 생산력입니다. 음수이면 생산력이 부족합니다.", "필요 생산력": "보유량을 반영해, 목표 달성에 추가로 필요한 생산력입니다.", "현재 생산력": "설정한 시간 동안의 생산량을 기준 생산력으로 환산한 값입니다.", "구간 필요량": "현재 레벨 다음부터 목표 레벨까지 요구하는 상품량입니다.", "생산 방식": "연속 생산은 운영 시간만큼, 주기 생산은 완료한 횟수만 생산량·소비량에 반영합니다.", "필요량": "현재 생산 계획을 실행하는 데 필요한 원료량입니다.", "행복도(%)": "행복도는 생산량에만 반영하며 원료 소비량에는 반영하지 않습니다.", "예상 보유량": "현재 보유량 + 예상 생산량입니다. 선택한 퀘스트 보상도 현재 보유량에 포함합니다.", "옥 사용량": "현재 상품 생산 계획에 필요한 옥의 양입니다.", "흑요석 사용량": "현재 상품 생산 계획에 필요한 흑요석의 양입니다.", "깃털 사용량": "현재 상품 생산 계획에 필요한 깃털의 양입니다."}, "fields": {"wLv": "현재 적용받는 불가사의 보너스 레벨입니다.", "baseH": "항목별 운영 시간이 빈칸이면 이 시간을 사용합니다. 0은 생산하지 않습니다.", "sleepPrepH": "기본값은 기본 운영 시간과 같습니다. 별도 입력하면 그 시간이 적용되고, 값을 지우면 기본 운영 시간으로 돌아갑니다. 취침 전 생산·소비만 계산합니다.", "sleepCycle": "취침 전에 예약할 생산 주기입니다. 해당 레벨에 없는 주기는 선택 가능한 주기 중 가까운 주기를 사용합니다.", "sleepCount": "건물 1채당 예약할 생산 횟수입니다. 모든 예약에 필요한 원료를 취침 전까지 확보해야 합니다.", "productRawCycle": "필요한 원료량을 계산할 생산 주기입니다. 생산 계산기값은 각 항목의 설정 주기를 사용합니다."}};
+const SHARED_COPY={"sections": {"productionSettings": "건물 구성과 운영 시간으로 생산량을 계산합니다. 원료·일꾼 부족에 따른 생산 중단은 자동 반영하지 않습니다.", "resourcesCard": "보유량과 예상 생산량을 생산 계획에 필요한 원료량과 비교합니다.", "productsCard": "완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다.", "mayaWonderSettings": "현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다.", "mayaGoal": "설정한 운영 시간 기준으로 목표에 필요한 상품이 얼마나 남거나 부족한지 확인합니다.", "mayaSleep": "취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 현재 보유량과 취침 전 생산·소비를 반영합니다.", "mayaPower": "설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고 초과 생산량은 제외합니다. 필요한 원료는 생산 계산기에 설정한 상품별 생산 방식으로 환산합니다.", "mayaConversion": "Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다.", "cityOverview": "입력한 건물 구성의 일꾼·사제와 영토 사용량을 확인합니다. 실제 건물 배치 모양은 고려하지 않습니다.", "cityCocoa": "현재 보유량에 예상 생산량을 더하고, 사용 계획에 필요한 비용을 차감합니다.", "cityBuildings": "생산 건물 수는 생산 계산기와 연동됩니다. 직접 입력한 건물 수가 있으면 그 값을 우선 적용합니다.", "cityConstruction": "현재 레벨에서 목표 레벨까지의 건설·업그레이드 비용을 계산합니다. 계산한 건물은 도시 구성에 자동 추가되지 않습니다.", "cityResearch": "완료한 연구와 목표 연구를 선택하세요. 필요한 선행 연구를 포함하고, 이미 완료한 연구의 비용은 제외합니다."}, "columns": {"레벨": "생산 건물의 현재 레벨입니다.", "건물 수": "소수점도 입력할 수 있습니다. 0.5채는 생산량·소비량을 절반으로 계산합니다.", "운영 시간(h)": "빈칸은 기본 운영 시간을 사용합니다. 0은 생산하지 않습니다.", "현재 보유량": "음수를 포함한 정수 또는 K·M 단위로 입력하세요. 예: -12000 또는 -12K", "잔여/부족": "현재 보유량 + 예상 생산량 − 필요량입니다. 양수는 남는 양, 음수는 부족한 양입니다.", "소요 시간": "현재 보유량을 포함해 필요량을 확보할 때까지 걸리는 총 생산 시간입니다.", "예상 생산량": "현재 구성과 운영 시간에 따른 생산량입니다.", "생산력 차이": "현재 생산력 − 필요 생산력입니다. 음수이면 생산력이 부족합니다.", "필요 생산력": "보유량을 반영해, 목표 달성에 추가로 필요한 생산력입니다.", "현재 생산력": "설정한 시간 동안의 생산량을 기준 생산력으로 환산한 값입니다.", "구간 필요량": "현재 레벨 다음부터 목표 레벨까지 요구하는 상품량입니다.", "생산 방식": "연속 생산은 운영 시간만큼, 주기 생산은 완료한 횟수만 생산량·소비량에 반영합니다.", "필요량": "현재 생산 계획을 실행하는 데 필요한 원료량입니다.", "행복도(%)": "행복도는 생산량에만 반영하며 원료 소비량에는 반영하지 않습니다.", "예상 보유량": "현재 보유량 + 예상 생산량입니다. 선택한 퀘스트 보상도 현재 보유량에 포함합니다.", "옥 사용량": "현재 상품 생산 계획에 필요한 옥의 양입니다.", "흑요석 사용량": "현재 상품 생산 계획에 필요한 흑요석의 양입니다.", "깃털 사용량": "현재 상품 생산 계획에 필요한 깃털의 양입니다."}, "fields": {"wLv": "현재 적용받는 불가사의 보너스 레벨입니다.", "baseH": "항목별 운영 시간이 빈칸이면 이 시간을 사용합니다. 0은 생산하지 않습니다.", "sleepPrepH": "기본값은 기본 운영 시간과 같습니다. 별도 입력하면 그 시간이 적용되고, 값을 지우면 기본 운영 시간으로 돌아갑니다. 취침 전 생산·소비만 계산합니다.", "sleepCycle": "취침 전에 예약할 생산 주기입니다. 해당 레벨에 없는 주기는 선택 가능한 주기 중 가까운 주기를 사용합니다.", "sleepCount": "건물 1채당 예약할 생산 횟수입니다. 모든 예약에 필요한 원료를 취침 전까지 확보해야 합니다."}};
 function uiHelpButton(label,tip){
   return '<button type="button" class="info-tip" data-tip="'+tip+'" data-help-label="'+label+'" aria-label="'+label+' 설명">i</button>';
 }
