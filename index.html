@@ -557,11 +557,14 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 </style><style>
 /* Whole quest rewards, arranged on the shared product heading baseline. */
 #productsCard .product-title-meta{flex:1 1 0;min-width:0}
-#wikiQuestRewards{gap:4px 16px}
-#wikiQuestRewards label.quest-bundle{display:inline-flex;align-items:center;gap:6px;white-space:normal;font-size:15px;line-height:1.5;min-width:0;max-width:100%}
-#wikiQuestRewards .quest-bundle-amounts{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:3px;min-width:0}
-#wikiQuestRewards .quest-bundle-amounts>span:not(.quest-bundle-divider){white-space:nowrap}
-#wikiQuestRewards .quest-bundle-divider{font-weight:400}
+#wikiQuestRewards,#wikiResourceQuestRewards{gap:4px 16px}
+#wikiResourceQuestRewards{display:flex;flex-wrap:wrap;margin-top:8px}
+#resourceQuestDetails{margin:0 0 10px}
+#resourceQuestTotal{font-size:.9em;font-weight:400}
+:is(#wikiQuestRewards,#wikiResourceQuestRewards) label.quest-bundle{display:inline-flex;align-items:center;gap:6px;white-space:normal;font-size:15px;line-height:1.5;min-width:0;max-width:100%}
+:is(#wikiQuestRewards,#wikiResourceQuestRewards) .quest-bundle-amounts{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:3px;min-width:0}
+:is(#wikiQuestRewards,#wikiResourceQuestRewards) .quest-bundle-amounts>span:not(.quest-bundle-divider){white-space:nowrap}
+:is(#wikiQuestRewards,#wikiResourceQuestRewards) .quest-bundle-divider{font-weight:400}
 #productsCard .production-section-title{flex:1;flex-wrap:nowrap}
 /* Match the reference's cell rhythm and inline help spacing. */
 #t1 th:first-child,#t2 th:first-child{width:190px}
@@ -575,8 +578,8 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 .detail-summary{line-height:1.5}
 @media(max-width:720px){
  #productsCard .product-title-meta{flex:1 1 0;min-width:0}
- #wikiQuestRewards label.quest-bundle{font-size:15px;align-items:flex-start}
- #wikiQuestRewards label.quest-bundle input{margin-top:2px;flex:none}
+ :is(#wikiQuestRewards,#wikiResourceQuestRewards) label.quest-bundle{font-size:15px;align-items:flex-start}
+ :is(#wikiQuestRewards,#wikiResourceQuestRewards) label.quest-bundle input{margin-top:2px;flex:none}
  .happiness-combo,.happiness-combo .happiness-input,.happiness-combo .happiness-toggle{height:48px;min-height:48px}
  .happiness-combo{grid-template-columns:minmax(0,1fr) 32px}
  .happiness-combo .happiness-toggle{width:32px}
@@ -647,6 +650,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <button aria-label="기초 자원 건물 상세 설정" class="detail-open-btn" id="resourceDetailOpen" type="button">상세 설정</button>
 </div>
 </div>
+<details class="calculation-details" id="resourceQuestDetails"><summary>퀘스트 보상 <span id="resourceQuestTotal"></span></summary><div id="wikiResourceQuestRewards" role="group" aria-label="기초 자원 퀘스트 예정 보상"></div></details>
 <p class="section-note" hidden="" id="resourceOverview" role="status"></p>
 <div class="table-wrap">
 <table class="responsive-table" id="t1">
@@ -924,7 +928,7 @@ function renderBonus(){
   const names=[...resourceOrder,...productOrder];
   const configs=names.flatMap(name=>productionConfigs(resourceOrder.includes(name)?'resources':'products',name).map(row=>({name,row})));
   const hasBuildings=configs.some(({row})=>row.count>0),operating=configs.some(({name,row})=>row.count>0&&configHours(resourceOrder.includes(name)?'resources':'products',name,row)>0);
-  const shortage=resourceOrder.filter(name=>state.resources[name].stock+resourceOutput(name)<resourceConsumption(name));
+  const shortage=resourceOrder.filter(name=>plannedResourceStock(name)+resourceOutput(name)<resourceConsumption(name));
   document.getElementById('bonusBox').innerHTML=summaryMetric('불가사의 보너스',bonus+' · 일꾼 +'+staff.worker+'명 · 사제 +'+staff.priest+'명',next)+summaryMetric(!hasBuildings||!operating?'생산 설정 확인':'조정 필요 생산 항목',!hasBuildings?'건물 수를 입력하세요.':!operating?'운영 시간을 입력하세요.':shortage.join(' · ')||'없음','',operating&&shortage.length?'warning':'');
 }
 
@@ -962,7 +966,7 @@ function renderTables(keepControls){
   }
   if(!keepControls) bindProductionRows();
   const shortage=resourceOrder.flatMap(name=>{
-    const remain=state.resources[name].stock+resourceOutput(name)-resourceConsumption(name);
+    const remain=plannedResourceStock(name)+resourceOutput(name)-resourceConsumption(name);
     return remain<0?[name+' '+fmtQty(-remain)]:[];
   });
   document.getElementById('resourceOverview').textContent=shortage.length?'부족 자원 · '+shortage.join(' / '):'현재 계획에서 부족한 자원이 없습니다.';
@@ -1028,6 +1032,15 @@ const wikiQuestRewards={
   sacred:{name:'Path to Sacred Power',products:{'마스크':5000,'달력돌':4000,'단검':3000}},
   final:{name:'The Final Stretch',products:{'마스크':10000,'달력돌':8000,'단검':10000,'머리장식':3500}}
 };
+// Wiki: Allied Cultures → Maya → Quests. Identical across all three Maya events.
+const wikiResourceQuestRewards={"workforce":{"옥":300,"흑요석":250},"workshopMask":{"옥":20},"workshopCalendar":{"흑요석":15},"ritualResearch":{"옥":1000},"ritualUpgrade":{"흑요석":750},"sacredRituals":{"옥":1000},"sacredQuarries":{"흑요석":800},"sacredWorkshops":{"흑요석":1500},"sacredHomes":{"옥":2000},"finalAviaries":{"깃털":3000},"finalOutfitter":{"옥":20000},"finalResearch":{"흑요석":15000}};
+const resourceQuestCondition={
+  ritualResearch:'의식 장소 연구',
+  sacredRituals:'Lv2 의식 장소 2개 및 행복도 조건 충족'
+};
+function plannedResourceStock(resource){
+  return state.resources[resource].stock+selectedQuestBonus(resource);
+}
 function selectedQuestBonus(product){
   return questRewardChoices().reduce((total,choice)=>total+(choice.product===product&&settings.questRewards?.[choice.key]===true?choice.amount:0),0);
 }
@@ -1107,7 +1120,7 @@ function mayaMinimumRaw(name,need,budget){
 }
 function mayaCanReachWithRaw(target){
   const need=Object.fromEntries(productOrder.map(name=>[name,Math.max(0,cumulative(target,name)-cumulative(wLvSet.cur,name)-plannedProductStock(name))]));
-  const raw=Object.fromEntries(resourceOrder.map(name=>[name,state.resources[name].stock+resourceOutput(name)]));
+  const raw=Object.fromEntries(resourceOrder.map(name=>[name,plannedResourceStock(name)+resourceOutput(name)]));
   const budget={jade:raw['옥'],obs:raw['흑요석'],feather:raw['깃털']};
   // These three products each consume one distinct raw material. Daggers
   // are assessed last because they share jade and obsidian.
@@ -1169,7 +1182,7 @@ function targetUseRatio(name,key){
 function targetResourceNeed(name,target){
   const key=resourceKeys[name];
   const gross=productOrder.reduce((sum,product)=>sum+requiredQty(target[product]*targetUseRatio(product,key)),0);
-  return Math.max(0,gross-state.resources[name].stock);
+  return Math.max(0,gross-plannedResourceStock(name));
 }
 function renderAdjustment(){
   const target=Object.fromEntries(productOrder.map(name=>[name,Math.max(0,wonderNeed(name)-plannedProductStock(name))]));
@@ -1329,12 +1342,24 @@ function resourceDetailLevelText(name){
 }
 
 function renderQuestRewards(){
-  document.getElementById('wikiQuestRewards').innerHTML=Object.entries(wikiQuestRewards).map(([phase,reward])=>{
-    const choices=questRewardChoices().filter(choice=>choice.phase===phase);
-    const checked=choices.every(choice=>settings.questRewards?.[choice.key]===true);
-    const summary=Object.entries(reward.products).map(([product,amount])=>product+' +'+fmtQty(amount));
-    return '<label class="quest-bundle"><input type="checkbox" data-quest-phase="'+phase+'" aria-label="'+summary.join(', ')+'"'+(checked?' checked':'')+'><span class="quest-bundle-amounts">'+summary.map((text,index)=>'<span>'+text+(index<summary.length-1?' ·':'')+'</span>').join('')+'</span></label>';
-  }).join('');
+  for(const [id,rewards] of [['wikiQuestRewards',Object.fromEntries(Object.entries(wikiQuestRewards).map(([phase,reward])=>[phase,reward.products]))],['wikiResourceQuestRewards',wikiResourceQuestRewards]]){
+    document.getElementById(id).innerHTML=Object.entries(rewards).map(([phase,reward])=>{
+      const choices=questRewardChoices().filter(choice=>choice.phase===phase);
+      const checked=choices.every(choice=>settings.questRewards?.[choice.key]===true);
+      const summary=Object.entries(reward).map(([product,amount])=>product+' +'+fmtQty(amount));
+      const condition=resourceQuestCondition[phase];
+      const label=summary.join(', ')+(condition?' · '+condition:'');
+      return '<label class="quest-bundle"'+(condition?' title="'+condition+'"':'')+'><input type="checkbox" data-quest-phase="'+phase+'" aria-label="'+label+'"'+(checked?' checked':'')+'><span class="quest-bundle-amounts">'+summary.map((text,index)=>'<span>'+text+(index<summary.length-1?' ·':'')+'</span>').join('')+(condition?'<small> · '+condition+'</small>':'')+'</span></label>';
+    }).join('');
+  }
+  renderResourceQuestTotal();
+}
+function renderResourceQuestTotal(){
+  const total=resourceOrder.flatMap(resource=>{
+    const amount=selectedQuestBonus(resource);
+    return amount>0?[resource+' +'+fmtQty(amount)]:[];
+  });
+  document.getElementById('resourceQuestTotal').textContent=total.length?' · '+total.join(' / '):'';
 }
 function normalizeState(){
   settings.questRewards=normalizedQuestSelections(settings);
@@ -1446,19 +1471,19 @@ function resourceConsumption(resource){
   return productOrder.reduce((sum,p)=>sum+productUse(p,key),0);
 }
 function resourceRequiredHours(name,consumption){
-  const shortfall=Math.max(0,consumption-(state.resources[name].stock||0));
+  const shortfall=Math.max(0,consumption-plannedResourceStock(name));
   if(shortfall===0) return 0;
   const perHour=productionConfigs('resources',name).reduce((sum,row)=>sum+(row.hours===0?0:resourceRate(name,row)),0);
   return perHour>0?shortfall/perHour:null;
 }
 
 function resourceRow(name){
-  const s=state.resources[name],prod=resourceOutput(name),cons=resourceConsumption(name),remain=s.stock+prod-cons,time=resourceRequiredHours(name,cons),detail=resourceDetailEnabled(name);
+  const s=state.resources[name],prod=resourceOutput(name),cons=resourceConsumption(name),remain=plannedResourceStock(name)+prod-cons,time=resourceRequiredHours(name,cons),detail=resourceDetailEnabled(name);
   const levelCell=detail?'<td class="calc detail-active-cell">'+resourceDetailLevelText(name)+'</td>':'<td class="input-cell">'+levelStepper(s.lv)+'</td>';
   const bldgCell=detail?'<td class="num calc detail-active-cell">'+fmtBldg(resourceActualBuildings(name))+'</td>':'<td class="input-cell">'+stepper('bldgs',s.bldgs)+'</td>';
   const happinessCell=detail?'<td class="calc detail-active-cell">상세</td>':'<td class="input-cell">'+happinessInput('happiness',s.happiness)+'</td>';
   return '<tr data-group="resources" data-name="'+name+'">'+
-    '<td class="name">'+name+(detail?'<span class="detail-badge">상세</span>':'')+'</td>'+
+    '<td class="name">'+name+(detail?'<span class="detail-badge">상세</span>':'')+(selectedQuestBonus(name)>0?'<span class="detail-badge quest-bonus-badge">퀘스트 +'+fmtQty(selectedQuestBonus(name))+'</span>':'')+'</td>'+
     levelCell+'<td class="fixed-input">연속</td>'+bldgCell+happinessCell+
     '<td class="input-cell">'+stepper('hours',s.hours,'기본 '+fmtHours(settings.baseH))+'</td>'+
     '<td class="input-cell">'+stockInput(s.stock)+'</td>'+
@@ -1534,7 +1559,7 @@ function sleepResourcePower(resource){
   const h=sleepPrepHours();
   const required=sleepRequirement(resource);
   const used=productOrder.reduce((sum,name)=>sum+requiredQty(productAmount(name,key,h)),0);
-  const stock=state.resources[resource].stock||0;
+  const stock=plannedResourceStock(resource);
   const produced=availableQty(resourceOutputForHours(resource,h));
   const projected=stock+produced-used;
   const remain=projected-required;
@@ -1758,12 +1783,14 @@ for(const id of ['sleepCycle','sleepCount']){
   });
 }
 
-document.getElementById('wikiQuestRewards').addEventListener('change',event=>{
-  const phase=event.target.dataset.questPhase;
-  if(!Object.hasOwn(wikiQuestRewards,phase))return;
-  for(const choice of questRewardChoices().filter(choice=>choice.phase===phase))settings.questRewards[choice.key]=event.target.checked;
-  renderTables(true);renderWonder();renderAdjustment();saveState();postSize();
-});
+for(const id of ['wikiQuestRewards','wikiResourceQuestRewards']){
+  document.getElementById(id).addEventListener('change',event=>{
+    const choices=questRewardChoices().filter(choice=>choice.phase===event.target.dataset.questPhase);
+    if(!choices.length) return;
+    for(const choice of choices) settings.questRewards[choice.key]=event.target.checked;
+    renderResourceQuestTotal();renderAll(true);saveState();postSize();
+  });
+}
 
 document.getElementById('productDetailOpen')?.addEventListener('click',()=>openDetailModal());
 document.getElementById('productDetailModal')?.addEventListener('click',e=>{
@@ -2454,6 +2481,7 @@ function syncCommonCopy(){
     for(const th of table.querySelectorAll('thead th')){
       const label=th.dataset.label||th.textContent.trim();
       let tip=SHARED_COPY.columns[label];
+      if(table.id==='t1'&&label==='현재 보유량')tip='입력한 보유량에 선택한 퀘스트 보상을 더해 원료 계산에 반영합니다.';
       if(table.id==='ts'&&label==='필요 생산력')tip='보유량과 취침 전 소비량을 반영해, 예약분을 확보하는 데 필요한 생산력입니다.';
       if(table.id==='tw'&&label==='소요 시간')tip='보유량과 선택한 퀘스트 보상을 반영해, 부족한 상품의 생산이 완료될 때까지 걸리는 시간입니다.';
       if(table.id==='ts'&&label==='필요량')tip='설정한 예약 횟수만큼 생산하는 데 필요한 원료량입니다.';
@@ -2496,14 +2524,16 @@ matchMedia('(max-width:720px)').addEventListener('change',()=>{syncCommonCopy();
 
 // Product reward choices use China's amount-by-product contract.
 function questRewardChoices(){
-  return productOrder.flatMap(product=>Object.entries(wikiQuestRewards).flatMap(([phase,reward])=>{
-    const amount=reward.products[product];return amount>0?[{key:product+'-'+amount,product,amount,phase}]:[];
-  }));
+  const products=Object.entries(wikiQuestRewards).flatMap(([phase,reward])=>
+    Object.entries(reward.products).map(([product,amount])=>({key:product+'-'+amount,product,amount,phase})));
+  const resources=Object.entries(wikiResourceQuestRewards).flatMap(([phase,reward])=>
+    Object.entries(reward).map(([product,amount])=>({key:'resource-'+phase+'-'+product,product,amount,phase})));
+  return [...products,...resources];
 }
 function normalizedQuestSelections(source){
   const saved=source.questRewards&&typeof source.questRewards==='object'?source.questRewards:{};
   const result={};
-  for(const phase of Object.keys(wikiQuestRewards)){
+  for(const phase of [...Object.keys(wikiQuestRewards),...Object.keys(wikiResourceQuestRewards)]){
     const choices=questRewardChoices().filter(choice=>choice.phase===phase);
     const hasSaved=choices.some(choice=>Object.hasOwn(saved,choice.key));
     const checked=hasSaved?choices.every(choice=>saved[choice.key]===true):source.questPhases?.[phase]===true;
