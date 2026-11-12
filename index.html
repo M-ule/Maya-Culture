@@ -480,6 +480,8 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
  .wiki-quest{width:100%;padding:4px 0;min-height:44px}
 }
 @media(max-width:379px){.city-stage-list{grid-template-columns:1fr}}
+#mayaConversion .section-title-row{justify-content:flex-start;align-items:center;flex-wrap:wrap;gap:6px 12px}
+#mayaConversion .conversion-mode-note{flex:1 1 240px;margin:0}
 </style>
 <style>/* Shared wording and disclosure components, with Maya-only controls retained. */
 .city-section-note{margin:8px 0 14px;color:var(--muted);font-size:13px;line-height:1.7;word-break:keep-all}
@@ -762,8 +764,7 @@ body{font-family:var(--font);font-size:16px;color:var(--text);background:var(--p
 <div class="table-wrap"><table class="responsive-table" id="ta"><thead><tr><th data-label="생산 항목">생산 항목</th><th data-label="생산력 차이">생산력 차이 <button aria-label="생산력 차이 설명" class="info-tip" data-help-label="생산력 차이" data-tip="현재 생산력 − 필요 생산력입니다. 음수이면 생산력이 부족합니다." type="button">i</button></th><th data-label="현재 생산력">현재 생산력 <button aria-label="현재 생산력 설명" class="info-tip" data-help-label="현재 생산력" data-tip="설정한 시간 동안의 생산량을 기준 생산력으로 환산한 값입니다." type="button">i</button></th><th data-label="필요 생산력">필요 생산력 <button aria-label="필요 생산력 설명" class="info-tip" data-help-label="필요 생산력" data-tip="보유량을 반영해, 목표 달성에 추가로 필요한 생산력입니다." type="button">i</button></th></tr></thead><tbody></tbody></table></div>
 </section>
 <section class="card" id="mayaConversion">
-<div class="section-title-row"><h2>생산력 환산표 <button aria-label="생산력 환산표 설명" class="info-tip" data-help-label="생산력 환산표" data-tip="Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다." data-wonder-help="생산력 환산표" type="button">i</button></h2></div>
-<p class="setting-inline-note">현재 설정한 생산 방식만 표시합니다. 다른 방식은 생산 계산기의 생산 방식을 변경해 비교할 수 있습니다.</p>
+<div class="section-title-row"><h2>생산력 환산표 <button aria-label="생산력 환산표 설명" class="info-tip" data-help-label="생산력 환산표" data-tip="Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다." data-wonder-help="생산력 환산표" type="button">i</button></h2><p class="setting-inline-note conversion-mode-note">현재 설정한 생산 방식만 표시합니다. 다른 방식은 생산 계산기의 생산 방식을 변경해 비교할 수 있습니다.</p></div>
 <div aria-label="레벨별 생산력 환산표" class="table-wrap conversion-scroll" role="region" tabindex="0"><table id="tc"><colgroup><col class="conversion-name"/><col class="conversion-mode"/><col span="6"/></colgroup><thead><tr><th data-label="생산 항목">생산 항목</th><th data-label="생산 방식">생산 방식</th><th data-label="Lv1">Lv1</th><th data-label="Lv2">Lv2</th><th data-label="Lv3">Lv3</th><th data-label="Lv4">Lv4</th><th data-label="Lv5">Lv5</th><th data-label="Lv6">Lv6</th></tr></thead><tbody></tbody></table></div>
 </section>
 </div>
