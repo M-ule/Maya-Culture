@@ -873,7 +873,7 @@ function parseStock(value){
   return Number.isSafeInteger(qty)?qty:null;
 }
 function stockInput(value){
-  return '<input type="text" class="stock-input" inputmode="decimal" data-k="stock" value="'+fmtQty(value)+'" data-exact="'+value+'"><small class="stock-error" role="status" hidden></small>';
+  return '<input type="text" class="stock-input" inputmode="text" data-k="stock" value="'+fmtQty(value)+'" data-exact="'+value+'"><small class="stock-error" role="status" hidden></small>';
 }
 function fmtHours(n){ if(n===null||n===undefined||!Number.isFinite(n)) return '—'; const r=requiredQty(n*100)/100; return (r||0).toLocaleString('ko-KR',{maximumFractionDigits:2}); }
 function fmtPct(n){ return (Math.round(n*1000)/10).toLocaleString('ko-KR',{maximumFractionDigits:1})+'%'; }
