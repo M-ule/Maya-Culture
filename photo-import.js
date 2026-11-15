@@ -166,27 +166,31 @@ function colorRatio(data,match){
  return hits*4/data.length;
 }
 async function buildingRowPositions(worker,canvas){
- const pitch=131.5, first=97, offsets=[];
+ const pitch=131.5, first=97, offsets=[], levels=[];
  const unscrolledRows=[97,228,360,491];
  await worker.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
  for(const x of [91,223]){
   const crop=photoCrop(canvas,[x,18,65,560],155,true);
   const {data}=await worker.recognize(crop,{}, {text:true,blocks:true});
   for(const {text,bbox} of recognizedLines(data)){
-   if(!bbox||bbox.x0>64||!/^레\s*벨\s*[1-6]\s*$/.test(text.trim()))continue;
+   const match=text.trim().match(/^레\s*벨\s*([1-6])$/);
+   if(!bbox||bbox.x0>64||!match)continue;
    const nameY=18+(bbox.y0-16)/4-32;
+   levels.push({x,y:nameY,value:Number(match[1])});
    offsets.push(((nameY-first)%pitch+pitch*1.5)%pitch-pitch/2);
   }
  }
  const distance=(a,b)=>Math.min(Math.abs(a-b),pitch-Math.abs(a-b));
  const clusters=offsets.map(offset=>offsets.filter(value=>distance(value,offset)<5));
  const best=clusters.sort((a,b)=>b.length-a.length)[0];
- if(!best||best.length<2)return unscrolledRows;
+ if(!best||best.length<2)return {positions:unscrolledRows,levels};
  const base=best[0];
  const offset=best.reduce((sum,value)=>sum+((value-base+pitch*1.5)%pitch-pitch/2),0)/best.length+base;
- if(Math.abs(offset)<4)return unscrolledRows;
- return Array.from({length:6},(_,i)=>Math.round(first+offset+(i-1)*pitch)).filter(y=>y>=55&&y+54<=588);
+ if(Math.abs(offset)<4)return {positions:unscrolledRows,levels};
+ const positions=Array.from({length:6},(_,i)=>Math.round(first+offset+(i-1)*pitch)).filter(y=>y>=55&&y+54<=588);
+ return {positions,levels};
 }
+const isBadgeOrange=(r,g,b)=>r>175&&g>98&&g<227&&b<140&&r>g+30&&g>b+20;
 async function readGameLayout(worker,canvas,kind){
  const referenceWidth=canvas.width*709/canvas.height;
  if(referenceWidth<1380||referenceWidth>1700)return [];
@@ -201,7 +205,21 @@ async function readGameLayout(worker,canvas,kind){
    const shift=(referenceWidth-1536)/2;
    const centered=([x,...box])=>[x+shift,...box];
    const paper=photoPixels(canvas,...centered([750,340,40,24]));
-   if(colorRatio(paper,(r,g,b)=>r>215&&g>195&&r>g&&g>b+20)<.9)return [];
+   if(colorRatio(paper,(r,g,b)=>r>215&&g>195&&r>g&&g>b+20)<.9){
+    // The city HUD exposes feathers below obsidian when the inventory is closed.
+    const blue=(r,g,b)=>b>g+18&&g>r+14&&b>70&&b<180;
+    const featherIcon=photoPixels(canvas,...centered([630,53,18,34]));
+    const featherBar=photoPixels(canvas,...centered([645,65,79,27]));
+    const upperBar=photoPixels(canvas,...centered([655,15,63,29]));
+    if(colorRatio(featherIcon,isBadgeOrange)<.18||colorRatio(featherBar,blue)<.38||colorRatio(upperBar,blue)<.33)return [];
+    await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:'0123456789.,KkMm'});
+    for(const threshold of [145,115,175]){
+     const {data,preview}=await read(centered([660,62,64,26]),threshold,true);
+     const value=stockNumber(data.text);
+     if(value!==null)return [entry('stock_깃털','깃털 보유량',value,{kind:'stock',target:'깃털',preview:preview()})];
+    }
+    return [];
+   }
    await worker.setParameters({tessedit_pageseg_mode:'7'});
    const title=await read(centered([303,121,90,26]),155,true);
    if(!clean(title.data.text).includes('마야'))return [];
@@ -228,9 +246,9 @@ async function readGameLayout(worker,canvas,kind){
     const retry=await read([239,650,79,25],155,true);
     if(!clean(retry.data.text).includes('보관'))return [];
    }
-   const cardRows=await buildingRowPositions(worker,canvas);
+   const {positions,levels}=await buildingRowPositions(worker,canvas);
    await worker.setParameters({tessedit_pageseg_mode:'7'});
-   for(const y of cardRows)for(const x of [91,223]){
+   for(const y of positions)for(const x of [91,223]){
     await worker.setParameters({tessedit_char_whitelist:''});
     const nameBox=[x,y,127,26];
     let building;
@@ -240,25 +258,21 @@ async function readGameLayout(worker,canvas,kind){
      if(building)break;
     }
     if(!building)continue;
-    await worker.setParameters({tessedit_char_whitelist:'0123456789'});
-    const levelBox=[x+32,y+29,22,25];
-    let level=await read(levelBox,155,true);
-    let lvMatch=level.data.text.trim().match(/^[1-6]$/);
-    if(!lvMatch){
-     await worker.setParameters({tessedit_pageseg_mode:'10'});
-     lvMatch=(await read(levelBox,135,true)).data.text.trim().match(/^[1-6]$/);
+    const labelBox=[x,y+29,70,24];
+    let level=await read(labelBox,150,true);
+    let lvMatch=level.data.text.trim().match(/^(?:레\s*벨|Lv\.?)\s*([1-6])$/i);
+    const rowLevel=levels.find(row=>row.x===x&&Math.abs(row.y-y)<6)?.value;
+    if(!lvMatch&&rowLevel===undefined){
+     const levelBox=[x+32,y+29,22,25];
+     await worker.setParameters({tessedit_char_whitelist:'0123456789',tessedit_pageseg_mode:'10'});
+     level=await read(levelBox,135,true);
+     lvMatch=level.data.text.trim().match(/^([1-6])$/);
      await worker.setParameters({tessedit_pageseg_mode:'7'});
     }
-    if(!lvMatch){
-     await worker.setParameters({tessedit_char_whitelist:''});
-     level=await read([x,y+29,71,25],145,true);
-     lvMatch=level.data.text.match(/(?:레\s*벨|Lv\.?)\s*([1-6])(?!\d)/i);
-    }
-    const lv=lvMatch?Number(lvMatch[1]||lvMatch[0]):null;
+    const lv=lvMatch?Number(lvMatch[1]):rowLevel??null;
     const badge=[x+94,y-37,37,37];
-    const isOrange=(r,g,b)=>r>175&&g>98&&g<227&&b<140&&r>g+30&&g>b+20;
-    const orange=colorRatio(photoPixels(canvas,...badge),isOrange);
-    const core=colorRatio(photoPixels(canvas,x+103,y-28,20,20),isOrange);
+    const orange=colorRatio(photoPixels(canvas,...badge),isBadgeOrange);
+    const core=colorRatio(photoPixels(canvas,x+103,y-28,20,20),isBadgeOrange);
     let count=null,preview;
     if(orange>.25||core>.32){
      await worker.setParameters({tessedit_char_whitelist:'0123456789xX'});
@@ -290,7 +304,8 @@ async function readGameLayout(worker,canvas,kind){
       if(agreed!==undefined&&new Set(readings).size===1)count=agreed;
       await worker.setParameters({tessedit_pageseg_mode:'7'});
      }
-    }else if(orange<.12&&core<.10){
+    }else if(lv!==null&&core<.20){
+     // A complete card without the orange badge represents a single building.
      count=1;
      preview=photoCrop(canvas,badge,null,false).toDataURL('image/png');
     }
@@ -313,7 +328,7 @@ async function recognizePhoto(w,canvas){
  const stockRows=await readGameLayout(w,canvas,'stocks');
  const localRows=stockRows.length?stockRows:await readGameLayout(w,canvas,'buildings');
  const kind=stockRows.length?'stock':localRows.length?'building':null;
- if((kind==='stock'&&localRows.length===6)||(kind==='building'&&localRows.every(f=>f.value!==null)))return localRows;
+ if((kind==='stock'&&(localRows.length===6||localRows.some(f=>f.target==='깃털')))||(kind==='building'&&localRows.every(f=>f.value!==null)))return localRows;
 
  const rows=[...localRows];
  await w.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
