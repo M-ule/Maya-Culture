@@ -5,11 +5,11 @@ const safeText=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt
 const BUILDINGS=[
  {id:'옥',name:'옥 채석장',aliases:['옥채석장','옥광산','옥채굴장'],production:'옥',group:'resources'},
  {id:'흑요석',name:'흑요석 채석장',aliases:['흑요석채석장','흑요석광산','흑요석채굴장'],production:'흑요석',group:'resources'},
- {id:'깃털',name:'새장',aliases:['새장','새 사육장','깃털사육장'],production:'깃털',group:'resources'},
+ {id:'깃털',name:'새장',aliases:['새장','새사육장','깃털사육장'],production:'깃털',group:'resources'},
  {id:'마스크',name:'마스크 작업장',aliases:['마스크작업장','마스크공방','마스크조각가'],production:'마스크',group:'products'},
  {id:'달력돌',name:'달력돌 작업장',aliases:['달력돌작업장','달력석작업장','달력돌공방','연대기편자'],production:'달력돌',group:'products'},
  {id:'단검',name:'단검 작업장',aliases:['단검작업장','단검공방','의식조각사'],production:'단검',group:'products'},
- {id:'머리장식',name:'머리장식 작업장',aliases:['머리장식작업장','머리장식공방'],production:'머리장식',group:'products'}
+ {id:'머리장식',name:'머리장식 작업장',aliases:['머리장식작업장','머리장식공방','행사복장'],production:'머리장식',group:'products'}
 ];
 const STOCKS=['옥','흑요석','깃털','마스크','달력돌','단검','머리장식']
  .map(name=>({name,target:name,group:resourceOrder.includes(name)?'resources':'products'}));
@@ -202,35 +202,53 @@ async function readGameLayout(worker,canvas,kind){
    // Verify the move/storage panel before using its two-column card layout.
    await worker.setParameters({tessedit_pageseg_mode:'7'});
    const footer=await read([111,647,211,30],155,true);
-   if(!clean(footer.data.text).includes('보관'))return [];
+   if(!clean(footer.data.text).includes('보관')){
+    const retry=await read([239,650,79,25],155,true);
+    if(!clean(retry.data.text).includes('보관'))return [];
+   }
    for(const y of [97,228,360,491])for(const x of [91,223]){
     await worker.setParameters({tessedit_char_whitelist:''});
     const nameBox=[x,y,127,26];
-    const name=await read(nameBox,155,true);
-    let building=matchBuilding(name.data.text);
-    if(!building){
-     // Some game backgrounds break up the pale strokes at the first threshold.
-     const retry=await read(nameBox,180,true);
-     building=matchBuilding(retry.data.text);
+    let building;
+    for(const threshold of [155,180,135]){
+     const name=await read(nameBox,threshold,true);
+     building=matchBuilding(name.data.text);
+     if(building)break;
     }
     if(!building)continue;
     await worker.setParameters({tessedit_char_whitelist:'0123456789'});
     const levelBox=[x+32,y+29,22,25];
-    const level=await read(levelBox,155,true);
+    let level=await read(levelBox,155,true);
     let lvMatch=level.data.text.trim().match(/^[1-6]$/);
     if(!lvMatch){
      await worker.setParameters({tessedit_pageseg_mode:'10'});
      lvMatch=(await read(levelBox,135,true)).data.text.trim().match(/^[1-6]$/);
      await worker.setParameters({tessedit_pageseg_mode:'7'});
     }
-    const lv=lvMatch?Number(lvMatch[0]):null;
+    if(!lvMatch){
+     await worker.setParameters({tessedit_char_whitelist:''});
+     level=await read([x,y+29,71,25],145,true);
+     lvMatch=level.data.text.match(/(?:레\s*벨|Lv\.?)\s*([1-6])(?!\d)/i);
+    }
+    const lv=lvMatch?Number(lvMatch[1]||lvMatch[0]):null;
     const badge=[x+94,y-37,37,37];
     const orange=colorRatio(photoPixels(canvas,...badge),(r,g,b)=>r>175&&g>98&&g<227&&b<140&&r>g+30&&g>b+20);
     let count=null,preview;
     if(orange>.25){
      await worker.setParameters({tessedit_char_whitelist:'0123456789xX'});
-     const result=await read([x+99,y-29,29,24],110,false);
-     const match=result.data.text.trim().match(/^[xX]?\s*(\d{1,4})$/);
+     const countBox=[x+99,y-29,29,24];
+     const result=await read(countBox,110,false);
+     const countPattern=/^[xX]\s*(\d{1,4})$/;
+     let match=result.data.text.trim().match(countPattern);
+     if(!match){
+      await worker.setParameters({tessedit_pageseg_mode:'8'});
+      const innerBadge=[x+99,y-26,26,17];
+      for(const threshold of [125,145]){
+       match=(await read(innerBadge,threshold,false)).data.text.trim().match(countPattern);
+       if(match)break;
+      }
+      await worker.setParameters({tessedit_pageseg_mode:'7'});
+     }
      if(match&&Number(match[1])>0)count=Number(match[1]);
      preview=result.preview();
     }else if(orange<.06){
