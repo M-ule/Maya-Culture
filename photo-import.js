@@ -107,7 +107,7 @@ function parseBuildingLines(lines,width,height){
  for(const [field,m]of [['lv',lv],['count',count]])out.push(entry(group+'_'+field,b.name+(field==='lv'?' 레벨':' 수량'),m?Number(m.match[1]):null,{kind:'building',building:b.id,field,group,anchor:p,box:m?.box,needsReview:true}));
  }return out;
 }
-function mergeFindings(additions){for(const f of additions){const prior=findings.find(p=>p.source===f.source&&(f.kind==='stock'?p.kind==='stock'&&p.target===f.target:p.building===f.building&&p.field===f.field&&Math.abs((p.anchor?.y0||0)-(f.anchor?.y0||0))<25&&Math.abs((p.anchor?.x0||0)-(f.anchor?.x0||0))<25));if(!prior){findings.push(f);continue;}if(f.value===null||f.value===undefined)continue;if(prior.value===null||prior.value===undefined){prior.value=f.value;prior.needsReview=!!f.needsReview;prior.preview=f.preview||prior.preview;}else if(prior.value!==f.value){prior.needsReview=true;prior.candidates=[...new Set([prior.value,f.value,...(prior.candidates||[])])];}}}
+function mergeFindings(additions){for(const f of additions){const prior=findings.find(p=>(f.kind==='stock'?p.kind==='stock'&&p.target===f.target:p.source===f.source&&p.building===f.building&&p.field===f.field&&Math.abs((p.anchor?.y0||0)-(f.anchor?.y0||0))<25&&Math.abs((p.anchor?.x0||0)-(f.anchor?.x0||0))<25));if(!prior){findings.push(f);continue;}if(f.value===null||f.value===undefined)continue;if(prior.value===null||prior.value===undefined){prior.value=f.value;prior.needsReview=!!f.needsReview;prior.preview=f.preview||prior.preview;}else if(prior.value!==f.value){prior.needsReview=true;prior.candidates=[...new Set([prior.value,f.value,...(prior.candidates||[])])];}}}
 // Overlapping scrolling screenshots show the same card at different positions.
 // Preserve its count once by matching a building and its displayed level.
 function dedupePhotoPages(){
@@ -138,7 +138,7 @@ function dedupePhotoPages(){
 // candidate selection and manual edits; never keep the first visual guess.
 function reviewLabel(f){if(f.kind!=='building')return f.label;const b=BUILDINGS.find(b=>b.id===f.building);if(!b)return f.label;const lv=findings.find(g=>g.group===f.group&&g.field==='lv')?.value;return b.name+(Number.isInteger(lv)&&lv>=1&&lv<=6?' (Lv.'+lv+')':'')+(f.field==='lv'?' 레벨':' 수량');}
 function syncReviewLabels(group){for(const [i,f]of findings.entries()){if(!group||f.group!==group)continue;const label=reviewLabel(f),node=document.querySelector('[data-photo-label="'+i+'"]');if(node)node.textContent=label;for(const [selector,suffix]of [['[data-photo-value="'+i+'"]',' 인식값'],['[data-photo-check="'+i+'"]',' 적용']])document.querySelector(selector)?.setAttribute('aria-label',label+suffix);}}
-function render(){el('photoReview').innerHTML=findings.length?'<button type="button" id="photoSkipUncertain">확인 필요 항목 선택 해제</button><table class="photo-table"><thead><tr><th>적용</th><th>항목</th><th>인식값 · 수정 가능</th></tr></thead><tbody>'+findings.map((f,i)=>'<tr><td><input type="checkbox" data-photo-check="'+i+'" '+(f.value!==null&&!f.needsReview&&!findings.some(g=>g.group&&g.group===f.group&&(g.value===null||g.needsReview))?'checked ':'')+'aria-label="'+safeText(reviewLabel(f))+' 적용"></td><td><span data-photo-label="'+i+'">'+safeText(reviewLabel(f))+'</span>'+(f.needsReview?'<small class="photo-caution">'+(f.value===null&&!f.candidates?.length?'인식값 없음 · 직접 입력':'추가 확인 필요')+'</small>':'')+'</td><td><input type="text" inputmode="decimal" placeholder="직접 입력" data-photo-value="'+i+'" value="'+(f.value??'')+'" aria-label="'+safeText(reviewLabel(f))+' 인식값">'+(f.candidates?.length&&(f.needsReview||f.candidates.length>1)?'<div class="photo-candidates">'+f.candidates.map(n=>'<button type="button" data-photo-pick="'+i+'" data-photo-number="'+n+'" aria-pressed="'+(f.value===n)+'">'+n+'</button>').join('')+'</div>':'')+(f.preview?'<img class="photo-preview" src="'+f.preview+'" alt="'+safeText(reviewLabel(f))+' 원본 숫자 확대">':'')+'</td></tr>').join('')+'</tbody></table><p class="photo-description">인식값을 수정한 뒤 적용할 항목을 체크하세요. 건물은 레벨과 수량을 함께 선택하세요. 기존 상세 설정의 다른 레벨은 유지됩니다.</p>':'';el('photoApply').disabled=!findings.length;}
+function render(){el('photoReview').innerHTML=findings.length?'<button type="button" id="photoSelectAll">모두 선택</button> <button type="button" id="photoDeselectAll">모두 해제</button><table class="photo-table"><thead><tr><th>적용</th><th>항목</th><th>인식값 · 수정 가능</th></tr></thead><tbody>'+findings.map((f,i)=>'<tr><td><input type="checkbox" data-photo-check="'+i+'" '+(f.value!==null&&!f.needsReview&&!findings.some(g=>g.group&&g.group===f.group&&(g.value===null||g.needsReview))?'checked ':'')+'aria-label="'+safeText(reviewLabel(f))+' 적용"></td><td><span data-photo-label="'+i+'">'+safeText(reviewLabel(f))+'</span>'+(f.needsReview?'<small class="photo-caution">'+(f.value===null&&!f.candidates?.length?'인식값 없음 · 직접 입력':'추가 확인 필요')+'</small>':'')+'</td><td><input type="text" inputmode="decimal" placeholder="직접 입력" data-photo-value="'+i+'" value="'+(f.value??'')+'" aria-label="'+safeText(reviewLabel(f))+' 인식값">'+(f.candidates?.length&&(f.needsReview||f.candidates.length>1)?'<div class="photo-candidates">'+f.candidates.map(n=>'<button type="button" data-photo-pick="'+i+'" data-photo-number="'+n+'" aria-pressed="'+(f.value===n)+'">'+n+'</button>').join('')+'</div>':'')+(f.preview?'<img class="photo-preview" src="'+f.preview+'" alt="'+safeText(reviewLabel(f))+' 원본 숫자 확대">':'')+'</td></tr>').join('')+'</tbody></table><p class="photo-description">인식값을 수정한 뒤 적용할 항목을 체크하세요. 건물은 레벨과 수량을 함께 선택하세요. 기존 상세 설정의 다른 레벨은 유지됩니다.</p>':'';el('photoApply').disabled=!findings.length;}
 // Coordinates describe the wide Korean game layout at a reference height of 709px.
 function photoCrop(canvas,[x,y,w,h],threshold,light){
  const scale=canvas.height/709,cv=document.createElement('canvas');
@@ -256,9 +256,11 @@ async function readGameLayout(worker,canvas,kind){
     }
     const lv=lvMatch?Number(lvMatch[1]||lvMatch[0]):null;
     const badge=[x+94,y-37,37,37];
-    const orange=colorRatio(photoPixels(canvas,...badge),(r,g,b)=>r>175&&g>98&&g<227&&b<140&&r>g+30&&g>b+20);
+    const isOrange=(r,g,b)=>r>175&&g>98&&g<227&&b<140&&r>g+30&&g>b+20;
+    const orange=colorRatio(photoPixels(canvas,...badge),isOrange);
+    const core=colorRatio(photoPixels(canvas,x+103,y-28,20,20),isOrange);
     let count=null,preview;
-    if(orange>.25){
+    if(orange>.25||core>.32){
      await worker.setParameters({tessedit_char_whitelist:'0123456789xX'});
      const countBox=[x+99,y-29,29,24];
      const result=await read(countBox,110,false);
@@ -275,7 +277,20 @@ async function readGameLayout(worker,canvas,kind){
      }
      if(match&&Number(match[1])>0)count=Number(match[1]);
      preview=result.preview();
-    }else if(orange<.06){
+     if(count===null){
+      // The coloured badge establishes that this is a stack even if OCR drops its x.
+      await worker.setParameters({tessedit_char_whitelist:'0123456789',tessedit_pageseg_mode:'8'});
+      const digits=[x+106,y-26,21,18];
+      const readings=[];
+      for(const threshold of [105,130,150]){
+       const value=(await read(digits,threshold,false)).data.text.trim();
+       if(/^[1-9]\d?$/.test(value))readings.push(Number(value));
+      }
+      const agreed=readings.find(n=>readings.filter(r=>r===n).length>=2);
+      if(agreed!==undefined&&new Set(readings).size===1)count=agreed;
+      await worker.setParameters({tessedit_pageseg_mode:'7'});
+     }
+    }else if(orange<.12&&core<.10){
      count=1;
      preview=photoCrop(canvas,badge,null,false).toDataURL('image/png');
     }
@@ -294,57 +309,87 @@ async function readGameLayout(worker,canvas,kind){
   await worker.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
  }
 }
-async function scan(){
- if(busy)return;const buildingFiles=Array.from(el('photoBuildings').files||[]),stockFiles=Array.from(el('photoStocks').files||[]);
- if(buildingFiles.length>2){status('건물 목록 사진은 최대 2장까지 선택할 수 있습니다.',true);return;}
- const files=[...buildingFiles.map((f,i)=>['buildings',f,'buildings_'+i]),...stockFiles.slice(0,1).map(f=>['stocks',f,'stocks'])];
- if(!files.length){status('사진을 선택해주세요.',true);return;}
- const failed=[];
- busy=true;el('photoScan').disabled=true;el('photoApply').disabled=true;findings=[];render();syncClear();
- try{status('문자 인식 엔진을 준비하고 있습니다. 처음에는 시간이 걸릴 수 있습니다…');const w=await engine();await w.setParameters({tessedit_pageseg_mode:'11'});
- for(const [kind,file,source]of files){try{if(!file.type.startsWith('image/')||file.size>20*1024*1024)throw new Error('20MB 이하 이미지 파일을 선택하세요.');
- status('사진 '+(files.findIndex(f=>f[2]===source)+1)+' / '+files.length+' · 건물명과 숫자를 확인하고 있습니다…');
- const url=URL.createObjectURL(file);try{const image=new Image();await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('사진을 열 수 없습니다.'));image.src=url;});
- const scale=Math.min(2,1600/image.naturalHeight,3000/image.naturalWidth),canvas=document.createElement('canvas');canvas.width=Math.round(image.naturalWidth*scale);canvas.height=Math.round(image.naturalHeight*scale);const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0,canvas.width,canvas.height);
- const localRows=await readGameLayout(w,canvas,kind);
- for(const f of localRows){
-  f.source=source;f.needsReview=true;
-  if(f.group)f.group=source+'_'+f.group;
- }
- mergeFindings(localRows);
- if(kind==='stocks'?localRows.length===6:localRows.length&&localRows.every(f=>f.value!==null))continue;
- const collect=async input=>{
-  const {data}=await w.recognize(input);
+async function recognizePhoto(w,canvas){
+ const stockRows=await readGameLayout(w,canvas,'stocks');
+ const localRows=stockRows.length?stockRows:await readGameLayout(w,canvas,'buildings');
+ const kind=stockRows.length?'stock':localRows.length?'building':null;
+ if((kind==='stock'&&localRows.length===6)||(kind==='building'&&localRows.every(f=>f.value!==null)))return localRows;
+
+ const rows=[...localRows];
+ await w.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
+ for(const input of [canvas,contrastImage(canvas)]){
+  const {data}=await w.recognize(input,{}, {text:true,blocks:true});
   const lines=recognizedLines(data);
-  const rows=kind==='buildings'?parseBuildingLines(lines):parseStockLines(lines).filter(
-   row=>!localRows.some(local=>local.target===row.target)
-  );
-  for(const f of rows){
-   f.source=source;f.needsReview=true;
-   if(f.group)f.group=source+'_'+f.group;
-   if(f.box){
-    const {x0,y0,x1,y1}=f.box;
-    const preview=document.createElement('canvas');
-    preview.width=Math.max(1,x1-x0);preview.height=Math.max(1,y1-y0);
-    preview.getContext('2d').drawImage(canvas,x0,y0,preview.width,preview.height,0,0,preview.width,preview.height);
-    f.preview=preview.toDataURL('image/png');
-   }
+  if(kind!=='building')rows.push(...parseStockLines(lines).filter(f=>!stockRows.some(local=>local.target===f.target)));
+  if(kind!=='stock')rows.push(...parseBuildingLines(lines,canvas.width,canvas.height).filter(f=>{
+   if(!f.anchor?.x0||!f.anchor?.y0)return false;
+   const card=localRows.find(local=>local.building===f.building&&local.field===f.field&&
+    Math.abs(local.anchor.x0-f.anchor.x0)<canvas.height*.04&&
+    Math.abs(local.anchor.y0-f.anchor.y0)<canvas.height*.035);
+   if(!card)return true;
+   f.anchor=card.anchor;
+   f.group=card.group;
+   return card.value===null;
+  }));
+ }
+ for(const f of rows){
+  if(f.preview||!f.box)continue;
+  const {x0,y0,x1,y1}=f.box;
+  const width=x1-x0,height=y1-y0;
+  if(width<=0||height<=0)continue;
+  const preview=document.createElement('canvas');
+  preview.width=width;preview.height=height;
+  preview.getContext('2d').drawImage(canvas,x0,y0,width,height,0,0,width,height);
+  f.preview=preview.toDataURL('image/png');
+ }
+ return rows;
+}
+async function scan(){
+ if(busy)return;
+ const files=Array.from(el('photoFiles').files||[]);
+ if(!files.length){status('사진을 선택해 주세요.',true);return;}
+ const failed=[];
+ busy=true;el('photoScan').disabled=true;findings=[];render();syncClear();
+ try{
+  status('문자 인식 엔진을 준비하고 있습니다…');
+  const w=await engine();
+  for(const [i,file] of files.entries()){
+   try{
+    if(!file.type.startsWith('image/')||file.size>20*1024*1024)throw new Error('20MB 이하 이미지 파일을 선택하세요.');
+    status('사진 '+(i+1)+' / '+files.length+' · 화면 종류와 숫자를 확인하고 있습니다…');
+    const url=URL.createObjectURL(file);
+    try{
+     const image=new Image();
+     await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('사진을 열 수 없습니다.'));image.src=url;});
+     const scale=Math.min(2,1600/image.naturalHeight,3000/image.naturalWidth);
+     const canvas=document.createElement('canvas');
+     canvas.width=Math.round(image.naturalWidth*scale);
+     canvas.height=Math.round(image.naturalHeight*scale);
+     canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);
+     const rows=await recognizePhoto(w,canvas);
+     if(!rows.length)throw new Error('건물이나 보유량을 읽지 못했습니다.');
+     mergeFindings(rows.map(f=>({...f,source:String(i),needsReview:true,group:f.group?i+'_'+f.group:undefined})));
+    }finally{URL.revokeObjectURL(url);}
+   }catch(e){failed.push('사진 '+(i+1)+' · '+e.message);}
   }
-  mergeFindings(rows);
- };
- await collect(canvas);
- status('대비를 높여 이름과 숫자를 다시 확인하고 있습니다…');
- await collect(contrastImage(canvas));
- }finally{URL.revokeObjectURL(url);}
- }catch(e){failed.push((kind==='stocks'?'보유량 사진':'건물 사진 '+(Number(source.split('_')[1])+1))+' · '+e.message);}}
- dedupePhotoPages();const recognized=findings.filter(f=>f.value!==null||f.candidates?.length).length;addMissing(files);render();const result=recognized?'인식값 '+recognized+'개 · 원본과 비교해 적용할 항목을 선택하세요.':'이름과 숫자를 읽지 못했습니다. 글자가 선명한 게임 화면으로 다시 분석하거나 직접 입력해 주세요.';
- status([result,...failed].join(' / '),!recognized||failed.length>0);
- }catch(e){addMissing(files);render();status(e.message+' · 아래에서 직접 입력할 수도 있습니다.',true);}
+  dedupePhotoPages();
+  const recognized=findings.filter(f=>f.value!==null||f.candidates?.length).length;
+  render();
+  status([recognized?'인식값 '+recognized+'개 · 사진과 비교한 뒤 적용하세요.':'읽을 수 있는 건물과 보유량이 없습니다.',...failed].join(' / '),!recognized||failed.length>0);
+ }catch(e){render();status(e.message,true);}
  finally{busy=false;el('photoScan').disabled=false;syncClear();}
 }
-function addMissing(files){
- if(files.some(f=>f[0]==='stocks'))for(const s of STOCKS)if(!findings.some(f=>f.kind==='stock'&&f.target===s.target))findings.push(entry('stock_'+s.target,s.name+' 보유량',null,{kind:'stock',target:s.target,needsReview:true}));
- if(files.some(f=>f[0]==='buildings'))for(const b of BUILDINGS)if(!findings.some(f=>f.kind==='building'&&f.building===b.id))for(const field of ['lv','count'])findings.push(entry(b.id+'_'+field,b.name+(field==='lv'?' 레벨':' 수량'),null,{kind:'building',building:b.id,field,group:'manual_'+b.id,needsReview:true}));
+function validPhotoValue(f,value){
+ return value!==null&&(f.kind!=='building'||(value>=0&&(f.field==='lv'?value>=1&&value<=6:value<=100000)));
+}
+function selectAllPhotoValues(){
+ const boxes=[...el('photoReview').querySelectorAll('[data-photo-check]')];
+ const readValue=i=>quantity(el('photoReview').querySelector('[data-photo-value="'+i+'"]').value);
+ const eligible=findings.map((f,i)=>validPhotoValue(f,readValue(i))&&(f.confirmed||(f.candidates?.length||0)<=1));
+ const incomplete=new Set(findings.filter((f,i)=>f.kind==='building'&&!eligible[i]).map(f=>f.building));
+ for(const [i,box] of boxes.entries())box.checked=eligible[i]&&!incomplete.has(findings[i].building);
+ const skipped=boxes.filter(box=>!box.checked).length;
+ status(skipped?'입력값이 없거나 후보가 다른 항목 '+skipped+'개를 제외하고 선택했습니다.':'읽은 값을 모두 선택했습니다.');
 }
 function apply(){
  if(busy)return;
@@ -353,7 +398,7 @@ function apply(){
   const f=findings[Number(box.dataset.photoCheck)];
   const input=el('photoReview').querySelector('[data-photo-value="'+box.dataset.photoCheck+'"]');
   const n=quantity(input.value);
-  if(n===null||(f.kind==='building'&&n<0)||(f.field==='lv'&&(n<1||n>6))||(f.field==='count'&&n>100000)){
+  if(!validPhotoValue(f,n)){
    status(reviewLabel(f)+' 값을 확인하세요.',true);return;
   }
   selected.push({...f,value:n});
@@ -419,9 +464,23 @@ function apply(){
  el('resetStatus').textContent='사진 입력 완료 · 선택한 항목만 반영했습니다.';
  el('photoImportDialog').close();
 }
-function reset(){if(busy)return;for(const id of ['photoBuildings','photoStocks'])el(id).value='';findings=[];render();syncClear();status('한 종류의 사진만 올려도 됩니다.');}
-function syncClear(){for(const id of ['photoBuildings','photoStocks'])el(id).disabled=busy;el('photoBuildingsClear').disabled=busy||!el('photoBuildings').files.length;el('photoStocksClear').disabled=busy||!el('photoStocks').files.length;el('photoReset').disabled=busy||!el('photoBuildings').files.length&&!el('photoStocks').files.length&&!findings.length;}
-el('photoReview').onclick=e=>{if(e.target.id==='photoSkipUncertain'){const uncertain=new Set(findings.filter(f=>f.value===null||f.needsReview).map(f=>f.group).filter(Boolean));for(const box of document.querySelectorAll('[data-photo-check]')){const f=findings[Number(box.dataset.photoCheck)];if(f.value===null||f.needsReview||uncertain.has(f.group))box.checked=false;}status('확인이 필요한 항목의 선택을 해제했습니다.');return;}const button=e.target.closest('[data-photo-pick]');if(!button)return;const i=Number(button.dataset.photoPick),n=Number(button.dataset.photoNumber);findings[i].value=n;const input=document.querySelector('[data-photo-value="'+i+'"]');input.value=n;document.querySelector('[data-photo-check="'+i+'"]').checked=true;syncReviewLabels(findings[i].group);for(const b of el('photoReview').querySelectorAll('[data-photo-pick="'+i+'"]'))b.setAttribute('aria-pressed',String(Number(b.dataset.photoNumber)===n));};
-el('photoReview').oninput=e=>{const i=e.target.dataset.photoValue;if(i!==undefined){findings[Number(i)].value=quantity(e.target.value);document.querySelector('[data-photo-check="'+i+'"]').checked=e.target.value.trim()!=='';syncReviewLabels(findings[Number(i)].group);}};
-el('photoImportBtn').onclick=()=>el('photoImportDialog').showModal();el('photoImportClose').onclick=()=>el('photoImportDialog').close();el('photoScan').onclick=scan;el('photoApply').onclick=apply;el('photoReset').onclick=reset;for(const [input,button]of [['photoBuildings','photoBuildingsClear'],['photoStocks','photoStocksClear']]){el(input).onchange=()=>{findings=[];render();syncClear();};el(button).onclick=()=>{if(busy)return;el(input).value='';findings=[];render();syncClear();};}
+function reset(){
+ if(busy)return;
+ el('photoFiles').value='';findings=[];render();syncClear();
+ status('건물 목록과 보유량 사진을 함께 선택할 수 있습니다.');
+}
+function syncClear(){
+ el('photoFiles').disabled=busy;
+ el('photoReset').disabled=busy||(!el('photoFiles').files.length&&!findings.length);
+}
+el('photoReview').onclick=e=>{
+ if(e.target.id==='photoSelectAll'){selectAllPhotoValues();return;}
+ if(e.target.id==='photoDeselectAll'){
+  for(const box of el('photoReview').querySelectorAll('[data-photo-check]'))box.checked=false;
+  return;
+ }
+ const button=e.target.closest('[data-photo-pick]');if(!button)return;const i=Number(button.dataset.photoPick),n=Number(button.dataset.photoNumber);findings[i].value=n;findings[i].confirmed=true;const input=document.querySelector('[data-photo-value="'+i+'"]');input.value=n;document.querySelector('[data-photo-check="'+i+'"]').checked=true;syncReviewLabels(findings[i].group);for(const b of el('photoReview').querySelectorAll('[data-photo-pick="'+i+'"]'))b.setAttribute('aria-pressed',String(Number(b.dataset.photoNumber)===n));};
+el('photoReview').oninput=e=>{const i=e.target.dataset.photoValue;if(i!==undefined){findings[Number(i)].value=quantity(e.target.value);findings[Number(i)].confirmed=true;document.querySelector('[data-photo-check="'+i+'"]').checked=e.target.value.trim()!=='';syncReviewLabels(findings[Number(i)].group);}};
+el('photoImportBtn').onclick=()=>el('photoImportDialog').showModal();el('photoImportClose').onclick=()=>el('photoImportDialog').close();el('photoScan').onclick=scan;el('photoApply').onclick=apply;el('photoReset').onclick=reset;
+el('photoFiles').onchange=()=>{findings=[];render();syncClear();status('사진 '+el('photoFiles').files.length+'장 선택');};
 })();
