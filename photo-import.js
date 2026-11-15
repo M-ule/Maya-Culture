@@ -165,6 +165,28 @@ function colorRatio(data,match){
  for(let i=0;i<data.length;i+=4)if(match(data[i],data[i+1],data[i+2]))hits++;
  return hits*4/data.length;
 }
+async function buildingRowPositions(worker,canvas){
+ const pitch=131.5, first=97, offsets=[];
+ const unscrolledRows=[97,228,360,491];
+ await worker.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
+ for(const x of [91,223]){
+  const crop=photoCrop(canvas,[x,18,65,560],155,true);
+  const {data}=await worker.recognize(crop,{}, {text:true,blocks:true});
+  for(const {text,bbox} of recognizedLines(data)){
+   if(!bbox||bbox.x0>64||!/^레\s*벨\s*[1-6]\s*$/.test(text.trim()))continue;
+   const nameY=18+(bbox.y0-16)/4-32;
+   offsets.push(((nameY-first)%pitch+pitch*1.5)%pitch-pitch/2);
+  }
+ }
+ const distance=(a,b)=>Math.min(Math.abs(a-b),pitch-Math.abs(a-b));
+ const clusters=offsets.map(offset=>offsets.filter(value=>distance(value,offset)<5));
+ const best=clusters.sort((a,b)=>b.length-a.length)[0];
+ if(!best||best.length<2)return unscrolledRows;
+ const base=best[0];
+ const offset=best.reduce((sum,value)=>sum+((value-base+pitch*1.5)%pitch-pitch/2),0)/best.length+base;
+ if(Math.abs(offset)<4)return unscrolledRows;
+ return Array.from({length:6},(_,i)=>Math.round(first+offset+(i-1)*pitch)).filter(y=>y>=55&&y+54<=588);
+}
 async function readGameLayout(worker,canvas,kind){
  const referenceWidth=canvas.width*709/canvas.height;
  if(referenceWidth<1380||referenceWidth>1700)return [];
@@ -206,7 +228,9 @@ async function readGameLayout(worker,canvas,kind){
     const retry=await read([239,650,79,25],155,true);
     if(!clean(retry.data.text).includes('보관'))return [];
    }
-   for(const y of [97,228,360,491])for(const x of [91,223]){
+   const cardRows=await buildingRowPositions(worker,canvas);
+   await worker.setParameters({tessedit_pageseg_mode:'7'});
+   for(const y of cardRows)for(const x of [91,223]){
     await worker.setParameters({tessedit_char_whitelist:''});
     const nameBox=[x,y,127,26];
     let building;
