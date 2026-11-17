@@ -55,7 +55,42 @@ function contrastImage(canvas){
  return copy;
 }
 function quantity(s){if(String(s).trim()==='')return null;const n=parseStock(String(s).replace(/[Oo]/g,'0'));return n!==null&&Number.isSafeInteger(n)&&Math.abs(n)<=1e12?n:null;}
-function matchBuilding(s){const text=clean(s);const exact=BUILDINGS.filter(b=>b.aliases.some(a=>text.includes(a))&&(!/호화|고급/.test(text)||/호화|고급/.test(b.name)));exact.sort((a,b)=>Math.max(...b.aliases.map(x=>x.length))-Math.max(...a.aliases.map(x=>x.length)));return exact[0]||null;}
+function editDistance(a,b){
+ const prev=Array.from({length:b.length+1},(_,i)=>i);
+ for(let i=1;i<=a.length;i++){
+  let left=i,diag=i-1;
+  for(let j=1;j<=b.length;j++){
+   const above=prev[j];
+   prev[j]=Math.min(above+1,left+1,diag+(a[i-1]===b[j-1]?0:1));
+   diag=above;left=prev[j];
+  }
+  prev[0]=i;
+ }
+ return prev[b.length];
+}
+function matchBuilding(s){
+ const text=clean(s).replace(/[^가-힣a-zA-Z0-9]/g,'');
+ if(!text)return null;
+ const exact=BUILDINGS.filter(b=>b.aliases.some(a=>text.includes(clean(a))));
+ exact.sort((a,b)=>Math.max(...b.aliases.map(x=>x.length))-Math.max(...a.aliases.map(x=>x.length)));
+ if(exact.length)return exact[0];
+ // Recover a Korean building name even when OCR misses one or two syllables.
+ const scores=[];
+ for(const building of BUILDINGS)for(const raw of building.aliases){
+  const alias=clean(raw);
+  if(alias.length<4)continue;
+  const tolerance=alias.length>=7?2:1;
+  for(let size=Math.max(2,alias.length-tolerance);size<=Math.min(text.length,alias.length+tolerance);size++){
+   for(let p=0;p+size<=text.length;p++){
+    const distance=editDistance(alias,text.slice(p,p+size));
+    if(distance<=tolerance)scores.push({building,distance,aliasLength:alias.length});
+   }
+  }
+ }
+ scores.sort((a,b)=>a.distance-b.distance||b.aliasLength-a.aliasLength);
+ if(!scores.length)return null;
+ return scores.some(x=>x.building.id!==scores[0].building.id&&x.distance===scores[0].distance)?null:scores[0].building;
+}
 function entry(id,label,value,extra={}){return {id,label,value,...extra};}
 function stockNumber(text){
  const match=String(text).trim().match(/^[·:：]?\s*([0-9Oo][0-9Oo,]*(?:\.[0-9Oo]+)?\s*[KM]?)$/i);
@@ -166,29 +201,54 @@ function colorRatio(data,match){
  return hits*4/data.length;
 }
 async function buildingRowPositions(worker,canvas){
- const pitch=131.5, first=97, offsets=[], levels=[];
+ const pitch=131.5,first=97,offsets=[],levels=[];
  const unscrolledRows=[97,228,360,491];
+ const pixelOffset=badgeRowOffset(canvas);
  await worker.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
  for(const x of [91,223]){
-  const crop=photoCrop(canvas,[x,18,65,560],155,true);
+  const crop=photoCrop(canvas,[x,18,67,560],155,true);
   const {data}=await worker.recognize(crop,{}, {text:true,blocks:true});
   for(const {text,bbox} of recognizedLines(data)){
-   const match=text.trim().match(/^레\s*벨\s*([1-6])$/);
-   if(!bbox||bbox.x0>64||!match)continue;
+   const match=text.trim().match(/^(?:레\s*벨|Lv\.?)\s*([1-6])$/i);
+   if(!bbox||bbox.x0>140||!match)continue;
    const nameY=18+(bbox.y0-16)/4-32;
    levels.push({x,y:nameY,value:Number(match[1])});
    offsets.push(((nameY-first)%pitch+pitch*1.5)%pitch-pitch/2);
   }
  }
  const distance=(a,b)=>Math.min(Math.abs(a-b),pitch-Math.abs(a-b));
- const clusters=offsets.map(offset=>offsets.filter(value=>distance(value,offset)<5));
+ const clusters=offsets.map(offset=>offsets.filter(value=>distance(value,offset)<6));
  const best=clusters.sort((a,b)=>b.length-a.length)[0];
- if(!best||best.length<2)return {positions:unscrolledRows,levels};
- const base=best[0];
- const offset=best.reduce((sum,value)=>sum+((value-base+pitch*1.5)%pitch-pitch/2),0)/best.length+base;
- if(Math.abs(offset)<4)return {positions:unscrolledRows,levels};
- const positions=Array.from({length:6},(_,i)=>Math.round(first+offset+(i-1)*pitch)).filter(y=>y>=55&&y+54<=588);
+ let offset=null;
+ if(best&&best.length>=2){
+  const base=best[0];
+  offset=best.reduce((sum,value)=>sum+((value-base+pitch*1.5)%pitch-pitch/2),0)/best.length+base;
+ }
+ // The orange xN badges expose the scrolled row position even if OCR misses Lv.
+ if(pixelOffset!==null&&(offset===null||Math.abs(offset-pixelOffset)>12))offset=pixelOffset;
+ if(offset===null||Math.abs(offset)<4)return {positions:unscrolledRows,levels};
+ const positions=Array.from({length:7},(_,i)=>Math.round(first+offset+(i-1)*pitch)).filter(y=>y>=55&&y+54<=588);
  return {positions,levels};
+}
+function badgeRowOffset(canvas){
+ const scores=[],pitch=131.5;
+ for(let offset=-65;offset<=65;offset++){
+  let score=0;
+  for(let i=0;i<7;i++){
+   const y=Math.round(97+offset+(i-1)*pitch);
+   if(y<55||y+54>588)continue;
+   for(const x of [91,223]){
+    const ratio=colorRatio(photoPixels(canvas,x+103,y-28,20,20),isBadgeOrange);
+    if(ratio>.40)score+=ratio;
+   }
+  }
+  scores.push({offset,score});
+ }
+ scores.sort((a,b)=>b.score-a.score);
+ const top=scores[0];
+ if(!top||top.score<.8)return null;
+ const nearby=scores.filter(item=>item.score>=top.score*.97&&Math.abs(item.offset-top.offset)<=17);
+ return Math.round(nearby.reduce((sum,item)=>sum+item.offset,0)/nearby.length);
 }
 const isBadgeOrange=(r,g,b)=>r>175&&g>98&&g<227&&b<140&&r>g+30&&g>b+20;
 async function readGameLayout(worker,canvas,kind){
