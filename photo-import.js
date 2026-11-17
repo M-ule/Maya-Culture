@@ -314,8 +314,8 @@ async function readGameLayout(worker,canvas,kind){
     await worker.setParameters({tessedit_char_whitelist:''});
     const nameBox=[x,y,127,26];
     let building;
-    for(const threshold of [155,180,135]){
-     const name=await read(nameBox,threshold,true);
+    for(const threshold of [155,180,135,null]){
+     const name=await read(nameBox,threshold,threshold!==null);
      building=matchBuilding(name.data.text);
      if(building)break;
     }
@@ -337,37 +337,32 @@ async function readGameLayout(worker,canvas,kind){
     const core=colorRatio(photoPixels(canvas,x+103,y-28,20,20),isBadgeOrange);
     let count=null,preview;
     if(orange>.25||core>.32){
+     const readings=[];
+     const readCountText=text=>{
+      const normal=String(text).replace(/[\s·,:：]/g,'').replace(/[xX×✕]/g,'').replace(/[Oo]/g,'0').replace(/[Ss]/g,'5').replace(/[Il|]/g,'1');
+      return /^[1-9]\d{0,2}$/.test(normal)?Number(normal):null;
+     };
+     // Cropped xN text may be recognized as "x5", "X5" or just "5".
+     const attempts=[
+      [[x+97,y-30,35,29],105,false,'7'],
+      [[x+99,y-28,30,24],140,false,'8'],
+      [[x+103,y-26,26,19],125,false,'8'],
+      [[x+98,y-29,33,27],null,false,'7']
+     ];
      await worker.setParameters({tessedit_char_whitelist:'0123456789xX'});
-     const countBox=[x+99,y-29,29,24];
-     const result=await read(countBox,110,false);
-     const countPattern=/^[xX]\s*(\d{1,4})$/;
-     let match=result.data.text.trim().match(countPattern);
-     if(!match){
-      await worker.setParameters({tessedit_pageseg_mode:'8'});
-      const innerBadge=[x+99,y-26,26,17];
-      for(const threshold of [125,145]){
-       match=(await read(innerBadge,threshold,false)).data.text.trim().match(countPattern);
-       if(match)break;
-      }
-      await worker.setParameters({tessedit_pageseg_mode:'7'});
+     for(const [box,threshold,light,psm] of attempts){
+      await worker.setParameters({tessedit_pageseg_mode:psm});
+      const result=await read(box,threshold,light);
+      const value=readCountText(result.data.text);
+      if(value!==null)readings.push(value);
+      if(readings.filter(n=>n===value).length>=2)break;
      }
-     if(match&&Number(match[1])>0)count=Number(match[1]);
-     preview=result.preview();
-     if(count===null){
-      // The coloured badge establishes that this is a stack even if OCR drops its x.
-      await worker.setParameters({tessedit_char_whitelist:'0123456789',tessedit_pageseg_mode:'8'});
-      const digits=[x+106,y-26,21,18];
-      const readings=[];
-      for(const threshold of [105,130,150]){
-       const value=(await read(digits,threshold,false)).data.text.trim();
-       if(/^[1-9]\d?$/.test(value))readings.push(Number(value));
-      }
-      const agreed=readings.find(n=>readings.filter(r=>r===n).length>=2);
-      if(agreed!==undefined&&new Set(readings).size===1)count=agreed;
-      await worker.setParameters({tessedit_pageseg_mode:'7'});
-     }
-    }else if(lv!==null&&core<.20){
-     // A complete card without the orange badge represents a single building.
+     const sorted=[...new Set(readings)].sort((a,b)=>readings.filter(x=>x===b).length-readings.filter(x=>x===a).length);
+     count=sorted[0]??null;
+     preview=photoCrop(canvas,badge,null,false).toDataURL('image/png');
+     await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
+    }else if(core<.20){
+     // No orange badge means a single building, even when its count is unprinted.
      count=1;
      preview=photoCrop(canvas,badge,null,false).toDataURL('image/png');
     }
