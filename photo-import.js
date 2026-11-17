@@ -199,53 +199,55 @@ async function readGameLayout(worker,canvas,kind){
   const {data}=await worker.recognize(crop);
   return {data,preview:()=>photoCrop(canvas,box,null,false).toDataURL('image/png')};
  };
+ async function readNumber(box,light){
+  const attempts=light?[[105,true,'7'],[145,true,'7'],[null,false,'8']]:
+   [[145,false,'7'],[185,false,'7'],[null,false,'8']];
+  const found=[],preview=photoCrop(canvas,box,null,false).toDataURL('image/png');
+  for(const [threshold,bright,psm] of attempts){
+   await worker.setParameters({tessedit_pageseg_mode:psm,tessedit_char_whitelist:'0123456789Oo.,KkMm'});
+   const result=await read(box,threshold,bright);
+   const value=stockNumber(result.data.text);
+   if(value!==null)found.push(value);
+   if(found.filter(n=>n===value).length>=2)break;
+  }
+  const distinct=[...new Set(found)];
+  const value=found.length?[...distinct].sort((a,b)=>found.filter(x=>x===b).length-found.filter(x=>x===a).length||String(b).length-String(a).length)[0]:null;
+  await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
+  return {value,candidates:distinct.length>1?distinct:undefined,needsReview:distinct.length>1||value===null,preview};
+ }
  const rows=[];
  try{
   if(kind==='stocks'){
    const shift=(referenceWidth-1536)/2;
    const centered=([x,...box])=>[x+shift,...box];
-   const paper=photoPixels(canvas,...centered([750,340,40,24]));
-   if(colorRatio(paper,(r,g,b)=>r>215&&g>195&&r>g&&g>b+20)<.9){
-    // The city HUD exposes feathers below obsidian when the inventory is closed.
+   // Distinguish the inventory window from scenery using several beige patches.
+   const paperBoxes=[[750,340,40,24],[500,435,36,24],[1120,490,36,24]];
+   const inventory=paperBoxes.every(box=>colorRatio(photoPixels(canvas,...centered(box)),(r,g,b)=>r>205&&g>182&&r>g&&g>b+17)>.75);
+   if(!inventory){
+    // City HUD: feathers are shown below the obsidian resource.
     const blue=(r,g,b)=>b>g+18&&g>r+14&&b>70&&b<180;
     const featherIcon=photoPixels(canvas,...centered([630,53,18,34]));
     const featherBar=photoPixels(canvas,...centered([645,65,79,27]));
     const upperBar=photoPixels(canvas,...centered([655,15,63,29]));
     if(colorRatio(featherIcon,isBadgeOrange)<.18||colorRatio(featherBar,blue)<.38||colorRatio(upperBar,blue)<.33)return [];
-    await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:'0123456789.,KkMm'});
-    for(const threshold of [145,115,175]){
-     const {data,preview}=await read(centered([660,62,64,26]),threshold,true);
-     const value=stockNumber(data.text);
-     if(value!==null)return [entry('stock_깃털','깃털 보유량',value,{kind:'stock',target:'깃털',preview:preview()})];
-    }
-    return [];
+    const n=await readNumber(centered([655,60,78,30]),true);
+    return n.value===null?[]:[entry('stock_깃털','깃털 보유량',n.value,{kind:'stock',target:'깃털',preview:n.preview,candidates:n.candidates,needsReview:n.needsReview})];
    }
-   await worker.setParameters({tessedit_pageseg_mode:'7'});
-   const title=await read(centered([303,121,90,26]),155,true);
-   if(!clean(title.data.text).includes('마야'))return [];
-   // The header shows cocoa, jade and obsidian. Feathers are not in this panel.
+   // Wide padded rectangles retain all digits, especially 25,450 in the second row.
    const positions=[
-    ['옥',[554,15,61,26],105,true],
-    ['흑요석',[662,15,64,26],105,true],
-    ['마스크',[374,184,68,28],128,false],
-    ['달력돌',[687,184,70,28],128,false],
-    ['단검',[998,184,83,28],128,false],
-    ['머리장식',[374,266,62,28],128,false]
+    ['옥',[548,10,87,36],true],
+    ['흑요석',[655,10,88,36],true],
+    ['마스크',[368,179,111,38],false],
+    ['달력돌',[682,179,113,38],false],
+    ['단검',[992,179,114,38],false],
+    ['머리장식',[368,261,113,39],false]
    ];
-   await worker.setParameters({tessedit_char_whitelist:'0123456789.,KkMm'});
-   for(const [target,box,threshold,light] of positions){
-    const {data,preview}=await read(centered(box),threshold,light);
-    const value=stockNumber(data.text);
-    if(value!==null)rows.push(entry('stock_'+target,target+' 보유량',value,{kind:'stock',target,preview:preview()}));
+   for(const [target,box,light] of positions){
+    const n=await readNumber(centered(box),light);
+    if(n.value!==null)rows.push(entry('stock_'+target,target+' 보유량',n.value,{kind:'stock',target,preview:n.preview,candidates:n.candidates,needsReview:n.needsReview}));
    }
   }else{
-   // Verify the move/storage panel before using its two-column card layout.
-   await worker.setParameters({tessedit_pageseg_mode:'7'});
-   const footer=await read([111,647,211,30],155,true);
-   if(!clean(footer.data.text).includes('보관')){
-    const retry=await read([239,650,79,25],155,true);
-    if(!clean(retry.data.text).includes('보관'))return [];
-   }
+   // Footer text may blend with foliage; detect individual cards instead.
    const {positions,levels}=await buildingRowPositions(worker,canvas);
    await worker.setParameters({tessedit_pageseg_mode:'7'});
    for(const y of positions)for(const x of [91,223]){
